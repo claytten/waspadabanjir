@@ -67,6 +67,12 @@
         <div class="flex-center position-ref full-height">
             <div class="content">
                 <div class="title m-b-md">
+                    @if(auth()->user()->role === 'admin' || auth()->user()->role === 'superadmin')
+                        <h5>{{ auth()->user()->admin->email }}</h5>
+                    @else
+                        <h5>{{ auth()->user()->employee->name }}</h5>
+                        <h6>{{ auth()->user()->employee->position }}</h6>
+                    @endif
                     <a href="{{ route('home')}}"> Home </a>
                     <a href="{{ route('admin.logout') }}">
                         Log out

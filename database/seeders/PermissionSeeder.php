@@ -27,6 +27,11 @@ class PermissionSeeder extends Seeder
             'roles-delete',
         ];
 
+        $roles = [
+            'admin',
+            'employee'
+        ];
+
         // Create Permission
         foreach ($permissions as $permission) {
             $db_permission = Permission::whereName($permission)->first();
@@ -35,13 +40,14 @@ class PermissionSeeder extends Seeder
             }
         }
 
-        $role = Role::where('name', 'superadmin')->first();
-        if(empty($role)){
-            // If role is empty, create a new one
-            $role = Role::create(['name' => 'superadmin']); // Add New Role Data
+        foreach($roles as $item) {
+            $role = Role::where('name', $item)->first();
+            if(empty($role)){
+                // If role is empty, create a new one
+                $role = Role::create(['name' => $item]); // Add New Role Data
+            }
+            $role->syncPermissions($permissions);
         }
-
-        $role->syncPermissions($permissions);
         
     }
 }

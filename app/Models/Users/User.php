@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\Accounts\Admins\Admin;
+use App\Models\Accounts\Employees\Employee;
 
 class User extends Authenticatable
 {
@@ -32,4 +34,24 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
     ];
+
+    /**
+     * Get the admin associated with the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function admin()
+    {
+        return $this->hasOne(Admin::class, 'id_user', 'id');
+    }
+
+    /**
+     * Get the employee associated with the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function employee()
+    {
+        return $this->hasOne(Employee::class, 'id_user', 'id');
+    }
 }

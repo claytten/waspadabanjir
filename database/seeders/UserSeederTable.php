@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\User;
+use App\Models\Users\User;
 use Spatie\Permission\Models\Role;
 
 class UserSeederTable extends Seeder
@@ -19,7 +19,19 @@ class UserSeederTable extends Seeder
             [
                 'username'  => 'superadmin',
                 'password'  => bcrypt('superadmin'),
-                'role'      => 'superadmin',
+                'role'      => 'admin',
+                'status'    => true,
+            ],
+            [
+                'username'  => 'adminFake',
+                'password'  => bcrypt('adminfake'),
+                'role'      => 'admin',
+                'status'    => false,
+            ],
+            [
+                'username'  => 'employee1',
+                'password'  => bcrypt('employee'),
+                'role'      => 'employee',
                 'status'    => true,
             ]
         ];
