@@ -6,83 +6,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name') }}</title>
 
-    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300,100,700,900' rel='stylesheet'
-          type='text/css'>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- inject:css -->
-    <link rel="stylesheet" href="{{ asset('css/lib/getmdl-select.min.css')}}">
-    <link rel="stylesheet" href="{{ asset('css/application.min.css')}}">
-    <!-- endinject -->
+    <!-- Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">
+    <!-- Icons -->
+    <link rel="stylesheet" href="{{ asset('vendor/nucleo/css/nucleo.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('vendor/@fortawesome/fontawesome-free/css/all.min.css') }}" type="text/css">
+
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}" type="text/css">
+    <style>
+      form .form-group {
+        border: 1px solid #ced4da;
+      }
+    </style>
 
 </head>
-<body>
-
-<div class="mdl-layout mdl-js-layout color--gray is-small-screen login">
-    <main class="mdl-layout__content">
-        <div class="mdl-card mdl-card__login mdl-shadow--2dp">
-                <div class="mdl-card__supporting-text color--dark-gray">
-                    <div class="mdl-grid">
-                        <div class="mdl-cell mdl-cell--12-col mdl-cell--4-col-phone">
-                        <a href="#">
-                            <span class="mdl-card__title-text text-color--smooth-gray">
-                                {{config('app.name')}}
-                            </span>
-                        </a>
-                        </div>
-                        @if(Session::get('message'))
-                            <div class="alert alert-warning alert-dismissible fade show mb-0" role="alert">
-                                <span>{{ Session::get('message') }}</span>
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        @endif
-                        <div class="mdl-cell mdl-cell--12-col mdl-cell--4-col-phone">
-                            <span class="login-name text-color--white">Sign in</span>
-                        </div>
-                        <form action="{{ route('admin.login') }}" method="POST">
-                            {{ csrf_field() }}
-                            <div class="mdl-cell mdl-cell--12-col mdl-cell--4-col-phone">
-                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label full-size">
-                                    <input class="mdl-textfield__input @error('username') is-invalid @enderror" type="text" id="username" name="username" value="{{ old('username') }}" autocomplete="username" autofocus>
-                                    <label class="mdl-textfield__label" for="e-mail">Username</label>
-                                    @error('email')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label full-size">
-                                    <input class="mdl-textfield__input @error('password') is-invalid @enderror" type="password" id="password" name="password" value="{{ old('password') }}">
-                                    <label class="mdl-textfield__label" for="password">Password</label>
-                                    @error('password')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="mdl-cell mdl-cell--12-col mdl-cell--4-col-phone submit-cell">
-                                <div class="mdl-layout-spacer"></div>
-                                <button type="submit" class="mdl-button mdl-js-button mdl-button--raised color--light-blue">
-                                    SIGN IN
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+<body class="bg-xoric bg-pattern">
+  <!-- Main content -->
+  <div class="main-content">
+    <!-- Header -->
+    <div class="header py-7 py-lg-8 pt-lg-9">
+      <div class="container">
+        <div class="header-body text-center mb-7">
+          <div class="row justify-content-center">
+            <div class="col-xl-5 col-lg-6 col-md-8 px-5">
+              <h1 class="text-white">Welcome To {{config('app.name')}}</h1>
             </div>
-    </main>
-</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Page content -->
+    <div class="container mt--8 pb-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-7">
+          @include('layouts.admin.flash-message')
+          <div class="card bg-secondary border-0 mb-0">
+            <div class="card-body px-lg-5 py-lg-5">
+              <form action="{{ route('admin.login') }}" method="POST">
+                {{ csrf_field() }}
+                <div class="form-group mb-3">
+                  <div class="input-group input-group-merge input-group-alternative">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-email-83"></i></span>
+                    </div>
+                    <input class="form-control @error('username') is-invalid @enderror" placeholder="Username" type="text" name="username">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group input-group-merge input-group-alternative">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                    </div>
+                    <input class="form-control" placeholder="Password" type="password" name="password">
+                  </div>
+                </div>
+                <div class="text-center">
+                  <button type="submit" class="btn btn-primary my-4">Sign in</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<!-- inject:js -->
-<script src="{{asset('js/getmdl-select.min.js')}}"></script>
-<script src="{{asset('js/material.min.js')}}"></script>
-<!-- endinject -->
+  <!-- Core -->
+  <script src="{{ asset('vendor/jquery/dist/jquery.min.js') }}"></script>
+  <script src="{{ asset('vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ asset('vendor/js-cookie/js.cookie.js') }}"></script>
+  <script src="{{ asset('vendor/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
 
+  <script src="{{ asset('js/script.js') }}"></script>
 </body>
 </html>

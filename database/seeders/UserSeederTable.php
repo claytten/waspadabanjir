@@ -23,16 +23,16 @@ class UserSeederTable extends Seeder
                 'status'    => true,
             ],
             [
-                'username'  => 'adminFake',
-                'password'  => bcrypt('adminfake'),
-                'role'      => 'admin',
-                'status'    => false,
-            ],
-            [
                 'username'  => 'employee1',
                 'password'  => bcrypt('employee'),
                 'role'      => 'employee',
                 'status'    => true,
+            ],
+            [
+                'username'  => 'adminFake',
+                'password'  => bcrypt('adminfake'),
+                'role'      => 'admin',
+                'status'    => false,
             ]
         ];
 

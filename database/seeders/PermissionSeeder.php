@@ -15,7 +15,7 @@ class PermissionSeeder extends Seeder
      */
     public function run()
     {
-        $permissions = [
+        $adminPermissions = [
             'admin-list',
             'admin-create',
             'admin-edit',
@@ -27,13 +27,30 @@ class PermissionSeeder extends Seeder
             'roles-delete',
         ];
 
+        $employeePermissions = [
+            'maps-list',
+            'maps-crete',
+            'maps-edit',
+            'maps-delete',
+
+            'subscriber-list',
+            'subscriber-create',
+            'subscriber-edit',
+            'subscriber-delete',
+
+            'reports-list',
+            'reports-create',
+            'reports-edit',
+            'reports-delete'
+        ];
+
         $roles = [
             'admin',
             'employee'
         ];
 
         // Create Permission
-        foreach ($permissions as $permission) {
+        foreach (array_merge($adminPermissions, $employeePermissions) as $permission) {
             $db_permission = Permission::whereName($permission)->first();
             if(empty($db_permission)){
                 Permission::create(['name' => $permission]);
@@ -46,7 +63,11 @@ class PermissionSeeder extends Seeder
                 // If role is empty, create a new one
                 $role = Role::create(['name' => $item]); // Add New Role Data
             }
-            $role->syncPermissions($permissions);
+            if($role == 'admin') {
+                $role->syncPermissions(array_merge($adminPermissions, $employeePermissions));
+            } else {
+                $role->syncPermissions($employeePermissions);
+            }
         }
         
     }
