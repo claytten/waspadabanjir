@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Accounts\ProfileController;
+use App\Http\Controllers\Admin\Accounts\UserController;
+use App\Http\Controllers\Admin\Accounts\RoleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,17 +28,18 @@ Route::namespace('Admin')->group(function () {
 });
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth'], 'as' => 'admin.' ], function () {
-    Route::namespace('Admin')->group(function () {
-        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-        Route::namespace('Accounts')->group(function () {
-            Route::get('/profile/{userId}/{role}', [ProfileController::class, 'editProfile'])->name('edit.profile');
-            Route::put('/profile/{userId}/{role}/edit', [ProfileController::class, 'updateProfile'])->name('update.profile');
-            Route::put('/profile/avatar/{userId}/{role}/edit', [ProfileController::class, 'updateProfileAvatar'])->name('update.profile.avatar');
-            Route::put('/settings/{userId}/edit', [ProfileController::class, 'updateSetting'])->name('update.setting');
-            Route::put('/settings/reset-password/{userId}/edit', [ProfileController::class, 'resetPassword'])->name('reset.password');
-        });
-    });
+    // Account Routing
+    Route::resource('/account/admin', UserController::class);
+    Route::resource('/account/role', RoleController::class);
+
+    // Profile Routing
+    Route::get('/profile/{userId}/{role}', [ProfileController::class, 'editProfile'])->name('edit.profile');
+    Route::put('/profile/{userId}/{role}/edit', [ProfileController::class, 'updateProfile'])->name('update.profile');
+    Route::put('/profile/avatar/{userId}/{role}/edit', [ProfileController::class, 'updateProfileAvatar'])->name('update.profile.avatar');
+    Route::put('/settings/{userId}/edit', [ProfileController::class, 'updateSetting'])->name('update.setting');
+    Route::put('/settings/reset-password/{userId}/edit', [ProfileController::class, 'resetPassword'])->name('reset.password');
 });
 
 Route::get('/', function () {

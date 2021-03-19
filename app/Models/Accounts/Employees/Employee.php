@@ -24,7 +24,6 @@ class Employee extends Model
         'address',
         'phone',
         'id_card',
-        'position',
         'image'
     ];
 

@@ -106,7 +106,6 @@ class ProfileController extends Controller
                 'address' => ['required', 'string', 'max:191'],
                 'phone' => ['required', 'string', 'max:191'],
                 'id_card' => ['required', 'string', 'max:191'],
-                'position' => ['required', 'string', 'max:191'],
             ]);
             $admin = $this->employeeRepo->findEmployeeById($user->$role->id);
             $adminRepo = new EmployeeRepository($admin);

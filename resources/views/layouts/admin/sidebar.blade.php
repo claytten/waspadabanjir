@@ -27,6 +27,57 @@
               <span class="nav-link-text">Dashboard</span>
             </a>
           </li>
+
+          @can('maps-list')
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                <i class="ni ni-map-big text-primary"></i>
+                <span class="nav-link-text">Maps</span>
+              </a>
+            </li>
+          @endcan
+
+          @can('reports-list')
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                <i class="ni ni-chat-round text-primary"></i>
+                <span class="nav-link-text">Reports</span>
+              </a>
+            </li>
+          @endcan
+
+          @can('subscriber-list')
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                <i class="ni ni-book-bookmark text-primary"></i>
+                <span class="nav-link-text">Subscriber</span>
+              </a>
+            </li>
+          @endcan
+
+          @if (auth()->user()->can('admin-list') || auth()->user()->can('roles-list'))
+            <li class="nav-item">
+              <a class="nav-link {{ !empty($menu) ? ($menu == "accounts" ? 'active' : '') : '' }}" href="#navbar-accounts" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="navbar-accounts">
+                <i class="ni ni-circle-08 text-primary"></i>
+                <span class="nav-link-text">Accounts</span>
+              </a>
+              <div class="collapse {{ !empty($menu) ? ($menu == "accounts" ? 'show' : '') : '' }}" id="navbar-accounts">
+                <ul class="nav nav-sm flex-column">
+                  @if(auth()->user()->can('admin-list'))
+                    <li class="nav-item {{ !empty($submenu) ? ($submenu == 'admins' ? 'show' : '') : '' }}">
+                      <a href="{{ route('admin.admin.index') }}" class="nav-link">Admin</a>
+                    </li>
+                  @endif
+                  
+                  @if(auth()->user()->can('roles-list'))
+                    <li class="nav-item {{ !empty($submenu) ? ($submenu == 'roles' ? 'show' : '') : '' }}">
+                      <a href="{{ route('admin.role.index') }}" class="nav-link">Role</a>
+                    </li>
+                  @endif
+                </ul>
+              </div>
+            </li>
+          @endif
         </ul>
         <!-- Divider -->
         <hr class="my-3">

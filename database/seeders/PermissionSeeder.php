@@ -45,8 +45,8 @@ class PermissionSeeder extends Seeder
         ];
 
         $roles = [
-            'admin',
-            'employee'
+            'Super Admin',
+            'Secretary'
         ];
 
         // Create Permission
@@ -63,7 +63,7 @@ class PermissionSeeder extends Seeder
                 // If role is empty, create a new one
                 $role = Role::create(['name' => $item]); // Add New Role Data
             }
-            if($role == 'admin') {
+            if($item == 'Super Admin') {
                 $role->syncPermissions(array_merge($adminPermissions, $employeePermissions));
             } else {
                 $role->syncPermissions($employeePermissions);

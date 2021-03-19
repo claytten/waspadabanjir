@@ -177,17 +177,6 @@
                   @enderror
                 </div>
               </div>
-              <div class="col-lg-6">
-                <div class="form-group">
-                  <label class="form-control-label" for="input-position">Position</label>
-                  <input type="text" id="input-position" class="form-control @error('position') is-invalid @enderror" placeholder="Position" value="{{ $admin->position }}" name="position">
-                  @error('position')
-                      <div class="invalid-feedback">
-                          {{ $message }}
-                      </div>
-                  @enderror
-                </div>
-              </div>
             </div>
           </div>
           <hr class="my-4" />

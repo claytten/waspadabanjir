@@ -20,19 +20,15 @@ class UserSeederTable extends Seeder
                 'username'  => 'superadmin',
                 'password'  => bcrypt('superadmin'),
                 'role'      => 'admin',
+                'assignRole'=> 'Super Admin',
                 'status'    => true,
             ],
             [
                 'username'  => 'employee1',
                 'password'  => bcrypt('employee'),
                 'role'      => 'employee',
+                'assignRole'=> 'Secretary',
                 'status'    => true,
-            ],
-            [
-                'username'  => 'adminFake',
-                'password'  => bcrypt('adminfake'),
-                'role'      => 'admin',
-                'status'    => false,
             ]
         ];
 
@@ -46,7 +42,7 @@ class UserSeederTable extends Seeder
                     'status' => $item['status']
                 ]);
 
-                $store->assignRole($item['role']);
+                $store->assignRole($item['assignRole']);
                 
             }
         }

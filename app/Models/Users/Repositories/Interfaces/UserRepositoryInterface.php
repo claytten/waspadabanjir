@@ -4,18 +4,28 @@ namespace App\Models\Users\Repositories\Interfaces;
 
 use Jsdecena\Baserepo\BaseRepositoryInterface;
 use App\Models\Users\User;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Collection as Support;
+use Illuminate\Support\Collection;
 
 interface UserRepositoryInterface extends BaseRepositoryInterface
 {
-    public function updateUser(array $params) : bool;
+    public function listUsers(): Collection;
+
+    public function createUser(array $params) : User;
 
     public function findUserById(int $id) : User;
 
-    public function searchUser(string $text) : Collection;
+    public function updateUser(array $params): bool;
+
+    public function syncRoles(array $roleIds);
+
+    public function listRoles() : Collection;
+
+    public function hasRole(string $roleName) : bool;
+
+    public function isAuthUser(User $employee): bool;
+
+    public function deleteUser() : bool;
 
     public function saveCoverImage(UploadedFile $file) : string;
 

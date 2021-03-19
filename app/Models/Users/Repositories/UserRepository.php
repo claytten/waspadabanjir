@@ -4,21 +4,22 @@ namespace App\Models\Users\Repositories;
 
 use Jsdecena\Baserepo\BaseRepository;
 use App\Models\Users\User;
-use App\Models\Users\Exceptions\CreateUserInvalidArgumentException;
 use App\Models\Users\Exceptions\UserNotFoundException;
-use App\Models\Users\Exceptions\UpdateUserInvalidArgumentException;
 use App\Models\Users\Repositories\Interfaces\UserRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
+use App\Models\Tools\UploadableTrait;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Collection as Support;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
+    use UploadableTrait;
     /**
      * UserRepository constructor.
+     *
      * @param User $user
      */
     public function __construct(User $user)
@@ -28,49 +29,113 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * Update the user
+     * List all the users
      *
-     * @param array $params
+     * @param string $order
+     * @param string $sort
      *
-     * @return bool
-     * @throws UpdateUserInvalidArgumentException
+     * @return Collection
      */
-    public function updateUser(array $params) : bool
+    public function listUsers(): Collection
     {
-        try {
-            return $this->model->update($params);
-        } catch (QueryException $e) {
-            throw new UpdateUserInvalidArgumentException($e);
-        }
+        return $this->model->where('id', '!=', auth()->user()->id)->get();
     }
 
     /**
-     * Find the user or fail
+     * Create the user
+     *
+     * @param array $data
+     *
+     * @return User
+     */
+    public function createUser(array $data): User
+    {
+        $data['password'] = Hash::make($data['password']);
+        $this->model->assignRole($data['role']);
+        return $this->create($data);
+    }
+
+    /**
+     * Find the user by id
      *
      * @param int $id
      *
      * @return User
-     * @throws UserNotFoundException
      */
-    public function findUserById(int $id) : User
+    public function findUserById(int $id): User
     {
         try {
             return $this->findOneOrFail($id);
         } catch (ModelNotFoundException $e) {
-            throw new UserNotFoundException($e);
+            throw new UserNotFoundException;
         }
     }
-    
+
     /**
-     * @param string $text
-     * @return mixed
+     * Update user
+     *
+     * @param array $params
+     *
+     * @return bool
      */
-    public function searchUser(string $text = null) : Collection
+    public function updateUser(array $params): bool
     {
-        if (is_null($text)) {
-            return $this->all();
+        if (isset($params['password'])) {
+            $params['password'] = Hash::make($params['password']);
         }
-        return $this->model->searchUser($text)->get();
+
+        $filtered = collect($params)->all();
+
+        return $this->update($filtered);
+    }
+
+    /**
+     * @param array $roleIds
+     */
+    public function syncRoles(array $roleIds)
+    {
+        $this->model->roles()->sync($roleIds);
+    }
+
+    /**
+     * @return Collection
+     */
+    public function listRoles(): Collection
+    {
+        return $this->model->roles()->get();
+    }
+
+    /**
+     * @param string $roleName
+     *
+     * @return bool
+     */
+    public function hasRole(string $roleName): bool
+    {
+        return $this->model->hasRole($roleName);
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return bool
+     */
+    public function isAuthUser(User $user): bool
+    {
+        $isAuthUser = false;
+        if (Auth::user()->id == $user->id) {
+            $isAuthUser = true;
+        }
+        return $isAuthUser;
+    }
+
+    /**
+     * @return bool
+     * @throws \Exception
+     */
+    public function deleteUser() : bool
+    {
+        return $this->delete();
     }
 
     /**

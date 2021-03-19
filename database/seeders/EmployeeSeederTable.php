@@ -19,10 +19,9 @@ class EmployeeSeederTable extends Seeder
                 'id_user'   => 2,
                 'name'      => 'Employee 1',
                 'email'     => 'employee@employee.com',
-                'address'   => 'indonesia',
+                'address_id'=> '3671050005',
                 'phone'     => '+62',
                 'id_card'   => 'xx',
-                'position'  => 'Product Manager',
                 'image'     => null
             ]
         ];
@@ -34,10 +33,9 @@ class EmployeeSeederTable extends Seeder
                     'id_user'   => $item['id_user'],
                     'name'      => $item['name'],
                     'email'     => $item['email'],
-                    'address'   => $item['address'],
+                    'address_id'=> $item['address_id'],
                     'phone'     => $item['phone'],
                     'id_card'   => $item['id_card'],
-                    'position'  => $item['position'],
                     'image'     => $item['image']
                 ]);
             }

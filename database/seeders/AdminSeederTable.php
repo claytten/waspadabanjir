@@ -19,7 +19,7 @@ class AdminSeederTable extends Seeder
                 'id_user'   => 1,
                 'name'      => 'Superadmin',
                 'email'     => 'superadmin@admin.com',
-                'address'   => 'indonesia',
+                'address_id'=> '3310140005',
                 'phone'     => '+62',
                 'image'     => null
             ]
@@ -32,7 +32,7 @@ class AdminSeederTable extends Seeder
                     'id_user'   => $item['id_user'],
                     'name'      => $item['name'],
                     'email'     => $item['email'],
-                    'address'   => $item['address'],
+                    'address_id'=> $item['address_id'],
                     'phone'     => $item['phone'],
                     'image'     => $item['image']
                 ]);
