@@ -6,6 +6,10 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Accounts\ProfileController;
 use App\Http\Controllers\Admin\Accounts\UserController;
 use App\Http\Controllers\Admin\Accounts\RoleController;
+use App\Http\Controllers\Admin\Address\ProvinceController;
+use App\Http\Controllers\Admin\Address\RegencyController;
+use App\Http\Controllers\Admin\Address\DistrictController;
+use App\Http\Controllers\Admin\Address\VillageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +44,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth'], 'as' => 'admin.' ],
     Route::put('/profile/avatar/{userId}/{role}/edit', [ProfileController::class, 'updateProfileAvatar'])->name('update.profile.avatar');
     Route::put('/settings/{userId}/edit', [ProfileController::class, 'updateSetting'])->name('update.setting');
     Route::put('/settings/reset-password/{userId}/edit', [ProfileController::class, 'resetPassword'])->name('reset.password');
+
+    // Addressing
+    Route::resource('/address/provinces', ProvinceController::class);
 });
 
 Route::get('/', function () {

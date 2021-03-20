@@ -25,6 +25,26 @@ class PermissionSeeder extends Seeder
             'roles-create',
             'roles-edit',
             'roles-delete',
+
+            'provinces-list',
+            'provinces-create',
+            'provinces-edit',
+            'provinces-delete',
+
+            'regencies-list',
+            'regencies-create',
+            'regencies-edit',
+            'regencies-delete',
+
+            'districts-list',
+            'districts-create',
+            'districts-edit',
+            'districts-delete',
+
+            'villages-list',
+            'villages-create',
+            'villages-edit',
+            'villages-delete'
         ];
 
         $employeePermissions = [

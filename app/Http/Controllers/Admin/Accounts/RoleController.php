@@ -38,7 +38,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = Role::withCount('employees', 'permissions')->get();
+        $roles = Role::withCount('users', 'permissions')->get();
         return view('admin.accounts.role.index',compact('roles'));
     }
 

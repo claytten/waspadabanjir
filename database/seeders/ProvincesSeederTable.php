@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Address\Province;
+use App\Models\Address\Provinces\Province;
 
 class ProvincesSeederTable extends Seeder
 {

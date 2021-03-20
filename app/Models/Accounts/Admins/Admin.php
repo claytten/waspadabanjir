@@ -5,6 +5,7 @@ namespace App\Models\Accounts\Admins;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Users\User;
+use App\Models\Address\Villages\Village;
 
 class Admin extends Model
 {
@@ -21,7 +22,7 @@ class Admin extends Model
         'id_user',
         'name',
         'email',
-        'address',
+        'address_id',
         'phone',
         'image'
     ];
@@ -41,5 +42,15 @@ class Admin extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
+    }
+
+    /**
+     * Get the village that owns the Admin
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function village()
+    {
+        return $this->belongsTo(Village::class, 'address_id', 'id');
     }
 }

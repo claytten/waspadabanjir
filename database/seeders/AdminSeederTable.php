@@ -19,7 +19,7 @@ class AdminSeederTable extends Seeder
                 'id_user'   => 1,
                 'name'      => 'Superadmin',
                 'email'     => 'superadmin@admin.com',
-                'address_id'=> '3310140005',
+                'address_id'=> '34480',
                 'phone'     => '+62',
                 'image'     => null
             ]

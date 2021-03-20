@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Address\District;
+use App\Models\Address\Districts\District;
 
 class DistrictsSeederTable extends Seeder
 {

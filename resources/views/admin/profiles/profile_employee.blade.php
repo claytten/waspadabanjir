@@ -44,7 +44,9 @@
           ==========
         </h5>
         <div class="h5 mt-4">
-          <i class="ni business_briefcase-24 mr-2"></i>{{ $admin->name }} - {{ $admin->position }}
+          <i class="ni business_briefcase-24 mr-2"></i>{{ $admin->name }} - @foreach (auth()->user()->roles->pluck('name') as $item )
+            {{ $item }} 
+          @endforeach
         </div>
         <div>
           <i class="ni education_hat mr-2"></i>{{ ucfirst(auth()->user()->role) }}
@@ -143,9 +145,9 @@
             <div class="row">
               <div class="col-lg-6">
                 <div class="form-group">
-                  <label class="form-control-label" for="input-address">Address</label>
-                  <input type="text" id="input-address" class="form-control @error('address') is-invalid @enderror" placeholder="Address" value="{{ $admin->address }}" name="address">
-                  @error('address')
+                  <label class="form-control-label" for="input-id_card">ID Card</label>
+                  <input type="text" id="input-id_card" class="form-control @error('id_card') is-invalid @enderror" placeholder="ID Card" value="{{ $admin->id_card }}" name="id_card">
+                  @error('id_card')
                       <div class="invalid-feedback">
                           {{ $message }}
                       </div>
@@ -166,15 +168,15 @@
             </div>
 
             <div class="row">
-              <div class="col-lg-6">
+              <div class="col-lg-12">
                 <div class="form-group">
-                  <label class="form-control-label" for="input-id_card">ID Card</label>
-                  <input type="text" id="input-id_card" class="form-control @error('id_card') is-invalid @enderror" placeholder="ID Card" value="{{ $admin->id_card }}" name="id_card">
-                  @error('id_card')
-                      <div class="invalid-feedback">
-                          {{ $message }}
-                      </div>
-                  @enderror
+                  <label class="form-control-label" for="input-address">Address</label>
+                  <button type="button" class="form-control" data-toggle="modal" data-target="#modal-change-address">
+                    {{$admin->village->name}},
+                    {{$admin->village->district->name}},
+                    {{$admin->village->district->regency->name}},
+                    {{$admin->village->district->regency->province->name}}
+                  </button>
                 </div>
               </div>
             </div>
@@ -238,6 +240,65 @@
   </div>
 </div>
 
+{{-- modal change address --}}
+<div class="modal fade" id="modal-change-address" tabindex="-1" role="dialog" aria-labelledby="modal-change-address" aria-hidden="true">
+  <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">>
+    <div class="modal-content">
+      <div class="modal-body p-0">
+        <div class="card bg-secondary border-0 mb-0">
+          <div class="card-body px-lg-5 py-lg-5">
+              <div class="text-center text-muted mb-4">
+                  <small>Change Address</small>
+              </div>
+              <form role="form" action="#" method="POST">
+                  {{ csrf_field() }}
+                  <input type="hidden" name="_method" value="PUT" readonly>
+                  <div class="form-group">
+                    <div class="input-group input-group-merge input-group-alternative">
+                      <label class="form-control-label" for="input-address">Province</label>
+                      <select name="province_id" id="province_id" class="form-control @error('province_id') is-invalid @enderror" data-toggle="select">
+                        <option value=""></option>
+                        <option value="employee">Employee</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="input-group input-group-merge input-group-alternative">
+                      <label class="form-control-label" for="input-address">Regency</label>
+                      <select name="regency_id" id="regency_id" class="form-control @error('regency_id') is-invalid @enderror" data-toggle="select">
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="input-group input-group-merge input-group-alternative">
+                      <label class="form-control-label" for="input-address">District</label>
+                      <select name="district_id" id="district_id" class="form-control @error('district_id') is-invalid @enderror" data-toggle="select">
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="input-group input-group-merge input-group-alternative">
+                      <label class="form-control-label" for="input-address">Village</label>
+                      <select name="village_id" id="village_id" class="form-control @error('village_id') is-invalid @enderror" data-toggle="select">
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div class="text-center">
+                      <button type="Submit" class="btn btn-primary my-4">Submit</button>
+                  </div>
+              </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {{-- modal change password --}}
 <div class="modal fade" id="modal-change-password" tabindex="-1" role="dialog" aria-labelledby="modal-change-password" aria-hidden="true">
   <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">>
@@ -290,6 +351,20 @@
 @section('inline_js')
 <script>
   "use strict"
+  $(document).ready(function() {
+      $('#province_id').select2({
+          'placeholder': 'Select Province',
+      });
+      $('#regency_id').select2({
+          'placeholder': 'Select Regency',
+      });
+      $('#district_id').select2({
+          'placeholder': 'Select District',
+      });
+      $('#village_id').select2({
+          'placeholder': 'Select Village',
+      });
+  });
   // Add More Image
   function previewImage(input){
         console.log("Preview Image");

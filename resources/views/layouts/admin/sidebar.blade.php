@@ -40,7 +40,7 @@
           @can('reports-list')
             <li class="nav-item">
               <a class="nav-link" href="#">
-                <i class="ni ni-chat-round text-primary"></i>
+                <i class="ni ni-chat-round text-orange"></i>
                 <span class="nav-link-text">Reports</span>
               </a>
             </li>
@@ -49,7 +49,7 @@
           @can('subscriber-list')
             <li class="nav-item">
               <a class="nav-link" href="#">
-                <i class="ni ni-book-bookmark text-primary"></i>
+                <i class="ni ni-book-bookmark text-info"></i>
                 <span class="nav-link-text">Subscriber</span>
               </a>
             </li>
@@ -72,6 +72,42 @@
                   @if(auth()->user()->can('roles-list'))
                     <li class="nav-item {{ !empty($submenu) ? ($submenu == 'roles' ? 'show' : '') : '' }}">
                       <a href="{{ route('admin.role.index') }}" class="nav-link">Role</a>
+                    </li>
+                  @endif
+                </ul>
+              </div>
+            </li>
+          @endif
+
+          @if (auth()->user()->can('provinces-list') || auth()->user()->can('regencies-list') || auth()->user()->can('districts-list') || auth()->user()->can('villages-list'))
+            <li class="nav-item">
+              <a class="nav-link {{ !empty($menu) ? ($menu == "address" ? 'active' : '') : '' }}" href="#navbar-address" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="navbar-address">
+                <i class="ni ni-book-bookmark text-success"></i>
+                <span class="nav-link-text">Address</span>
+              </a>
+              <div class="collapse {{ !empty($menu) ? ($menu == "address" ? 'show' : '') : '' }}" id="navbar-address">
+                <ul class="nav nav-sm flex-column">
+                  @if(auth()->user()->can('provinces-list'))
+                    <li class="nav-item {{ !empty($submenu) ? ($submenu == 'provinces' ? 'show' : '') : '' }}">
+                      <a href="{{ route('admin.provinces.index')}}" class="nav-link">Provinces</a>
+                    </li>
+                  @endif
+
+                  @if(auth()->user()->can('regencies-list'))
+                    <li class="nav-item {{ !empty($submenu) ? ($submenu == 'regencies' ? 'show' : '') : '' }}">
+                      <a href="#" class="nav-link">Regencies</a>
+                    </li>
+                  @endif
+
+                  @if(auth()->user()->can('districts-list'))
+                    <li class="nav-item {{ !empty($submenu) ? ($submenu == 'districts' ? 'show' : '') : '' }}">
+                      <a href="#" class="nav-link">Districts</a>
+                    </li>
+                  @endif
+
+                  @if(auth()->user()->can('villages-list'))
+                    <li class="nav-item {{ !empty($submenu) ? ($submenu == 'villages' ? 'show' : '') : '' }}">
+                      <a href="#" class="nav-link">Villages</a>
                     </li>
                   @endif
                 </ul>

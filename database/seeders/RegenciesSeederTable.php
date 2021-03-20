@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Address\Regency;
+use App\Models\Address\Regencies\Regency;
 
 class RegenciesSeederTable extends Seeder
 {

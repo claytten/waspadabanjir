@@ -19,7 +19,7 @@ class EmployeeSeederTable extends Seeder
                 'id_user'   => 2,
                 'name'      => 'Employee 1',
                 'email'     => 'employee@employee.com',
-                'address_id'=> '3671050005',
+                'address_id'=> '49088',
                 'phone'     => '+62',
                 'id_card'   => 'xx',
                 'image'     => null
