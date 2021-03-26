@@ -11,9 +11,7 @@ use App\Models\Address\Regencies\Repositories\Interfaces\RegencyRepositoryInterf
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Collection as Support;
+use Illuminate\Support\Facades\Cache;
 
 class RegencyRepository extends BaseRepository implements RegencyRepositoryInterface
 {
@@ -28,6 +26,42 @@ class RegencyRepository extends BaseRepository implements RegencyRepositoryInter
     }
 
     /**
+     * List all the regencies
+     *
+     * @param string $order
+     * @param string $sort
+     *
+     * @return Collection
+     */
+    public function listRegencies(string $order = 'id', string $sort = 'desc', $except = []) : Collection
+    {
+        return Cache::rememberForever('regencies', function () use ($order, $sort, $except) {
+            return $this->model->withCount('districts')->orderBy($order, $sort)->get()->except($except);
+        });
+    }
+
+    /**
+     * Create the province
+     *
+     * @param array $data
+     *
+     * @return Regency
+     */
+    public function createRegency(array $data): Regency
+    {
+        try {
+            if (Cache::has('regencies') || Cache::has('provinces')) {
+                Cache::forget('regencies');
+                Cache::forget('provinces');
+            }
+            return $this->create($data);
+        } catch (QueryException $e) {
+            throw new CreateRegencyInvalidArgumentException($e);
+        }
+        
+    }
+
+    /**
      * Update the regency
      *
      * @param array $params
@@ -38,10 +72,30 @@ class RegencyRepository extends BaseRepository implements RegencyRepositoryInter
     public function updateRegency(array $params) : bool
     {
         try {
+            if (Cache::has('regencies')) {
+                Cache::forget('regencies');
+            }
             return $this->model->update($params);
         } catch (QueryException $e) {
             throw new UpdateRegencyInvalidArgumentException($e);
         }
+    }
+
+    /**
+     * @return bool
+     * @throws \Exception
+     */
+    public function deleteRegency() : bool
+    {
+        
+        if (Cache::has('regencies')) {
+            Cache::forget('regencies');
+            if($this->model->countDistrict() > 0) {
+                Cache::forget('districts');
+                Cache::forget('villages');
+            }
+        }
+        return $this->model->delete();
     }
 
     /**

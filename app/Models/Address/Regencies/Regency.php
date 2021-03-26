@@ -19,7 +19,6 @@ class Regency extends Model
      * @var array
      */
     protected $fillable = [
-        'id',
         'province_id',
         'name'
     ];

@@ -12,8 +12,8 @@ use App\Models\Address\Provinces\Repositories\Interfaces\ProvinceRepositoryInter
 use App\Models\Address\Provinces\Repositories\ProvinceRepository;
 use App\Models\Address\Regencies\Repositories\Interfaces\RegencyRepositoryInterface;
 use App\Models\Address\Regencies\Repositories\RegencyRepository;
-use App\Models\Address\District\Repositories\Interfaces\DistrictRepositoryInterface;
-use App\Models\Address\District\Repositories\DistrictRepository;
+use App\Models\Address\Districts\Repositories\Interfaces\DistrictRepositoryInterface;
+use App\Models\Address\Districts\Repositories\DistrictRepository;
 use App\Models\Address\Villages\Repositories\Interfaces\VillageRepositoryInterface;
 use App\Models\Address\Villages\Repositories\VillageRepository;
 use Illuminate\Support\ServiceProvider;

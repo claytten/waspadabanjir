@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Admin\Address;
 use App\Models\Address\Provinces\Repositories\Interfaces\ProvinceRepositoryInterface;
 use App\Models\Address\Provinces\Repositories\ProvinceRepository;
 use App\Models\Address\Provinces\Province;
+use App\Models\Address\Provinces\Requests\CreateProvinceRequest;
+use App\Models\Address\Provinces\Requests\UpdateProvinceRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Cache;
+use DataTables;
 
 class ProvinceController extends Controller
 {
@@ -24,12 +27,11 @@ class ProvinceController extends Controller
      */
     public function __construct(
         ProvinceRepositoryInterface $provinceRepository
-    )
-    {
+    ) {
         // Spatie ACL Provinces
-        $this->middleware('permission:provinces-list',['only' => ['index']]);
-        $this->middleware('permission:provinces-create', ['only' => ['create','store']]);
-        $this->middleware('permission:provinces-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:provinces-list', ['only' => ['index']]);
+        $this->middleware('permission:provinces-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:provinces-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:provinces-delete', ['only' => ['destroy']]);
 
         // binding repository
@@ -44,30 +46,7 @@ class ProvinceController extends Controller
     public function index()
     {
         $provinces = $this->provinceRepo->listProvinces()->sortBy('name');
-        foreach($provinces as $province) {
-            $countDistrict = 0;
-            $countVillage = 0;
-            foreach($province->regencies as $regency) {
-                $countDistrict += $regency->countDistrict();
-                foreach($regency->districts as $district) {
-                    $countVillage += $district->countVillage();
-                }
-            }
-            $province->countRegency = $province->countRegency();
-            $province->countDistrict = $countDistrict;
-            $province->countVillage = $countVillage;
-        }
         return view('admin.address.provinces.index', compact('provinces'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -76,9 +55,50 @@ class ProvinceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateProvinceRequest $request)
     {
-        //
+        $data = $request->except('_token','_method');
+        $data['name'] = strtoupper($data['name']);
+        $province = $this->provinceRepo->createProvince($data);
+        $province->regencies_count = 0;
+        if (Cache::has('provinces')) {
+            Cache::forget('provinces');
+        }
+
+        return response()->json([
+            'status'    => 'success',
+            'message'   => 'Create Province successful!',
+            'data'      => $province
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(UpdateProvinceRequest $request, $id)
+    {
+        $data = $request->except('_token','_method');
+        $data['name'] = strtoupper($data['name']);
+        $province = $this->provinceRepo->findProvinceById($id);
+
+        $provRepo = new ProvinceRepository($province);
+        $provRepo->updateProvince($data);
+        $province->regencies_count = 0;
+        
+        if (Cache::has('provinces')) {
+            Cache::forget('provinces');
+        }
+        $this->provinceRepo->listProvinces()->sortBy('name');
+
+        return response()->json([
+            'status'    => 'success',
+            'message'   => 'Create Province successful!',
+            'data'      => $province,
+        ]);
     }
 
     /**
@@ -93,29 +113,6 @@ class ProvinceController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
@@ -123,6 +120,21 @@ class ProvinceController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $province = $this->provinceRepo->findProvinceById($id);
+        if (Cache::has('provinces')) {
+            Cache::forget('provinces');
+            if($province->countRegency() > 0) {
+                Cache::forget('regencies');
+                Cache::forget('districts');
+                Cache::forget('villages');
+            }
+        }
+        $getProvince = new ProvinceRepository($province);
+        $getProvince->deleteProvince();
+
+        return response()->json([
+            'status'      => 'success',
+            'message'     => 'Province successfully destroy'
+        ]);
     }
 }

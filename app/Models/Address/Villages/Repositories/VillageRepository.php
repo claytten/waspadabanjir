@@ -11,9 +11,7 @@ use App\Models\Address\Villages\Repositories\Interfaces\VillageRepositoryInterfa
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Collection as Support;
+use Illuminate\Support\Facades\Cache;
 
 class VillageRepository extends BaseRepository implements VillageRepositoryInterface
 {
@@ -28,6 +26,21 @@ class VillageRepository extends BaseRepository implements VillageRepositoryInter
     }
 
     /**
+     * List all the villages
+     *
+     * @param string $order
+     * @param string $sort
+     *
+     * @return Collection
+     */
+    public function listVillages(string $order = 'id', string $sort = 'desc', $except = []) : Collection
+    {
+        return Cache::rememberForever('villages', function () use ($order, $sort, $except) {
+            return $this->model->orderBy($order, $sort)->get()->except($except);
+        });
+    }
+
+    /**
      * Update the village
      *
      * @param array $params
@@ -38,9 +51,32 @@ class VillageRepository extends BaseRepository implements VillageRepositoryInter
     public function updateVillage(array $params) : bool
     {
         try {
+            if (Cache::has('villages')) {
+                Cache::forget('villages');
+            }
             return $this->model->update($params);
         } catch (QueryException $e) {
             throw new UpdateVillageInvalidArgumentException($e);
+        }
+    }
+
+    /**
+     * Create the province
+     *
+     * @param array $data
+     *
+     * @return Village
+     */
+    public function createVillage(array $data): Village
+    {
+        try {
+            if (Cache::has('villages') || Cache::has('districts')) {
+                Cache::forget('villages');
+                Cache::forget('districts');
+            }
+            return $this->create($data);
+        } catch (QueryException $e) {
+            throw new CreateVillageInvalidArgumentException($e);
         }
     }
 
@@ -59,6 +95,19 @@ class VillageRepository extends BaseRepository implements VillageRepositoryInter
         } catch (ModelNotFoundException $e) {
             throw new VillageNotFoundException($e);
         }
+    }
+
+    /**
+     * @return bool
+     * @throws \Exception
+     */
+    public function deleteVillage() : bool
+    {
+        
+        if (Cache::has('villages')) {
+            Cache::forget('villages');
+        }
+        return $this->model->delete();
     }
 
     /**

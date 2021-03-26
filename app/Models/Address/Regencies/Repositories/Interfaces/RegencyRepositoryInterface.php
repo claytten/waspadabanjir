@@ -9,7 +9,13 @@ use Illuminate\Support\Collection as Support;
 
 interface RegencyRepositoryInterface extends BaseRepositoryInterface
 {
+    public function listRegencies(): Collection;
+
+    public function createRegency(array $data): Regency;
+
     public function updateRegency(array $params) : bool;
+
+    public function deleteRegency() : bool;
 
     public function findRegencyById(int $id) : Regency;
 

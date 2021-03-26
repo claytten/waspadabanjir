@@ -154,14 +154,14 @@ class ProvincesSeederTable extends Seeder
         ];
 
         foreach($provinces as $item) {
-					$province = Province::where('name', $item['name'])->first();
-					if (empty($province)) {
-					  Province::create([
-					    'id'  => $item['id'],
-					    'name'=> $item['name']
-						]);
-					}
-				}
+			$province = Province::where('name', $item['name'])->first();
+			if (empty($province)) {
+				Province::create([
+				'id'  => $item['id'],
+				'name'=> $item['name']
+				]);
+			}
+		}
 	}
 }
 

@@ -95,19 +95,19 @@
 
                   @if(auth()->user()->can('regencies-list'))
                     <li class="nav-item {{ !empty($submenu) ? ($submenu == 'regencies' ? 'show' : '') : '' }}">
-                      <a href="#" class="nav-link">Regencies</a>
+                      <a href="{{ route('admin.regencies.index') }}" class="nav-link">Regencies</a>
                     </li>
                   @endif
 
                   @if(auth()->user()->can('districts-list'))
                     <li class="nav-item {{ !empty($submenu) ? ($submenu == 'districts' ? 'show' : '') : '' }}">
-                      <a href="#" class="nav-link">Districts</a>
+                      <a href="{{ route('admin.districts.index')}}" class="nav-link">Districts</a>
                     </li>
                   @endif
 
                   @if(auth()->user()->can('villages-list'))
                     <li class="nav-item {{ !empty($submenu) ? ($submenu == 'villages' ? 'show' : '') : '' }}">
-                      <a href="#" class="nav-link">Villages</a>
+                      <a href="{{ route('admin.villages.index') }}" class="nav-link">Villages</a>
                     </li>
                   @endif
                 </ul>

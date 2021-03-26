@@ -29,7 +29,9 @@
     @include('layouts.admin.sidebar')
     <!-- Main content -->
     <div class="main-content" id="panel">
-      @include('layouts.admin.flash-message')
+      <div id="alert_section">
+        @include('layouts.admin.flash-message')
+      </div>
       <!-- Topnav -->
       @include('layouts.admin.navbar')
       <!-- Header -->

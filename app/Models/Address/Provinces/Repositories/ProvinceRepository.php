@@ -14,6 +14,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Collection as Support;
+use Illuminate\Support\Facades\Cache;
 
 class ProvinceRepository extends BaseRepository implements ProvinceRepositoryInterface
 {
@@ -37,11 +38,13 @@ class ProvinceRepository extends BaseRepository implements ProvinceRepositoryInt
      */
     public function listProvinces(string $order = 'id', string $sort = 'desc', $except = []) : Collection
     {
-        return $this->model->orderBy($order, $sort)->get()->except($except);
+        return Cache::rememberForever('provinces', function () use ($order, $sort, $except) {
+            return $this->model->withCount('regencies')->orderBy($order, $sort)->get()->except($except);
+        });
     }
 
     /**
-     * Create the user
+     * Create the province
      *
      * @param array $data
      *
@@ -49,9 +52,11 @@ class ProvinceRepository extends BaseRepository implements ProvinceRepositoryInt
      */
     public function createProvince(array $data): Province
     {
-        $data['password'] = Hash::make($data['password']);
-        $this->model->assignRole($data['role']);
-        return $this->create($data);
+        try {
+            return $this->create($data);
+        } catch (QueryException $e) {
+            throw new CreateProvinceInvalidArgumentException($e);
+        }
     }
 
     /**
@@ -69,6 +74,15 @@ class ProvinceRepository extends BaseRepository implements ProvinceRepositoryInt
         } catch (QueryException $e) {
             throw new UpdateProvinceInvalidArgumentException($e);
         }
+    }
+
+    /**
+     * @return bool
+     * @throws \Exception
+     */
+    public function deleteProvince() : bool
+    {
+        return $this->model->delete();
     }
 
     /**

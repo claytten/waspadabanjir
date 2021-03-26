@@ -46,7 +46,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth'], 'as' => 'admin.' ],
     Route::put('/settings/reset-password/{userId}/edit', [ProfileController::class, 'resetPassword'])->name('reset.password');
 
     // Addressing
-    Route::resource('/address/provinces', ProvinceController::class);
+    Route::resource('/address/provinces', ProvinceController::class, ['only' => ['index', 'store', 'update', 'destroy', 'show']]);
+    Route::resource('/address/regencies', RegencyController::class, ['only' => ['index', 'store', 'update', 'destroy', 'show']]);
+    Route::resource('/address/districts', DistrictController::class, ['only' => ['index', 'store', 'update', 'destroy', 'show']]);
+    Route::resource('/address/villages', VillageController::class, ['only' => ['index', 'store', 'update', 'destroy', 'show']]);
 });
 
 Route::get('/', function () {

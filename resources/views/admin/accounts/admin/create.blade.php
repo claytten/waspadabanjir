@@ -37,13 +37,11 @@
           <!-- Card header -->
           <div class="card-header">
             <div class="row align-items-center">
-              <div class="col-8">
+              <div class="col-lg-8 col-md-6">
                 <h3 class="mb-0">Employee Information</h3>
               </div>
-              <div class="col-lg-2 text-right">
+              <div class="col-lg-4 col-md-6 d-flex justify-content-end">
                 <button type="button" class="btn btn-danger" id="btn-reset">Reset</button>
-              </div>
-              <div class="col-lg-2 text-right">
                 <button type="submit" class="btn btn-primary">Submit</button>
               </div>
             </div>

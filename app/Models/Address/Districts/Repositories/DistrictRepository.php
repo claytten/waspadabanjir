@@ -11,9 +11,7 @@ use App\Models\Address\Districts\Repositories\Interfaces\DistrictRepositoryInter
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Collection as Support;
+use Illuminate\Support\Facades\Cache;
 
 class DistrictRepository extends BaseRepository implements DistrictRepositoryInterface
 {
@@ -28,6 +26,42 @@ class DistrictRepository extends BaseRepository implements DistrictRepositoryInt
     }
 
     /**
+     * List all the regencies
+     *
+     * @param string $order
+     * @param string $sort
+     *
+     * @return Collection
+     */
+    public function listDistricts(string $order = 'id', string $sort = 'desc', $except = []) : Collection
+    {
+        return Cache::rememberForever('districts', function () use ($order, $sort, $except) {
+            return $this->model->withCount(['villages'])->orderBy($order, $sort)->get()->except($except);
+        });
+    }
+
+    /**
+     * Create the province
+     *
+     * @param array $data
+     *
+     * @return District
+     */
+    public function createDistrict(array $data): District
+    {
+        try {
+            if (Cache::has('districts') || Cache::has('regencies')) {
+                Cache::forget('districts');
+                Cache::forget('regencies');
+            }
+            return $this->create($data);
+        } catch (QueryException $e) {
+            throw new CreateDistrictInvalidArgumentException($e);
+        }
+    }
+
+
+    /**
      * Update the district
      *
      * @param array $params
@@ -38,6 +72,9 @@ class DistrictRepository extends BaseRepository implements DistrictRepositoryInt
     public function updateDistrict(array $params) : bool
     {
         try {
+            if (Cache::has('districts')) {
+                Cache::forget('districts');
+            }
             return $this->model->update($params);
         } catch (QueryException $e) {
             throw new UpdateDistrictInvalidArgumentException($e);
@@ -59,6 +96,22 @@ class DistrictRepository extends BaseRepository implements DistrictRepositoryInt
         } catch (ModelNotFoundException $e) {
             throw new DistrictNotFoundException($e);
         }
+    }
+
+    /**
+     * @return bool
+     * @throws \Exception
+     */
+    public function deleteDistrict() : bool
+    {
+        
+        if (Cache::has('districts')) {
+            Cache::forget('districts');
+            if($this->model->countVillage() > 0) {
+                Cache::forget('villages');
+            }
+        }
+        return $this->model->delete();
     }
 
     /**
