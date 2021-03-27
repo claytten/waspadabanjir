@@ -41,6 +41,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth'], 'as' => 'admin.' ],
     // Profile Routing
     Route::get('/profile/{userId}/{role}', [ProfileController::class, 'editProfile'])->name('edit.profile');
     Route::put('/profile/{userId}/{role}/edit', [ProfileController::class, 'updateProfile'])->name('update.profile');
+    Route::put('/profile/address/{userId}/{role}/edit', [ProfileController::class, 'updateProfileAddress'])->name('update.address.profile');
     Route::put('/profile/avatar/{userId}/{role}/edit', [ProfileController::class, 'updateProfileAvatar'])->name('update.profile.avatar');
     Route::put('/settings/{userId}/edit', [ProfileController::class, 'updateSetting'])->name('update.setting');
     Route::put('/settings/reset-password/{userId}/edit', [ProfileController::class, 'resetPassword'])->name('reset.password');

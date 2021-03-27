@@ -21,6 +21,7 @@ use Illuminate\Http\Request;
 use App\Models\Tools\UploadableTrait;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
 
 class ProfileController extends Controller
 {
@@ -71,10 +72,11 @@ class ProfileController extends Controller
     {
         $user = $this->userRepo->findUserById($userId);
         $admin = $user->$role;
+        $provinces = Cache::get('provinces');
         if($user->role == 'admin') {
-            return view('admin.profiles.profile_admin', compact('admin')); 
+            return view('admin.profiles.profile_admin', compact('admin', 'provinces')); 
         } 
-        return view('admin.profiles.profile_employee', compact('admin'));
+        return view('admin.profiles.profile_employee', compact('admin', 'provinces'));
     }
 
     /**
@@ -93,7 +95,6 @@ class ProfileController extends Controller
             $request->validate([
                 'name' => ['required', 'string', 'max:191'],
                 'email' => ['required', 'email', 'max:191', 'unique:admin,email,'.$user->$role->id],
-                'address' => ['required', 'string', 'max:191'],
                 'phone' => ['required', 'string', 'max:191'],
             ]);
             $admin = $this->adminRepo->findAdminById($user->$role->id);
@@ -103,7 +104,6 @@ class ProfileController extends Controller
             $request->validate([
                 'name' => ['required', 'string', 'max:191'],
                 'email' => ['required', 'email', 'max:191', 'unique:employees,email,'.$user->$role->id],
-                'address' => ['required', 'string', 'max:191'],
                 'phone' => ['required', 'string', 'max:191'],
                 'id_card' => ['required', 'string', 'max:191'],
             ]);
@@ -218,6 +218,64 @@ class ProfileController extends Controller
         return redirect()->route('admin.edit.profile', [$user->id, $user->role])->with([
             'status'    => 'danger',
             'message'   => "Your confirmation password something wrong"
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int      $userId
+     * @param  string   $role
+     * @return \Illuminate\Http\Response
+     */
+    public function updateProfileAddress(Request $request, $userId, $role)
+    {
+        $data = $request->except('_token', '_method');
+        $user = $this->userRepo->findUserById($userId);
+        $address = array();
+        if($request->ajax()) {
+            if($user->role == 'admin') {
+                $request->validate([
+                    'address_id' =>  ['required', 'string']
+                ]);
+                $admin = $this->adminRepo->findAdminById($user->$role->id);
+                $adminRepo = new AdminRepository($admin);
+                $adminRepo->updateAdmin($data);
+                $address[] = array(
+                    "address_id"    => $admin->address_id,
+                    "address_name"  => $admin->village->name,
+                    "district_id"   => $admin->village->district->id,
+                    "district_name" => $admin->village->district->name,
+                    "regency_id"    => $admin->village->district->regency->id,
+                    "regency_name"  => $admin->village->district->regency->name,
+                    "province_id"   => $admin->village->district->regency->province->id,
+                    "province_name" => $admin->village->district->regency->province->name
+                );
+            } else {
+                $request->validate([
+                    'address_id' =>  ['required', 'string']
+                ]);
+                $admin = $this->employeeRepo->findEmployeeById($user->$role->id);
+                $adminRepo = new EmployeeRepository($admin);
+                $adminRepo->updateEmployee($data);
+                $address[] = array(
+                    "address_id"    => $admin->address_id,
+                    "address_name"  => $admin->village->name,
+                    "district_id"   => $admin->village->district->id,
+                    "district_name" => $admin->village->district->name,
+                    "regency_id"    => $admin->village->district->regency->id,
+                    "regency_name"  => $admin->village->district->regency->name,
+                    "province_id"   => $admin->village->district->regency->province->id,
+                    "province_name" => $admin->village->district->regency->province->name
+                );
+            }
+        }
+
+        return response()->json([
+            'status'    => 'success',
+            'message'   => 'Update Address Successfully!',
+            'data'      => $address[0]
         ]);
     }
 }

@@ -37,7 +37,6 @@ class RegencyController extends Controller
     )
     {
         // Spatie ACL Provinces
-        $this->middleware('permission:regencies-list',['only' => ['index']]);
         $this->middleware('permission:regencies-create', ['only' => ['create','store']]);
         $this->middleware('permission:regencies-edit', ['only' => ['edit','update']]);
         $this->middleware('permission:regencies-delete', ['only' => ['destroy']]);

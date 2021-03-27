@@ -171,7 +171,7 @@
               <div class="col-lg-12">
                 <div class="form-group">
                   <label class="form-control-label" for="input-address">Address</label>
-                  <button type="button" class="form-control" data-toggle="modal" data-target="#modal-change-address">
+                  <button type="button" class="form-control" id="btn-address" data-toggle="modal" data-target="#modal-change-address">
                     {{$admin->village->name}},
                     {{$admin->village->district->name}},
                     {{$admin->village->district->regency->name}},
@@ -250,48 +250,51 @@
               <div class="text-center text-muted mb-4">
                   <small>Change Address</small>
               </div>
-              <form role="form" action="#" method="POST">
-                  {{ csrf_field() }}
-                  <input type="hidden" name="_method" value="PUT" readonly>
-                  <div class="form-group">
-                    <div class="input-group input-group-merge input-group-alternative">
-                      <label class="form-control-label" for="input-address">Province</label>
-                      <select name="province_id" id="province_id" class="form-control @error('province_id') is-invalid @enderror" data-toggle="select">
-                        <option value=""></option>
-                        <option value="employee">Employee</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                    </div>
-                  </div>
+              <div class="form-group">
+                <div class="input-group input-group-merge input-group-alternative">
+                  <label class="form-control-label" for="input-address">Province</label>
+                  <select onchange="searchProvince()" id="provinces" class="form-control @error('provinces') is-invalid @enderror" data-toggle="select">
+                    <option value=""></option>
+                    @foreach($provinces as $item)
+                        <option value="{{$item['id']}}" {{ ($item['id'] === $admin->village->district->regency->province->id) ? 'selected' : ''}}>{{$item['name']}}</option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
 
-                  <div class="form-group">
-                    <div class="input-group input-group-merge input-group-alternative">
-                      <label class="form-control-label" for="input-address">Regency</label>
-                      <select name="regency_id" id="regency_id" class="form-control @error('regency_id') is-invalid @enderror" data-toggle="select">
-                      </select>
-                    </div>
-                  </div>
+              <div class="form-group">
+                <div class="input-group input-group-merge input-group-alternative">
+                  <label class="form-control-label" for="input-address">Regency</label>
+                  <select onchange="searchRegency()" id="regencies" class="form-control @error('regencies') is-invalid @enderror" data-toggle="select">
+                    <option value=""></option>
+                    <option value="{{$admin->village->district->regency->id}}" selected>{{$admin->village->district->regency->name}}</option>
+                  </select>
+                </div>
+              </div>
 
-                  <div class="form-group">
-                    <div class="input-group input-group-merge input-group-alternative">
-                      <label class="form-control-label" for="input-address">District</label>
-                      <select name="district_id" id="district_id" class="form-control @error('district_id') is-invalid @enderror" data-toggle="select">
-                      </select>
-                    </div>
-                  </div>
+              <div class="form-group">
+                <div class="input-group input-group-merge input-group-alternative">
+                  <label class="form-control-label" for="input-address">District</label>
+                  <select onchange="searchDistrict()" id="districts" class="form-control @error('districts') is-invalid @enderror" data-toggle="select">
+                    <option value=""></option>
+                    <option value="{{$admin->village->district->id}}" selected>{{$admin->village->district->name}}</option>
+                  </select>
+                </div>
+              </div>
 
-                  <div class="form-group">
-                    <div class="input-group input-group-merge input-group-alternative">
-                      <label class="form-control-label" for="input-address">Village</label>
-                      <select name="village_id" id="village_id" class="form-control @error('village_id') is-invalid @enderror" data-toggle="select">
-                      </select>
-                    </div>
-                  </div>
-                  
-                  <div class="text-center">
-                      <button type="Submit" class="btn btn-primary my-4">Submit</button>
-                  </div>
-              </form>
+              <div class="form-group">
+                <div class="input-group input-group-merge input-group-alternative">
+                  <label class="form-control-label" for="input-address">Village</label>
+                  <select name="village_id" id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select">
+                    <option value=""></option>
+                    <option value="{{$admin->village->id}}" selected>{{$admin->village->name}}</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="text-center">
+                <button type="button" onclick="editAction('{{auth()->user()->id}}', '{{auth()->user()->role}}')" class="btn btn-primary my-4">Submit</button>
+              </div>
           </div>
         </div>
       </div>
@@ -367,34 +370,128 @@
   });
   // Add More Image
   function previewImage(input){
-        console.log("Preview Image");
-        let preview_image = $(input).closest('.images-content').find('.img-responsive');
-        let preview_button = $(input).closest('.images-content').find('.remove_preview');
+      console.log("Preview Image");
+      let preview_image = $(input).closest('.images-content').find('.img-responsive');
+      let preview_button = $(input).closest('.images-content').find('.remove_preview');
 
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                // console.log(e.target.result);
-                $(preview_image).attr('src', e.target.result);
-                
-            }
-            $('.custom-file-label').html(input.files[0].name);
-            reader.readAsDataURL(input.files[0]);
-            $(preview_button).prop('disabled', false);
+      if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function(e) {
+              // console.log(e.target.result);
+              $(preview_image).attr('src', e.target.result);
+              
+          }
+          $('.custom-file-label').html(input.files[0].name);
+          reader.readAsDataURL(input.files[0]);
+          $(preview_button).prop('disabled', false);
+      }
+  }
+
+  function resetPreview(input){
+
+      let preview_image = $(input).closest('.images-content').find('.img-responsive');
+      let preview_button = $(input).closest('.images-content').find('.remove_preview');
+      let preview_form = $(input).closest('.images-content').find('.imgs');
+
+      $('.custom-file-label').html('Choose File');
+      $(preview_image).attr('src', '');
+      $(preview_button).prop('disabled', true);
+      $(preview_form).val('');
+  }
+
+  function editAction(userId, userRole) {
+    const village_id = $('#villages').val();
+    let link = '{{ route('admin.update.address.profile', [':id', ':role']) }}';
+    link = link.replace(':id', userId);
+    link = link.replace(':role', userRole);
+    $.ajax({
+      headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      url: link,
+      type : "PUT",
+      dataType : "json",
+      data: { address_id: village_id},
+      success:function(result) {
+        if(result) {
+          const data = result.data;
+          console.log(data, data['address_name'])
+          $('#btn-address').empty().append(`${data['address_name']}, ${data['district_name']}, ${data['regency_name']}, ${data['province_name']}`);
+          $('#regencies, #districts, #villages').empty();
+          $('#regencies').append(`<option value="${data['regency_id']}" selected>${data['regency_name']}</option>`);
+          $('#districts').append(`<option value="${data['district_id']}" selected>${data['district_name']}</option>`);
+          $('#villages').append(`<option value="${data['address_id']}" selected>${data['address_name']}</option>`);
+        } else {
+          console.log("data trouble");
         }
-    }
+      }
+    })
+  }
 
-    function resetPreview(input){
+  function searchProvince() {
+    $('#regencies').empty();
+    $.ajax({
+      headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      url: "{{ route('admin.regencies.index') }}?provinces=" + $('#provinces').val(),
+      type : "GET",
+      dataType : "json",
+      success:function(result) {
+        if(result) {
+          $.each(result.data, (key, value) => {
+            $('#regencies').append(`
+              <option value="${value['id']}">${value['name']}
+              </option>`);
+          });
+        } else {
+          console.log("data trouble");
+        }
+      }
+    })
+  }
 
-        let preview_image = $(input).closest('.images-content').find('.img-responsive');
-        let preview_button = $(input).closest('.images-content').find('.remove_preview');
-        let preview_form = $(input).closest('.images-content').find('.imgs');
+  function searchRegency() {
+    $('#districts').empty();
+    $.ajax({
+      headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      url: "{{ route('admin.districts.index') }}?regencies=" + $('#regencies').val(),
+      type : "GET",
+      dataType : "json",
+      success:function(result) {
+        if(result) {
+          $.each(result.data, (key, value) => {
+            $('#districts').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
+          });
+        } else {
+          console.log("data trouble");
+        }
+      }
+    })
+  }
 
-        $('.custom-file-label').html('Choose File');
-        $(preview_image).attr('src', '');
-        $(preview_button).prop('disabled', true);
-        $(preview_form).val('');
-    }
+  function searchDistrict() {
+    $('#villages').empty();
+    $.ajax({
+      headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      url: "{{ route('admin.villages.index') }}?districts=" + $('#districts').val(),
+      type : "GET",
+      dataType : "json",
+      success:function(result) {
+        if(result) {
+          $.each(result.data, (key, value) => {
+            $('#villages').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
+          });
+        } else {
+          console.log("data trouble");
+        }
+      }
+    })
+  }
 </script>
     
 @endsection

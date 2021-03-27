@@ -29,7 +29,6 @@ class ProvinceController extends Controller
         ProvinceRepositoryInterface $provinceRepository
     ) {
         // Spatie ACL Provinces
-        $this->middleware('permission:provinces-list', ['only' => ['index']]);
         $this->middleware('permission:provinces-create', ['only' => ['create', 'store']]);
         $this->middleware('permission:provinces-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:provinces-delete', ['only' => ['destroy']]);
@@ -43,8 +42,15 @@ class ProvinceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->ajax()) {
+            $provinces = [];
+            $provinces = $this->provinceRepo->listProvinces()->sortBy('name');
+            return response()->json([
+                'data'=> $provinces
+            ]);
+        }
         $provinces = $this->provinceRepo->listProvinces()->sortBy('name');
         return view('admin.address.provinces.index', compact('provinces'));
     }

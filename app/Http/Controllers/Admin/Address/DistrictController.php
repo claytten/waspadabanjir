@@ -36,7 +36,6 @@ class DistrictController extends Controller
     )
     {
         // Spatie ACL Districts
-        $this->middleware('permission:districts-list',['only' => ['index']]);
         $this->middleware('permission:districts-create', ['only' => ['create','store']]);
         $this->middleware('permission:districts-edit', ['only' => ['edit','update']]);
         $this->middleware('permission:districts-delete', ['only' => ['destroy']]);

@@ -38,7 +38,6 @@ class VillageController extends Controller
     )
     {
         // Spatie ACL Villages
-        $this->middleware('permission:villages-list',['only' => ['index']]);
         $this->middleware('permission:villages-create', ['only' => ['create','store']]);
         $this->middleware('permission:villages-edit', ['only' => ['edit','update']]);
         $this->middleware('permission:villages-delete', ['only' => ['destroy']]);
