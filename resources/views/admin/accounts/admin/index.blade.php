@@ -1,8 +1,8 @@
 @extends('layouts.admin.app',[
   'headers' => 'active',
   'menu' => 'accounts',
-  'title' => 'Admin',
-  'first_title' => 'Admin',
+  'title' => 'Users',
+  'first_title' => 'Users',
   'first_link' => route('admin.admin.index')
 ])
 
@@ -26,12 +26,13 @@
         <div class="card">
           <!-- Card header -->
           <div class="card-header">
-            <h3 class="mb-0">Admin Management</h3>
+            <h3 class="mb-0">Users Management</h3>
           </div>
           <div class="table-responsive py-4">
             <table class="table table-flush" id="usersTable">
               <thead class="thead-light">
                 <tr>
+                  <th>No</th>
                   <th>Name</th>
                   <th>Email</th>
                   <th>Position</th>
@@ -42,6 +43,7 @@
               </thead>
               <tfoot>
                 <tr>
+                  <th>No</th>
                   <th>Name</th>
                   <th>Email</th>
                   <th>Role</th>
@@ -50,11 +52,12 @@
                 </tr>
               </tfoot>
               <tbody>
-                @foreach($users as $item)
+                @foreach($users as $index => $item)
                     <tr id="rows_{{ $item->id }}">
                       @php
                           $role = $item->role;
                       @endphp
+                      <th>{{ $index +1 }}</th>
                       <td>{{ ucwords($item->$role->name) }}</td>
                       <td>{{ $item->$role->email }}</td>
                       <td>{{ $item->getRoleNames()[0] }}</td>
@@ -70,9 +73,9 @@
                                 <a href="{{ route('admin.admin.edit', $item->id) }}" class="dropdown-item text-warning">Edit</a>
                             @endif
                             @if(auth()->user()->can('admin-delete'))
-                                <button onclick="blockUser('{{ $item->id }}')" class="dropdown-item text-danger" id="block_{{ $item->id }}" {{ $item->is_active ? '' : 'style=display:none' }}>Block</button>
-                                <button onclick="restoreUser('{{ $item->id }}')" class="dropdown-item text-success" id="restore_{{ $item->id }}" {{ $item->is_active ? 'style=display:none' : '' }}>Restore</button>
-                                <button onclick="deleteUser('{{ $item->id }}')" class="dropdown-item text-danger" id="block_{{ $item->id }}">Delete</button>
+                              <button onclick="blockUser('{{ $item->id }}')" class="dropdown-item text-danger" id="block_{{ $item->id }}" {{ $item->status ? '' : 'style=display:none' }}>Block</button>
+                              <button onclick="restoreUser('{{ $item->id }}')" class="dropdown-item text-success" id="restore_{{ $item->id }}" {{ $item->status ? 'style=display:none' : '' }}>Restore</button>
+                              <button onclick="deleteUser('{{ $item->id }}')" class="dropdown-item text-danger" id="block_{{ $item->id }}">Delete</button>
                             @endif
                           </div>
                         </div>
@@ -92,71 +95,28 @@
 <script type="text/javascript" src="{{ asset('vendor/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.js') }}"></script>
 @endsection
 
 @section('inline_js')
 <script>
   "use strict"
-  const DatatableButtons = (function() {
-
-    // Variables
-
-    var $dtButtons = $('#usersTable');
-
-
-    // Methods
-
-    function init($this) {
-
-      // For more options check out the Datatables Docs:
-      // https://datatables.net/extensions/buttons/
-
-      var buttons = ["copy", "print"];
-
-      // Basic options. For more options check out the Datatables Docs:
-      // https://datatables.net/manual/options
-
-      var options = {
-        order: [3, 'asc'],
-        lengthChange: !1,
-        dom: 'Bfrtip',
-        buttons: buttons,
-        // select: {
-        // 	style: "multi"
-        // },
-        language: {
-          paginate: {
-            previous: "<i class='fas fa-angle-left'>",
-            next: "<i class='fas fa-angle-right'>"
-          }
-        },
-        columnDefs: [
+  const usersTable = $("#usersTable").DataTable({
+      lengthMenu: [ 5, 10, 25, 50, 75, 100 ],
+      language: {
+        "emptyTable": "Please select sort or search data"
+      },
+      pageLength: 5,
+      columnDefs: [
         {
-            targets: 5,
-            orderable: false,
-            searchable: false,
+          target: 6,
+          orderable: false,
+          searchable: false
         }
-    ],
-      };
+      ],
+      responsive: true,
+  });
 
-      // Init the datatable
-
-      var table = $this.on( 'init.dt', function () {
-        $('.dt-buttons .btn').removeClass('btn-secondary').addClass('btn-sm btn-default');
-        }).DataTable(options);
-    }
-
-
-    // Events
-
-    if ($dtButtons.length) {
-      init($dtButtons);
-    }
-
-  })();
   function deleteUser(id){
       $(".alert-result").slideUp(function(){
           $(this).remove();
@@ -169,33 +129,21 @@
           confirmButtonText: 'Yes, delete it!'
       }).then((result) => {
           if(result.value){
-              $.post("{{ route('admin.admin.index') }}/"+id, {'_token': "{{ csrf_token() }}", '_method': 'DELETE', 'user_action': 'delete'}, function(result){
-                  // Append Alert Result
-                  $(`
-                  <div class="alert alert-`+ result.status +` alert-dismissible fade show alert-result" role="alert" style="margin-bottom: 0">
-                    <span class="alert-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
-                    <span class="alert-text">`+ result.message +`</span>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  `).appendTo($("#alert-result")).slideDown("slow", "swing");
-                  setTimeout(location.reload.bind(location), 1000);
-              }).fail(function(jqXHR, textStatus, errorThrown){
-  
-                  $.each(jqXHR.responseJSON.errors, function(key, result) {
-                    $(`
-                    <div class="alert alert-danger alert-dismissible fade show alert-result" role="alert" style="margin-bottom: 0">
-                      <span class="alert-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
-                      <span class="alert-text">`+ jqXHR.responseText +`</span>
-                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    `).appendTo($("#alert-result")).slideDown("slow", "swing");
-                    setTimeout(location.reload.bind(location), 1000);
-                  });
+            $.post("{{ route('admin.admin.index') }}/"+id, {'_token': "{{ csrf_token() }}", '_method': 'DELETE', 'user_action': 'delete'}, function(result){
+              // Append Alert Result
+              usersTable.row("#rows_"+id).remove().draw();
+              Swal.fire(
+                result.status,
+                result.message,
+                'success'
+              );
+            }).fail(function(jqXHR, textStatus, errorThrown){
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops... ' + textStatus,
+                text: 'Please Try Again or Refresh Page!'
               });
+            });
           }
       });
   }
@@ -213,33 +161,31 @@
           confirmButtonText: 'Yes, block it!'
       }).then((result) => {
           if(result.value){
-              $.post("{{ route('admin.admin.index') }}/"+id, {'_token': "{{ csrf_token() }}", '_method': 'DELETE', 'user_action': 'block'}, function(result){
-                  // Append Alert Result
-                  $(`
-                  <div class="alert alert-`+ result.status +` alert-dismissible fade show alert-result" role="alert" style="margin-bottom: 0">
-                    <span class="alert-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
-                    <span class="alert-text">`+ result.message +`</span>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  `).appendTo($("#alert-result")).slideDown("slow", "swing");
-                  setTimeout(location.reload.bind(location), 1000);
-              }).fail(function(jqXHR, textStatus, errorThrown){
-  
-                  $.each(jqXHR.responseJSON.errors, function(key, result) {
-                    $(`
-                    <div class="alert alert-danger alert-dismissible fade show alert-result" role="alert" style="margin-bottom: 0">
-                      <span class="alert-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
-                      <span class="alert-text">`+ jqXHR.responseText +`</span>
-                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    `).appendTo($("#alert-result")).slideDown("slow", "swing");
-                    setTimeout(location.reload.bind(location), 1000);
-                  });
+            $.post("{{ route('admin.admin.index') }}/"+id, {'_token': "{{ csrf_token() }}", '_method': 'DELETE', 'user_action': 'block'}, function(result){
+              // Append Alert Result
+              const row_id = usersTable.row("#rows_"+id).index();
+                
+              if(result.user_status){
+                  $("#block_"+id).show();
+                  $("#restore_"+id).hide();
+                  usersTable.cell({row: row_id, column: 5}).data('Active').draw();
+              } else {
+                  $("#block_"+id).hide();
+                  $("#restore_"+id).show();
+                  usersTable.cell({row: row_id, column: 5}).data('Inactive').draw();
+              }
+              Swal.fire(
+                result.status,
+                result.message,
+                'success'
+              );
+            }).fail(function(jqXHR, textStatus, errorThrown){
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops... ' + textStatus,
+                text: 'Please Try Again or Refresh Page!'
               });
+            });
           }
       });
   }
@@ -259,33 +205,31 @@
       }).then((result) => {
           $('#loading').show();
           if(result.value){
-              $.post("{{ route('admin.admin.index') }}/"+id, {'_token': "{{ csrf_token() }}", '_method': 'DELETE', 'user_action': 'restore'}, function(result){
-                  // Append Alert Result
-                  $(`
-                  <div class="alert alert-`+ result.status +` alert-dismissible fade show alert-result" role="alert" style="margin-bottom: 0">
-                    <span class="alert-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
-                    <span class="alert-text">`+ result.message +`</span>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  `).appendTo($("#alert-result")).slideDown("slow", "swing");
-                  setTimeout(location.reload.bind(location), 1000);
-              }).fail(function(jqXHR, textStatus, errorThrown){
-  
-                  $.each(jqXHR.responseJSON.errors, function(key, result) {
-                    $(`
-                    <div class="alert alert-danger alert-dismissible fade show alert-result" role="alert" style="margin-bottom: 0">
-                      <span class="alert-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
-                      <span class="alert-text">`+ jqXHR.responseText +`</span>
-                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    `).appendTo($("#alert-result")).slideDown("slow", "swing");
-                    setTimeout(location.reload.bind(location), 1000);
-                  });
+            $.post("{{ route('admin.admin.index') }}/"+id, {'_token': "{{ csrf_token() }}", '_method': 'DELETE', 'user_action': 'restore'}, function(result){
+              const row_id = usersTable.row("#rows_"+id).index();
+
+              // Append Alert Result
+              if(result.user_status){
+                $("#block_"+id).show();
+                $("#restore_"+id).hide();
+                usersTable.cell({row: row_id, column: 5}).data('Active').draw();
+              } else {
+                $("#block_"+id).hide();
+                $("#restore_"+id).show();
+                usersTable.cell({row: row_id, column: 5}).data('Inactive').draw();
+              }
+              Swal.fire(
+                result.status,
+                result.message,
+                'success'
+              );
+            }).fail(function(jqXHR, textStatus, errorThrown){
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops... ' + textStatus,
+                text: 'Please Try Again or Refresh Page!'
               });
+            });
           }
       });
   }

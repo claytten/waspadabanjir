@@ -28,6 +28,29 @@ class EmployeeRepository extends BaseRepository implements EmployeeRepositoryInt
     }
 
     /**
+     * Create the employee
+     *
+     * @param array $data
+     *
+     * @return Employee
+     */
+    public function createEmployee(array $data): Employee
+    {
+        try {
+            if(substr($data['phone'],0,3) == '+62') {
+                $data['phone'] = preg_replace("/^0/", "+62", $data['phone']);
+            } else if(substr($data['phone'],0,1) == '0') {
+                $data['phone'] = preg_replace("/^0/", "+62", $data['phone']);
+            } else {
+                $data['phone'] = "+62".$data['phone'];
+            }
+            return $this->create($data);
+        } catch (QueryException $e) {
+            throw new CreateEmployeeInvalidArgumentException($e);
+        }
+    }
+
+    /**
      * Update the employee
      *
      * @param array $params
@@ -38,6 +61,13 @@ class EmployeeRepository extends BaseRepository implements EmployeeRepositoryInt
     public function updateEmployee(array $params) : bool
     {
         try {
+            if(substr($params['phone'],0,3) == '+62') {
+                $params['phone'] = preg_replace("/^0/", "+62", $params['phone']);
+            } else if(substr($params['phone'],0,1) == '0') {
+                $params['phone'] = preg_replace("/^0/", "+62", $params['phone']);
+            } else {
+                $params['phone'] = "+62".$params['phone'];
+            }
             return $this->model->update($params);
         } catch (QueryException $e) {
             throw new UpdateEmployeeInvalidArgumentException($e);
@@ -80,6 +110,18 @@ class EmployeeRepository extends BaseRepository implements EmployeeRepositoryInt
     public function saveCoverImage(UploadedFile $file) : string
     {
         return $file->store('employees', ['disk' => 'public']);
+    }
+
+    /**
+     * @return bool
+     * @throws \Exception
+     */
+    public function deleteEmployee() : bool
+    {
+        if ($this->model->image) {
+            $this->deleteFile($this->model->image);
+        }
+        return $this->delete();
     }
 
     /**

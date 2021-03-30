@@ -24,9 +24,15 @@ class RoleController extends Controller
         $this->middleware('permission:roles-delete', ['only' => ['destroy']]);
 
         $this->permission_avail = [
-            'admin' => ['list', 'create', 'edit', 'delete'],
-            'roles' => ['list', 'create', 'edit', 'delete'],
-            'map'   => ['list', 'create', 'edit', 'delete']
+            'admin'     => ['list', 'create', 'edit', 'delete'],
+            'roles'     => ['list', 'create', 'edit', 'delete'],
+            'maps'      => ['list', 'create', 'edit', 'delete'],
+            'subcriber' => ['list', 'create', 'edit', 'delete'],
+            'reports'   => ['list', 'create', 'edit', 'delete'],
+            'provinces' => ['list', 'create', 'edit', 'delete'],
+            'regencies' => ['list', 'create', 'edit', 'delete'],
+            'districts' => ['list', 'create', 'edit', 'delete'],
+            'villages'  => ['list', 'create', 'edit', 'delete']
         ];
     }
 
@@ -39,7 +45,7 @@ class RoleController extends Controller
     public function index()
     {
         $roles = Role::withCount('users', 'permissions')->get();
-        return view('admin.accounts.role.index',compact('roles'));
+        return view('admin.accounts.roles.index',compact('roles'));
     }
 
     /**
@@ -50,7 +56,7 @@ class RoleController extends Controller
     public function create()
     {
         $options = $this->permission_avail;
-        return view('admin.accounts.role.create', compact('options'));
+        return view('admin.accounts.roles.create', compact('options'));
     }
 
     /**
@@ -69,7 +75,6 @@ class RoleController extends Controller
         
         $role = new Role;
         $role->name = $request->name;
-        $role->guard_name = 'employee';
         $role->save();
 
         // Assign Permission
@@ -90,7 +95,7 @@ class RoleController extends Controller
     public function show($id)
     {
         $role = Role::findOrFail($id);
-        return view('admin.accounts.role.show', compact('role'));
+        return view('admin.accounts.roles.show', compact('role'));
     }
 
     /**
@@ -107,7 +112,7 @@ class RoleController extends Controller
             ->where('role_has_permissions.role_id', $id)
             ->get()->pluck('name');
             
-        return view('admin.accounts.role.edit', compact('role', 'options', 'old_options'));
+        return view('admin.accounts.roles.edit', compact('role', 'options', 'old_options'));
     }
 
     /**
@@ -125,7 +130,6 @@ class RoleController extends Controller
 
         $role = Role::findOrFail($id);
         $role->name = $request->name;
-        $role->guard_name = 'employee';
         $role->save();
 
         // Validate Request
@@ -162,9 +166,9 @@ class RoleController extends Controller
         $role = Role::findOrFail($id);
 
         // Check if Role assigned to users
-        if($role->employees()->exists()){
+        if($role->users()->exists()){
             return response()->json([
-                'status'    => 'danger',
+                'status' => 'danger',
                 'message' => 'Failed to delete. Please remove role from assigned users'
             ]);
         }

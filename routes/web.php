@@ -35,7 +35,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth'], 'as' => 'admin.' ],
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Account Routing
-    Route::resource('/account/admin', UserController::class);
+    Route::resource('/account/admin', UserController::class, ['except' => ['update']]);
+    Route::put('/account/admin/{id}/{role}/edit', [UserController::class, 'update'])->name('admin.update');
     Route::resource('/account/role', RoleController::class);
 
     // Profile Routing

@@ -73,6 +73,10 @@ class ProfileController extends Controller
         $user = $this->userRepo->findUserById($userId);
         $admin = $user->$role;
         $provinces = Cache::get('provinces');
+
+        if(substr($admin['phone'],0,3) == '+62') {
+            $admin['phone'] = substr($admin['phone'],3);
+        }
         if($user->role == 'admin') {
             return view('admin.profiles.profile_admin', compact('admin', 'provinces')); 
         } 

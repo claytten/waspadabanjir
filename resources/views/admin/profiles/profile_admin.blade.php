@@ -60,6 +60,7 @@
         {{ csrf_field() }}
         <input type="hidden" name="_method" value="PUT" readonly>
         <input type="hidden" name="statStages" value="photo" readonly>
+        <input type="hidden" name="address_id" id="village_id" value="{{ $admin->address_id }}" readonly>
         <!-- Card header -->
         <div class="card-header">
           <!-- Title -->
@@ -156,12 +157,17 @@
               <div class="col-lg-6">
                 <div class="form-group">
                   <label class="form-control-label" for="input-phone">Phone</label>
-                  <input type="text" id="input-phone" class="form-control @error('phone') is-invalid @enderror" placeholder="Phone Number" value="{{ $admin->phone }}" name="phone">
-                  @error('phone')
-                      <div class="invalid-feedback">
-                          {{ $message }}
-                      </div>
-                  @enderror
+                  <div class="input-group input-group-merge">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">+62</span>
+                    </div>
+                    <input type="number" step="1" min="0" id="input-phone" class="form-control @error('phone') is-invalid @enderror" placeholder="Phone Number" value="{{ $admin->phone }}" name="phone">
+                    @error('phone')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                  </div>
                 </div>
               </div>
             </div>
@@ -341,18 +347,18 @@
 <script>
   "use strict"
   $(document).ready(function() {
-      $('#provinces').select2({
-          'placeholder': 'Select Province',
-      });
-      $('#regencies').select2({
-          'placeholder': 'Select Regency',
-      });
-      $('#districts').select2({
-          'placeholder': 'Select District',
-      });
-      $('#villages').select2({
-          'placeholder': 'Select Village',
-      });
+    $('#provinces').select2({
+        'placeholder': 'Select Province',
+    });
+    $('#regencies').select2({
+        'placeholder': 'Select Regency',
+    });
+    $('#districts').select2({
+        'placeholder': 'Select District',
+    });
+    $('#villages').select2({
+        'placeholder': 'Select Village',
+    });
   });
   // Add More Image
   function previewImage(input){
@@ -386,32 +392,16 @@
   }
 
   function editAction(userId, userRole) {
-    const village_id = $('#villages').val();
-    let link = '{{ route('admin.update.address.profile', [':id', ':role']) }}';
-    link = link.replace(':id', userId);
-    link = link.replace(':role', userRole);
-    $.ajax({
-      headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-      },
-      url: link,
-      type : "PUT",
-      dataType : "json",
-      data: { address_id: village_id},
-      success:function(result) {
-        if(result) {
-          const data = result.data;
-          console.log(data, data['address_name'])
-          $('#btn-address').empty().append(`${data['address_name']}, ${data['district_name']}, ${data['regency_name']}, ${data['province_name']}`);
-          $('#regencies, #districts, #villages').empty();
-          $('#regencies').append(`<option value="${data['regency_id']}" selected>${data['regency_name']}</option>`);
-          $('#districts').append(`<option value="${data['district_id']}" selected>${data['district_name']}</option>`);
-          $('#villages').append(`<option value="${data['address_id']}" selected>${data['address_name']}</option>`);
-        } else {
-          console.log("data trouble");
-        }
-      }
-    })
+    $('#village_id').val('');
+    $('#village_id').val( $('#villages').val() );
+    const result = `
+      ${$('#villages option:selected').text()}, 
+      ${$('#districts option:selected').text()}, 
+      ${$('#regencies option:selected').text()}, 
+      ${$('#provinces option:selected').text()}
+    `;
+
+    $('#btn-address').empty().append(result);
   }
 
   function searchProvince() {

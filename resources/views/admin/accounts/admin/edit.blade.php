@@ -1,12 +1,12 @@
 @extends('layouts.admin.app',[
   'headers' => 'active',
   'menu' => 'accounts',
-  'title' => 'Admin',
-  'first_title' => 'Admin',
+  'title' => 'Users',
+  'first_title' => 'Users',
   'first_link' => route('admin.dashboard'),
   'second_title' => 'Edit',
-  'second_link' => route('admin.admin.edit', $employee->id),
-  'third_title'  => $employee->name
+  'second_link' => route('admin.admin.edit', $user->id),
+  'third_title'  => $user->name
 ])
 
 @section('content_alert')
@@ -27,14 +27,10 @@
 <link rel="stylesheet" href="{{ asset('vendor/select2/dist/css/select2.min.css') }}">
 @endsection
 
-@section('header-right')
-
-  
-@endsection
-
 @section('content_body')
-<form action="{{ route('admin.admin.update', $employee->id) }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('admin.admin.update', [$user->user->id, $user->user->role]) }}" method="POST" enctype="multipart/form-data">
   {{ csrf_field() }}
+  <input type="hidden" name="address_id" id="village_id" readonly value="{{ $user->address_id}}">
   <input type="hidden" name="_method" value="PUT" readonly>
   <div class="row">
     <div class="col-lg-6">
@@ -44,10 +40,15 @@
           <!-- Card header -->
           <div class="card-header">
             <div class="row align-items-center">
-              <div class="col-8">
-                <h3 class="mb-0">Employee Information</h3>
+              <div class="col-lg-6 col-md-6">
+                <h3 class="mb-0">Users Information</h3>
               </div>
-              <div class="col-lg-4 text-right">
+              <div class="col-lg-6 col-md-6 d-flex justify-content-end">
+                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-change-password">
+                  <i class="ni ni-lock-circle-open"></i>
+                  Change Password
+                </button>
+                <button type="button" class="btn btn-danger" id="btn-reset">Reset</button>
                 <button type="submit" class="btn btn-primary">Submit</button>
               </div>
             </div>
@@ -62,7 +63,7 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text"><i class="fas fa-user"></i></span>
                       </div>
-                      <input class="form-control @error('name') is-invalid @enderror" placeholder="Your name" type="text" name="name" value="{{ $employee->name }}">
+                      <input class="form-control @error('name') is-invalid @enderror" placeholder="Your name" type="text" name="name" value="{{ $user->name }}" id="name">
                       @error('name')
                           <div class="invalid-feedback">
                               {{ $message }}
@@ -75,10 +76,10 @@
                   <div class="form-group">
                     <div class="input-group input-group-merge">
                       <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
                       </div>
-                      <input class="form-control @error('email') is-invalid @enderror" placeholder="Email address" type="email" name="email" value="{{ $employee->email }}">
-                      @error('email')
+                      <input class="form-control @error('username') is-invalid @enderror" placeholder="Username" type="text" name="username" value="{{ $user->user->username }}" id="username">
+                      @error('username')
                           <div class="invalid-feedback">
                               {{ $message }}
                           </div>
@@ -91,11 +92,11 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <div class="input-group input-group-merge">
-                      <input class="form-control @error('password') is-invalid @enderror" placeholder="New Password" type="password" name="password">
-                      <div class="input-group-append">
-                        <span class="input-group-text"><i class="fas fa-eye"></i></span>
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                       </div>
-                      @error('password')
+                      <input class="form-control @error('email') is-invalid @enderror" placeholder="Email address" type="email" name="email" value="{{ $user->email }}" id="email">
+                      @error('email')
                           <div class="invalid-feedback">
                               {{ $message }}
                           </div>
@@ -106,15 +107,32 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <div class="input-group input-group-merge">
-                      <input class="form-control @error('password_confirmation') is-invalid @enderror" placeholder="Re-type Password" type="password" name="password_confirmation">
-                      <div class="input-group-append">
-                        <span class="input-group-text"><i class="fas fa-eye"></i></span>
+                      <div class="input-group-prepend">
+                        <span class="input-group-text">+62</span>
                       </div>
-                      @error('password_confirmation')
+                      <input class="form-control @error('phone') is-invalid @enderror" placeholder="Phone Number (ex. 85702142789)" type="text" name="phone" value="{{ $user->phone }}" id="phone">
+                      @error('phone')
                           <div class="invalid-feedback">
                               {{ $message }}
                           </div>
                       @enderror
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <div class="input-group input-group-merge">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-map-marker"></i></span>
+                      </div>
+                      <button type="button" class="form-control text-left" id="btn-address" data-toggle="modal" data-target="#modal-change-address">
+                        {{$user->village->name}},
+                        {{$user->village->district->name}},
+                        {{$user->village->district->regency->name}},
+                        {{$user->village->district->regency->province->name}}
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -133,11 +151,11 @@
                 <div class="col-md-12">
                   <div class="form-group" style="align-items: center">
                     <div class="input-group">
-                      <button type="button" class="btn btn-sm btn-danger d-block mb-2 mx-auto remove_preview text-center" onclick="resetPreview(this)" disabled>Reset Preview</button>
+                      <button type="button" class="btn btn-sm btn-danger d-block mb-2 mx-auto remove_preview text-center" onclick="resetPreview(this)" {{ ($user->image) ? '' : 'disabled'}}>Reset Preview</button>
                     </div>
                     <div class="input-group" style="justify-content: center">
-                      @if(!empty($employee->image))
-                          <img class="img-responsive" width="150px;" style="padding:.25rem;background:#eee;display:block;" src="{{ url('/storage'.'/'.$employee->image) }}">
+                      @if(!empty($user->image))
+                          <img class="img-responsive" width="150px;" style="padding:.25rem;background:#eee;display:block;" src="{{ url('/storage'.'/'.$user->image) }}">
                       @else
                           <img class="img-responsive" width="150px;" style="padding:.25rem;background:#eee;display:block;">
                       @endif
@@ -151,27 +169,6 @@
     </div>
     <div class="col-lg-6">
       <div class="card-wrapper">
-        <!-- Roles -->
-        <div class="card">
-          <!-- Card header -->
-          <div class="card-header">
-            <h3 class="mb-0">Roles</h3>
-          </div>
-          <!-- Card body -->
-          <div class="card-body">
-            <select name="role" id="role" class="form-control @error('role') is-invalid @enderror" data-toggle="select">
-                <option value=""></option>
-                @foreach($roles as $item)
-                    <option value="{{$item}}" {{ ($item == $employee->role) ? 'selected' : '' }}>{{$item}}</option>
-                @endforeach
-            </select>
-            @error('role')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-            @enderror
-          </div>
-        </div>
         <!-- Toggle buttons -->
         <div class="card">
           <!-- Card header -->
@@ -181,15 +178,168 @@
           <!-- Card body -->
           <div class="card-body">
             <label class="custom-toggle custom-toggle-default">
-              <input type="checkbox" name="is_active" {{ ($employee->is_active == 1) ? 'checked' : '' }}>
+              <input type="checkbox" name="status" {{ ($user->user->status == 1) ? 'checked' : '' }}>
               <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
             </label>
+          </div>
+        </div>
+        {{-- Roles --}}
+        <div class="card">
+          <!-- Card header -->
+          <div class="card-header">
+            <h3 class="mb-0">Role</h3>
+          </div>
+          <!-- Card body -->
+          <div class="card-body">
+            <select name="role" id="role" class="form-control @error('role') is-invalid @enderror" data-toggle="select" onchange="roleAction()">
+              <option value=""></option>
+              <option value="employee" {{ ($user->user->role === 'employee') ? 'selected' : '' }}>Employee</option>
+              <option value="admin" {{ ($user->user->role === 'admin') ? 'selected' : '' }}>Admin</option>
+            </select>
+            @error('role')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+            <div class="input-group input-group-merge pt-3" id="id-card-input">
+              @if ($user->user->role === 'employee')
+                <input type="text" id="input-id_card" class="form-control" placeholder="ID Card" name="id_card" value="{{ $user->id_card }}">
+              @endif
+            </div>
+          </div>
+        </div>
+        <!-- Positions -->
+        <div class="card">
+          <!-- Card header -->
+          <div class="card-header">
+            <h3 class="mb-0">Position</h3>
+          </div>
+          <!-- Card body -->
+          <div class="card-body">
+            <select name="position" id="position" class="form-control @error('position') is-invalid @enderror" data-toggle="select">
+              <option value=""></option>
+              @forelse ($roles as $item)
+                <option value="{{ $item }}" {{ ($item == $user->user->getRoleNames()[0]) ? 'selected' : '' }}>{{ $item }}</option>
+              @empty
+                <option value=""></option>
+              @endforelse
+            </select>
+            @error('position')
+                <span class="invalid-feedback" position="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
           </div>
         </div>
       </div>
     </div>
   </div>
 </form>
+
+{{-- modal change address --}}
+<div class="modal fade" id="modal-change-address" tabindex="-1" role="dialog" aria-labelledby="modal-change-address" aria-hidden="true">
+  <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">>
+    <div class="modal-content">
+      <div class="modal-body p-0">
+        <div class="card bg-secondary border-0 mb-0">
+          <div class="card-body px-lg-5 py-lg-5">
+              <div class="text-center text-muted mb-4">
+                  <small>Change Address</small>
+              </div>
+              <div class="form-group">
+                <div class="input-group input-group-merge input-group-alternative">
+                  <label class="form-control-label" for="input-address">Province</label>
+                  <select onchange="searchProvince()" id="provinces" class="form-control @error('provinces') is-invalid @enderror" data-toggle="select">
+                    <option value=""></option>
+                    @foreach($provinces as $item)
+                        <option value="{{$item['id']}}" {{ ($item['id'] === $user->village->district->regency->province->id) ? 'selected' : ''}}>{{$item['name']}}</option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="input-group input-group-merge input-group-alternative">
+                  <label class="form-control-label" for="input-address">Regency</label>
+                  <select onchange="searchRegency()" id="regencies" class="form-control @error('regencies') is-invalid @enderror" data-toggle="select">
+                    <option value=""></option>
+                    <option value="{{$user->village->district->regency->id}}" selected>{{$user->village->district->regency->name}}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="input-group input-group-merge input-group-alternative">
+                  <label class="form-control-label" for="input-address">District</label>
+                  <select onchange="searchDistrict()" id="districts" class="form-control @error('districts') is-invalid @enderror" data-toggle="select">
+                    <option value=""></option>
+                    <option value="{{$user->village->district->id}}" selected>{{$user->village->district->name}}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="input-group input-group-merge input-group-alternative">
+                  <label class="form-control-label" for="input-address">Village</label>
+                  <select name="village_id" id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select">
+                    <option value=""></option>
+                    <option value="{{$user->village->id}}" selected>{{$user->village->name}}</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="text-center">
+                <button type="button" onclick="editAction('{{$user->id}}', '{{$user->role}}')" class="btn btn-primary my-4">Submit</button>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{-- modal change password --}}
+<div class="modal fade" id="modal-change-password" tabindex="-1" role="dialog" aria-labelledby="modal-change-password" aria-hidden="true">
+  <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">>
+    <div class="modal-content">
+      <div class="modal-body p-0">
+        <div class="card bg-secondary border-0 mb-0">
+          <div class="card-body px-lg-5 py-lg-5">
+              <div class="text-center text-muted mb-4">
+                  <small>Change Password</small>
+              </div>
+              <form role="form" action="{{ route('admin.reset.password', $user->user->id) }}" method="POST">
+                  {{ csrf_field() }}
+                  <input type="hidden" name="_method" value="PUT" readonly>
+                  <input type="hidden" name="statStages" value="user" readonly>
+                  <div class="form-group">
+                    <div class="input-group input-group-merge input-group-alternative">
+                        <input class="form-control" placeholder="Old Password" type="password" name="oldpassword">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                      <div class="input-group input-group-merge input-group-alternative">
+                          <input class="form-control" placeholder="New Password" type="password" name="password">
+                      </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="input-group input-group-merge input-group-alternative">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                        </div>
+                        <input class="form-control" placeholder="Confirmation Password" type="password" name="password_confirmation">
+                    </div>
+                </div>
+                  <div class="text-center">
+                      <button type="Submit" class="btn btn-primary my-4">Submit</button>
+                  </div>
+              </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 @section('plugins_js')
@@ -200,41 +350,154 @@
 <script>
   "use strict"
   $(document).ready(function() {
-      $('#role').select2({
-          'placeholder': 'Select Role',
-      });
+    $('#role').select2({
+        'placeholder': 'Select Role',
+    });
+    $('#position').select2({
+        'placeholder': 'Select Position',
+    });
+    $('#provinces').select2({
+      'placeholder': 'Select Province',
+    });
+    $('#regencies').select2({
+        'placeholder': 'Select Regency',
+    });
+    $('#districts').select2({
+        'placeholder': 'Select District',
+    });
+    $('#villages').select2({
+        'placeholder': 'Select Village',
+    });
   });
+
+  function roleAction() {
+    if ($('#role').val() === 'employee') {
+      $('#id-card-input').empty().append('<input type="text" id="input-id_card" class="form-control" placeholder="ID Card" name="id_card">');
+    } else {
+      $('#id-card-input').empty();
+    }
+  }
 
   // Add More Image
   function previewImage(input){
-        console.log("Preview Image");
-        let preview_image = $(input).closest('.images-content').find('.img-responsive');
-        let preview_button = $(input).closest('.images-content').find('.remove_preview');
+    console.log("Preview Image");
+    let preview_image = $(input).closest('.images-content').find('.img-responsive');
+    let preview_button = $(input).closest('.images-content').find('.remove_preview');
 
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                // console.log(e.target.result);
-                $(preview_image).attr('src', e.target.result);
-                
-            }
-            $('.custom-file-label').html(input.files[0].name);
-            reader.readAsDataURL(input.files[0]);
-            $(preview_button).prop('disabled', false);
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            // console.log(e.target.result);
+            $(preview_image).attr('src', e.target.result);
+            
         }
+        $('.custom-file-label').html(input.files[0].name);
+        reader.readAsDataURL(input.files[0]);
+        $(preview_button).prop('disabled', false);
     }
+  }
 
-    function resetPreview(input){
+  function resetPreview(input){
+    let preview_image = $(input).closest('.images-content').find('.img-responsive');
+    let preview_button = $(input).closest('.images-content').find('.remove_preview');
+    let preview_form = $(input).closest('.images-content').find('.imgs');
 
-        let preview_image = $(input).closest('.images-content').find('.img-responsive');
-        let preview_button = $(input).closest('.images-content').find('.remove_preview');
-        let preview_form = $(input).closest('.images-content').find('.imgs');
+    $('.custom-file-label').html('Choose File');
+    $(preview_image).attr('src', '');
+    $(preview_button).prop('disabled', true);
+    $(preview_form).val('');
+  }
 
-        $('.custom-file-label').html('Choose File');
-        $(preview_image).attr('src', '');
-        $(preview_button).prop('disabled', true);
-        $(preview_form).val('');
-    }
+  $("#btn-reset").click(function(e){
+    e.preventDefault();
+    $("#name").val('');
+    $('#username').val('');
+    $('#phone').val('');
+    $('#email').val('');
+    $('#password').val('');
+    $('#password_confirmation').val('');
+    $('#village_id').val('');
+    $('#btn-address').empty().append('Set Address');
+    resetPreview();
+  });
+
+  function editAction() {
+    $('#village_id').val('');
+    $('#village_id').val( $('#villages').val() );
+    const result = `
+      ${$('#villages option:selected').text()}, 
+      ${$('#districts option:selected').text()}, 
+      ${$('#regencies option:selected').text()}, 
+      ${$('#provinces option:selected').text()}
+    `;
+
+    $('#btn-address').empty().append(result);
+  }
+
+  function searchProvince() {
+    $('#regencies').empty();
+    $.ajax({
+      headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      url: "{{ route('admin.regencies.index') }}?provinces=" + $('#provinces').val(),
+      type : "GET",
+      dataType : "json",
+      success:function(result) {
+        if(result) {
+          $.each(result.data, (key, value) => {
+            $('#regencies').append(`
+              <option value="${value['id']}">${value['name']}
+              </option>`);
+          });
+        } else {
+          console.log("data trouble");
+        }
+      }
+    })
+  }
+
+  function searchRegency() {
+    $('#districts').empty();
+    $.ajax({
+      headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      url: "{{ route('admin.districts.index') }}?regencies=" + $('#regencies').val(),
+      type : "GET",
+      dataType : "json",
+      success:function(result) {
+        if(result) {
+          $.each(result.data, (key, value) => {
+            $('#districts').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
+          });
+        } else {
+          console.log("data trouble");
+        }
+      }
+    })
+  }
+
+  function searchDistrict() {
+    $('#villages').empty();
+    $.ajax({
+      headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      url: "{{ route('admin.villages.index') }}?districts=" + $('#districts').val(),
+      type : "GET",
+      dataType : "json",
+      success:function(result) {
+        if(result) {
+          $.each(result.data, (key, value) => {
+            $('#villages').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
+          });
+        } else {
+          console.log("data trouble");
+        }
+      }
+    })
+  }
 </script>
     
 @endsection

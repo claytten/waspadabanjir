@@ -51,8 +51,9 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function createUser(array $data): User
     {
         $data['password'] = Hash::make($data['password']);
-        $this->model->assignRole($data['role']);
-        return $this->create($data);
+        $store = $this->create($data);
+        $store->assignRole($data['position']);
+        return $store; 
     }
 
     /**

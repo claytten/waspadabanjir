@@ -4,8 +4,14 @@ namespace App\Http\Controllers\Admin\Accounts;
 
 use App\Models\Users\Requests\CreateUserRequest;
 use App\Models\Users\Requests\UpdateUserRequest;
+use App\Models\Users\User;
 use App\Models\Users\Repositories\UserRepository;
 use App\Models\Users\Repositories\Interfaces\UserRepositoryInterface;
+use App\Models\Address\Provinces\Repositories\Interfaces\ProvinceRepositoryInterface;
+use App\Models\Accounts\Admins\Repositories\Interfaces\AdminRepositoryInterface;
+use App\Models\Accounts\Employees\Repositories\Interfaces\EmployeeRepositoryInterface;
+use App\Models\Accounts\Admins\Repositories\AdminRepository;
+use App\Models\Accounts\Employees\Repositories\EmployeeRepository;
 
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
@@ -18,9 +24,24 @@ class UserController extends Controller
 {
     use UploadableTrait;
     /**
+     * @var ProfinceRepositoryInterface
+     */
+    private $provinceRepo;
+
+    /**
      * @var UserRepositoryInterface
      */
     private $userRepo;
+
+    /**
+     * @var AdminRepositoryInterface
+     */
+    private $adminRepo;
+
+    /**
+     * @var EmployeeRepositoryInterface
+     */
+    private $employeeRepo;
 
     /**
      * Admin Controller Constructor
@@ -29,7 +50,10 @@ class UserController extends Controller
      * @return void
      */
     public function __construct(
-        UserRepositoryInterface $userRepository
+        ProvinceRepositoryInterface $provinceRepository,
+        UserRepositoryInterface $userRepository,
+        AdminRepositoryInterface $adminRepository,
+        EmployeeRepositoryInterface $employeeRepository
     )
     {
         // Spatie ACL
@@ -39,6 +63,9 @@ class UserController extends Controller
         $this->middleware('permission:admin-delete', ['only' => ['destroy']]);
 
         $this->userRepo = $userRepository;
+        $this->adminRepo = $adminRepository;
+        $this->employeeRepo = $employeeRepository;
+        $this->provinceRepo = $provinceRepository;
     }
 
     /**
@@ -60,7 +87,8 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::pluck('name', 'name')->all();
-        return view('admin.accounts.admin.create', compact('roles'));
+        $provinces = $this->provinceRepo->listProvinces()->sortBy('name');
+        return view('admin.accounts.admin.create', compact('roles', 'provinces'));
     }
 
     /**
@@ -75,13 +103,24 @@ class UserController extends Controller
 
         if ($request->hasFile('image') && $request->file('image') instanceof UploadedFile) {
             $data['image'] = $this->userRepo->saveCoverImage($request->file('image'));
+        } else {
+            $data['image'] = null;
         }
         if($request->is_active == "on") {
-            $data['is_active'] = 1;
+            $data['status'] = 1;
         } else {
-            $data['is_active'] = 0;
+            $data['status'] = 0;
         }
-        $checking = $this->userRepo->createUser($data);
+        $storeUser = $this->userRepo->createUser($data);
+
+        if (!empty($storeUser)) {
+            $data['id_user'] = $storeUser->id;
+            if($storeUser->role == 'admin') {
+                $this->adminRepo->createAdmin($data);
+            } else {
+                $this->employeeRepo->createEmployee($data);
+            }
+        }
 
         return redirect()->route('admin.admin.index')->with([
             'status'    => 'success',
@@ -108,9 +147,15 @@ class UserController extends Controller
     public function edit($id)
     {
         $roles = Role::pluck('name', 'name')->all();
-        $user = $this->userRepo->findUserById($id);
+        $getUser = $this->userRepo->findUserById($id);
+        $role = $getUser->role;
+        $user = $getUser->$role;
+        $provinces = $this->provinceRepo->listProvinces()->sortBy('name');
+        if(substr($user['phone'],0,3) == '+62') {
+            $user['phone'] = substr($user['phone'],3);
+        }
 
-        return view('admin.accounts.admin.edit',compact('user','roles'));
+        return view('admin.accounts.admin.edit',compact('user','roles', 'provinces'));
     }
 
     /**
@@ -120,45 +165,70 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateUserRequest $request, $id, $role)
     {
         $data = $request->except('_token','_method');
         $user = $this->userRepo->findUserById($id);
-        $request->validate([
-            'name' => ['required', 'string', 'max:191'],
-            'email' => ['required', 'email', 'max:191', 'unique:users,email,'.$id],
-            'role' => ['required']
-        ]);
-
-        if(!empty($request->password) && !empty($request->password_confirmation)) {
-            $request->validate([
-                'password' => ['required', 'string', 'min:5', 'confirmed']
-            ]);
-            $data['password'] = Hash::make($request->password);
-        } else {
-            $data['password'] = $user->password;
-        }
-
-        if($request->is_active == "on") {
-            $data['is_active'] = 1;
-        } else {
-            $data['is_active'] = 0;
-        }
         $userRepo = new UserRepository($user);
+
+        if ($request->ajax()) {
+            $chkOldPassword = Hash::check($request->oldpassword, $user->password);
+            if ($chkOldPassword) {
+                $user->password = Hash::make($request->password);
+                $user->save();
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => 'Password successfully changed!'
+                ]);
+            }
+            return response()->json([
+                'status'    => 'success',
+                'message'   => 'Please check again old password / matching new password!'
+            ]);
+        }
+
+        if($request->status == "on") {
+            $data['status'] = 1;
+        } else {
+            $data['status'] = 0;
+        }
+
         if ($request->hasFile('image') && $request->file('image') instanceof UploadedFile) {
-            if(!empty($user->image)) {
-                $userRepo->deleteFile($user->image);
+            if(!empty($user->$role->image)) {
+                $userRepo->deleteFile($user->$role->image);
             }
             $data['image'] = $this->userRepo->saveCoverImage($request->file('image'));
+        } else {
+            $data['image'] = $user->$role->image;
         }
+
+        if ($role !== $request->role) {
+            $data['id_user'] = $user->id;
+            if ($request->role === 'admin') {
+                $user->employee()->delete();
+                $this->adminRepo->createAdmin($data);
+            } else {
+                $this->employeeRepo->createEmployee($data);
+                $user->admin()->delete();
+            }
+        } else {
+            if ($role === 'admin') {
+                $admin = $this->adminRepo->findAdminById($user->admin->id);
+                $adminRepo = new AdminRepository($admin);
+                $adminRepo->updateAdmin($data);
+            } else {
+                $employee = $this->employeeRepo->findEmployeeById($user->employee->id);
+                $employeeRepo = new EmployeeRepository($employee);
+                $employeeRepo->updateEmployee($data);
+            }
+        }
+
         $userRepo->updateUser($data);
 
-        return redirect()->route('admin.admin.edit', $id)->with([
+        return redirect()->route('admin.admin.index')->with([
             'status'    => 'success',
             'message'   => 'Update Account successful!'
         ]);
-        
-        
     }
 
     /**
@@ -173,16 +243,17 @@ class UserController extends Controller
         $user = new UserRepository($users);
         $message = '';
         if($request->user_action == 'block'){
-            $users->is_active = false;
+            $users->status = false;
             $users->save();
             $message = 'User successfully blocked';
         } else if( $request->user_action == 'restore') {
-            $users->is_active = true;
+            $users->status = true;
             $users->save();
             $message = 'User successfully restored';
         } else {
-            if(!empty($users->image) ) {
-                $user->deleteFile($users->image);
+            $role = $users->role;
+            if(!empty($users->$role->image) ) {
+                $user->deleteFile($users->$role->image);
             }
             $message = 'User successfully destroy';
             $user->deleteUser();
@@ -191,7 +262,7 @@ class UserController extends Controller
         return response()->json([
             'status'      => 'success',
             'message'     => $message,
-            'user_status' => $users->is_active
+            'user_status' => $users->status
         ]);
     }
 }

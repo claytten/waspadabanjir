@@ -11,6 +11,8 @@ use Illuminate\Support\Collection as Support;
 
 interface EmployeeRepositoryInterface extends BaseRepositoryInterface
 {
+    public function createEmployee(array $data): Employee;
+
     public function updateEmployee(array $params) : bool;
 
     public function findEmployeeById(int $id) : Employee;
@@ -18,6 +20,8 @@ interface EmployeeRepositoryInterface extends BaseRepositoryInterface
     public function searchEmployee(string $text) : Collection;
 
     public function saveCoverImage(UploadedFile $file) : string;
+
+    public function deleteEmployee() : bool;
 
     public function deleteFile(string $get_data);
 }

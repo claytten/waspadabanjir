@@ -49,7 +49,7 @@ class PermissionSeeder extends Seeder
 
         $employeePermissions = [
             'maps-list',
-            'maps-crete',
+            'maps-create',
             'maps-edit',
             'maps-delete',
 

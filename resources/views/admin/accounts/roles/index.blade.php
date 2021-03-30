@@ -1,24 +1,10 @@
 @extends('layouts.admin.app',[
   'headers' => 'active',
-  'menu' => 'accounts',
-  'title' => 'Role',
-  'first_title' => 'Role',
+  'menu' => 'roles',
+  'title' => 'Roles',
+  'first_title' => 'Roles',
   'first_link' => route('admin.role.index')
 ])
-
-@section('content_alert')
-<div id="alert-result">
-  @if(Session::get('message'))
-    <div class="alert alert-{{ Session::get('status') }} alert-dismissible fade show alert-result" style="margin-bottom: 0" role="alert">
-      <span class="alert-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
-      <span class="alert-text">{{ Session::get('message') }}</span>
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-  @endif
-</div>
-@endsection
 
 @section('plugins_css')
 <link rel="stylesheet" type="text/css" href="{{ asset('vendor/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}">
@@ -40,32 +26,35 @@
         <div class="card">
           <!-- Card header -->
           <div class="card-header">
-            <h3 class="mb-0">Role Management</h3>
+            <h3 class="mb-0">Roles Management</h3>
           </div>
           <div class="table-responsive py-4">
             <table class="table table-flush" id="rolesTable">
               <thead class="thead-light">
                 <tr>
+                  <th>No</th>
                   <th>Name</th>
-                  <th>User Assigned</th>
+                  <th>Users Assigned</th>
                   <th>Permission Count</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tfoot>
                 <tr>
+                  <th>No</th>
                   <th>Name</th>
-                  <th>User Assigned</th>
+                  <th>Users Assigned</th>
                   <th>Permission Count</th>
                   <th>Action</th>
                 </tr>
               </tfoot>
               <tbody>
-                @foreach($roles as $item)
+                @foreach($roles as $index => $item)
                   <tr id="rows_{{ $item->id }}">
+                    <td>{{ $index +1 }}</td>
                     <td>{{ucwords($item->name)}}</td>
-                    <td>{{ $item->employees_count }}</td>
-                    <td>{{$item->permissions_count}}</td>
+                    <td>{{ $item->users_count }}</td>
+                    <td>{{ $item->permissions_count }}</td>
                     <td>
                       <div class="dropdown">
                         <a class="btn btn-md btn-icon-only text-primary" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -74,7 +63,6 @@
                         <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                           @if(auth()->user()->can('roles-edit'))
                               <a href="{{ route('admin.role.edit', $item->id) }}" class="dropdown-item text-warning">Edit</a>
-                              <a href="{{ route('admin.role.show', $item->id) }}" class="dropdown-item text-primary">Show</a>
                           @endif
                           @if(auth()->user()->can('roles-delete'))
                               <button onclick="deleteRole('{{ $item->id }}')" class="dropdown-item text-danger" id="block_{{ $item->id }}">Delete</button>
@@ -97,71 +85,28 @@
 <script type="text/javascript" src="{{ asset('vendor/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.js') }}"></script>
 @endsection
 
 @section('inline_js')
 <script>
   "use strict"
-  var DatatableButtons = (function() {
-
-    // Variables
-
-    var $dtButtons = $('#rolesTable');
-
-
-    // Methods
-
-    function init($this) {
-
-      // For more options check out the Datatables Docs:
-      // https://datatables.net/extensions/buttons/
-
-      var buttons = ["copy", "print"];
-
-      // Basic options. For more options check out the Datatables Docs:
-      // https://datatables.net/manual/options
-
-      var options = {
-        order: [2, 'asc'],
-        lengthChange: !1,
-        dom: 'Bfrtip',
-        buttons: buttons,
-        // select: {
-        // 	style: "multi"
-        // },
-        language: {
-          paginate: {
-            previous: "<i class='fas fa-angle-left'>",
-            next: "<i class='fas fa-angle-right'>"
-          }
-        },
-        columnDefs: [
+  const rolesTable = $("#rolesTable").DataTable({
+      lengthMenu: [ 5, 10, 25, 50, 75, 100 ],
+      language: {
+        "emptyTable": "Please select sort or search data"
+      },
+      pageLength: 5,
+      columnDefs: [
         {
-            targets: 3,
-            orderable: false,
-            searchable: false,
+          target: 4,
+          orderable: false,
+          searchable: false
         }
-    ],
-      };
+      ],
+      responsive: true,
+  });
 
-      // Init the datatable
-
-      var table = $this.on( 'init.dt', function () {
-        $('.dt-buttons .btn').removeClass('btn-secondary').addClass('btn-sm btn-default');
-        }).DataTable(options);
-    }
-
-
-    // Events
-
-    if ($dtButtons.length) {
-      init($dtButtons);
-    }
-
-  })();
   function deleteRole(id){
       $(".alert-result").slideUp(function(){
           $(this).remove();
@@ -174,33 +119,21 @@
           confirmButtonText: 'Yes, delete it!'
       }).then((result) => {
           if(result.value){
-              $.post("{{ route('admin.role.index') }}/"+id, {'_token': "{{ csrf_token() }}", '_method': 'DELETE', 'user_action': 'delete'}, function(result){
-                  // Append Alert Result
-                  $(`
-                  <div class="alert alert-`+ result.status +` alert-dismissible fade show alert-result" role="alert" style="margin-bottom: 0">
-                    <span class="alert-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
-                    <span class="alert-text">`+ result.message +`</span>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  `).appendTo($("#alert-result")).slideDown("slow", "swing");
-                  setTimeout(location.reload.bind(location), 1000);
-              }).fail(function(jqXHR, textStatus, errorThrown){
-  
-                  $.each(jqXHR.responseJSON.errors, function(key, result) {
-                    $(`
-                    <div class="alert alert-danger alert-dismissible fade show alert-result" role="alert" style="margin-bottom: 0">
-                      <span class="alert-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
-                      <span class="alert-text">`+ jqXHR.responseText +`</span>
-                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    `).appendTo($("#alert-result")).slideDown("slow", "swing");
-                    setTimeout(location.reload.bind(location), 1000);
-                  });
+            $.post("{{ route('admin.role.index') }}/"+id, {'_token': "{{ csrf_token() }}", '_method': 'DELETE'}, function(result){
+              // Append Alert Result
+              rolesTable.row("#rows_"+id).remove().draw();
+              Swal.fire(
+                result.status,
+                result.message,
+                'success'
+              );
+            }).fail(function(jqXHR, textStatus, errorThrown){
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops... ' + textStatus,
+                text: 'Please Try Again or Refresh Page!'
               });
+            });
           }
       });
   }

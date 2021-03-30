@@ -11,11 +11,15 @@ use Illuminate\Support\Collection as Support;
 
 interface AdminRepositoryInterface extends BaseRepositoryInterface
 {
+    public function createAdmin(array $data): Admin;
+    
     public function updateAdmin(array $params) : bool;
 
     public function findAdminById(int $id) : Admin;
 
     public function searchAdmin(string $text) : Collection;
+
+    public function deleteAdmin() : bool;
 
     public function saveCoverImage(UploadedFile $file) : string;
 
