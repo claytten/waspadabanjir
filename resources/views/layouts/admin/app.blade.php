@@ -80,12 +80,12 @@
       </div>
     </div>
     <!-- Core -->
-    <script src="{{ asset('vendor/jquery/dist/jquery.min.js') }}"></script>
-    <script src="{{ asset('vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('vendor/js-cookie/js.cookie.js') }}"></script>
-    <script src="{{ asset('vendor/jquery.scrollbar/jquery.scrollbar.min.js') }}"></script>
-    <script src="{{ asset('vendor/jquery-scroll-lock/dist/jquery-scrollLock.min.js') }}"></script>
-    <script src="{{ asset('vendor/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/jquery/dist/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/js-cookie/js.cookie.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/jquery.scrollbar/jquery.scrollbar.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/jquery-scroll-lock/dist/jquery-scrollLock.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
     <!-- Optional JS -->
     @yield('plugins_js')
     <script src="{{ asset('js/script.js') }}"></script>

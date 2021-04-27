@@ -17,7 +17,13 @@ class CreateFieldsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('color');
+            $table->string('locations');
             $table->string('description')->nullable();
+            $table->integer('deaths');
+            $table->integer('losts');
+            $table->integer('injured');
+            $table->string('date');
+            $table->string('time');
             $table->timestamps();
         });
     }

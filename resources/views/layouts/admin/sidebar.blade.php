@@ -30,7 +30,7 @@
 
           @can('maps-list')
             <li class="nav-item">
-              <a class="nav-link" href="#">
+              <a class="nav-link" href="{{ route('admin.map.view') }}">
                 <i class="ni ni-map-big text-primary"></i>
                 <span class="nav-link-text">Maps</span>
               </a>

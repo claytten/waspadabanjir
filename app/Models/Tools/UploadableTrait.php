@@ -34,7 +34,7 @@ trait UploadableTrait
      *
      * @return false|string
      */
-    public function storeFile(UploadedFile $file, $folder = 'posts', $disk = 'public')
+    public function storeFile(UploadedFile $file, $folder = 'maps', $disk = 'public')
     {
         return $file->store($folder, ['disk' => $disk]);
     }

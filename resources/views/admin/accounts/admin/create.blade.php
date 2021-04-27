@@ -165,7 +165,7 @@
                   <div class="form-group">
                     <div class="input-group input-group-merge">
                       <div class="custom-file">
-                        <input type="file" accept=".jpg, .jpeg, .png" name="image" class="form-control imgs" onchange="previewImage(this)"id="projectCoverUploads">
+                        <input type="file" accept=".jpg, .jpeg, .png" name="image" class="form-control imgs" onchange="previewImage(this)" id="projectCoverUploads" multiple>
                         <label class="custom-file-label" for="projectCoverUploads">Choose file</label>
                       </div>
                     </div>
@@ -350,21 +350,22 @@
 
   // Add More Image
   function previewImage(input){
-      console.log("Preview Image");
-      let preview_image = $(input).closest('.images-content').find('.img-responsive');
-      let preview_button = $(input).closest('.images-content').find('.remove_preview');
+    console.log("Preview Image");
+    console.log(input.files);
+    let preview_image = $(input).closest('.images-content').find('.img-responsive');
+    let preview_button = $(input).closest('.images-content').find('.remove_preview');
 
-      if (input.files && input.files[0]) {
-          var reader = new FileReader();
-          reader.onload = function(e) {
-              // console.log(e.target.result);
-              $(preview_image).attr('src', e.target.result);
-              
-          }
-          $('.custom-file-label').html(input.files[0].name);
-          reader.readAsDataURL(input.files[0]);
-          $(preview_button).prop('disabled', false);
-      }
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            // console.log(e.target.result);
+            $(preview_image).attr('src', e.target.result);
+            
+        }
+        $('.custom-file-label').html(input.files[0].name);
+        reader.readAsDataURL(input.files[0]);
+        $(preview_button).prop('disabled', false);
+    }
   }
 
   function resetPreview(input){

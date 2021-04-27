@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\Address\ProvinceController;
 use App\Http\Controllers\Admin\Address\RegencyController;
 use App\Http\Controllers\Admin\Address\DistrictController;
 use App\Http\Controllers\Admin\Address\VillageController;
+use App\Http\Controllers\Admin\Maps\MapController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +53,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth'], 'as' => 'admin.' ],
     Route::resource('/address/regencies', RegencyController::class, ['only' => ['index', 'store', 'update', 'destroy', 'show']]);
     Route::resource('/address/districts', DistrictController::class, ['only' => ['index', 'store', 'update', 'destroy', 'show']]);
     Route::resource('/address/villages', VillageController::class, ['only' => ['index', 'store', 'update', 'destroy', 'show']]);
+
+    // Maps
+    Route::get('/maps/view', [MapController::class, 'indexView'])->name('map.view');
+    Route::delete('/maps/image/{id}/destroy', [MapController::class, 'destroyImage'])->name('maps.image.destroy');
+    Route::resource('/maps', MapController::class, ['except' => ['create']]);
 });
 
 Route::get('/', function () {

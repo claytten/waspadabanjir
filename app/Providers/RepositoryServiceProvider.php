@@ -16,6 +16,8 @@ use App\Models\Address\Districts\Repositories\Interfaces\DistrictRepositoryInter
 use App\Models\Address\Districts\Repositories\DistrictRepository;
 use App\Models\Address\Villages\Repositories\Interfaces\VillageRepositoryInterface;
 use App\Models\Address\Villages\Repositories\VillageRepository;
+use App\Models\Maps\Fields\Repositories\Interfaces\FieldRepositoryInterface;
+use App\Models\Maps\Fields\Repositories\FieldRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -52,6 +54,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             VillageRepositoryInterface::class,
             VillageRepository::class
+        );
+        $this->app->bind(
+            FieldRepositoryInterface::class,
+            FieldRepository::class
         );
     }
 
