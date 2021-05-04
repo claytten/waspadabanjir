@@ -42,8 +42,16 @@ class MapController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function indexView()
+    public function indexView(Request $request)
     {
+        if ($request->ajax()) {
+            $fields = $this->fieldRepo->listFields()->sortBy('name');
+            return response()->json([
+                'code'      => 200,
+                'status'    => 'success',
+                'data'      => $fields
+            ]);
+        }
         return view('admin.maps.index');
     }
 
@@ -69,12 +77,9 @@ class MapController extends Controller
                         "id"          => $item->id,
                         "name"        => $item->name,
                         "locations"   => $item->locations,
-                        "description" => $item->description,
-                        "deaths"      => $item->deaths,
-                        "losts"       => $item->losts,
-                        "injured"     => $item->injured,
                         "date"        => $item->date,
-                        "time"        => $item->time
+                        "time"        => $item->time,
+                        "status"      => $item->status
                     )
                 ),
                 "geometry" => array(
@@ -135,17 +140,6 @@ class MapController extends Controller
                 "type" => "Feature",
                 "properties" => array(
                     "color" => $field->color,
-                    "popupContent" => array(
-                        "id"          => $field->id,
-                        "name"        => $field->name,
-                        "locations"   => $field->locations,
-                        "description" => $field->description,
-                        "deaths"      => $field->deaths,
-                        "losts"       => $field->losts,
-                        "injured"     => $field->injured,
-                        "date"        => $field->date,
-                        "time"        => $field->time
-                    )
                 ),
                 "geometry" => array(
                     "type" => $field->geometries->geo_type,
@@ -211,7 +205,8 @@ class MapController extends Controller
             'losts'     => ['required', 'numeric', 'min:0'],
             'injured'   => ['required', 'numeric', 'min:0'],
             'date'      => ['required', 'string'],
-            'time'      => ['required', 'string']
+            'time'      => ['required', 'string'],
+            'status'    => ['required']
         ];
         $customMessages = [
             'required' => 'The :attribute field is required.'

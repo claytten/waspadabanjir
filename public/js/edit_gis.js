@@ -338,7 +338,7 @@ const getGeoJSONData = () => {
 }
 const onEachFeatureCallback = (feature, layer) => {
     console.log(feature);
-    if (feature.properties && feature.properties.popupContent) {
+    if (feature.properties) {
         polygon = L.polygon([feature.geometry.coordinates], {
             color: feature.properties.color,
             fillOpacity: 0.4
@@ -369,6 +369,7 @@ const updateGeoJSONData = (color) => {
     success: function(response){
       console.log(response);
       if (response.status === 'success') {
+        console.log('updateGeoJSON', polygon);
         polylayer = polygon;
         Swal.fire('Saved!', '', 'success');
       } else {

@@ -102,7 +102,7 @@
                   <div class="form-group row">
                     <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Time</label>
                     <div class="col-md-10">
-                      <input class="form-control" name="time" type="text" value="{{ $map->time }} WIB" id="time" disabled>
+                      <input class="form-control" name="time" type="text" value="{{ date('h:i A', strtotime($map->time)) }}" id="time" disabled>
                     </div>
                   </div>
                 </div>
@@ -116,13 +116,23 @@
                 </div>
                 <div class="col-md-12">
                   <div class="form-group row">
+                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Status Publish</label>
+                    <div class="col-md-10">
+                      <input class="form-control" name="status" type="text" value="{{ ($map->status) ? 'Published' : 'Draft' }}" id="status" disabled>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group row">
                     <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Images</label>
                     <div class="col-md-10">
-                      @foreach ($map->images as $item)
+                      @forelse ($map->images as $item)
                         <a href="{{ url('/storage'.'/'.$item->src) }}" data-rel="lightcase:myCollection" >
                           <img class="img-fluid rounded" src="{{ url('/storage'.'/'.$item->src) }}" alt="{{ $map->name }}" width="150px;">
                         </a>
-                      @endforeach
+                      @empty
+                        <input class="form-control" name="images" type="text" value="No Images" id="images" disabled>
+                      @endforelse
                     </div>
                   </div>
                 </div>

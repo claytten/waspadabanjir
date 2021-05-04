@@ -27,7 +27,8 @@ class Field extends Model
         'losts',
         'injured',
         'date',
-        'time'
+        'time',
+        'status'
     ];
 
     /**

@@ -32,7 +32,8 @@ class CreateFieldRequest extends FormRequest
             'losts'     => ['required', 'numeric', 'min:0'],
             'injured'   => ['required', 'numeric', 'min:0'],
             'date'      => ['required', 'string'],
-            'time'      => ['required', 'string']
+            'time'      => ['required', 'string'],
+            'status'    => ['required']
         ];
     }
 }

@@ -161,7 +161,7 @@
                             <div class="input-group-prepend">
                               <span class="input-group-text"><i class="fa fa-clock-o" aria-hidden="true"></i></span>
                             </div>
-                            <input class="form-control @error('time') is-invalid @enderror" type="time" value="00:00:00" id="example-time-input" name="time" value="{{ $map->time }}">
+                            <input class="form-control @error('time') is-invalid @enderror" type="time" id="example-time-input" name="time" value="{{ $map->time }}">
                             @error('time')
                               <div class="invalid-feedback">
                                   {{ $message }}
@@ -246,8 +246,38 @@
 
             <div class="col-lg-6">
               <div class="card-body">
-                <div class="form-group">
-                  <div id="mapid"></div>
+                <div class="row">
+                  <div class="col-md-12" id="status-form">
+                    <div class="form-group row">
+                      <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Status Publish</label>
+                      <div class="col-md-10">
+                        <select name="status" id="status" class="form-control" data-toggle="select" onchange="statusAction()">
+                          <option value=""></option>
+                          <option value="1" {{ ($map->status == 1) ? 'selected' : '' }}>Publish</option>
+                          <option value="0" {{ ($map->status == 0) ? 'selected' : '' }}>Draft</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  @if ($map->status)
+                    <div class="col-md-12" id="broadcast-form">
+                      <div class="form-group row">
+                        <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Broadcast ?</label>
+                        <div class="col-md-10">
+                          <select name="broadcast" id="broadcast" class="form-control" data-toggle="select">
+                            <option value=""></option>
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  @endif
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <div id="mapid"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -320,6 +350,12 @@
     });
     $('#villages').select2({
         'placeholder': 'Select Village',
+    });
+    $('#status').select2({
+      'placeholder': 'Select Status',
+    });
+    $('#broadcast').select2({
+      'placeholder': '--Choose Status--',
     });
     $('a[data-rel^=lightcase]').lightcase();
 
@@ -450,6 +486,30 @@
         }
       }
     });
+  }
+
+  function statusAction() {
+    if ($('#status').val() === '1') {
+      $(`
+        <div class="col-md-12" id="broadcast-form">
+          <div class="form-group row">
+            <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Broadcast ?</label>
+            <div class="col-md-10">
+              <select name="broadcast" id="broadcast" class="form-control" data-toggle="select">
+                <option value=""></option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      `).insertAfter('#status-form');
+      $('#broadcast').select2({
+        'placeholder': 'Select Broadcast Status',
+      });
+    } else {
+      $('#broadcast-form').remove();
+    }
   }
 </script>
     

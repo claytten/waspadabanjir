@@ -24,6 +24,7 @@ class CreateFieldsTable extends Migration
             $table->integer('injured');
             $table->string('date');
             $table->string('time');
+            $table->boolean('status')->default(false);
             $table->timestamps();
         });
     }

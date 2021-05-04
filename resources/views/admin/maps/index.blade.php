@@ -15,6 +15,7 @@
 <!-- Load Esri Leaflet Geocoder from CDN -->
 <link rel="stylesheet" type="text/css" href="{{ asset('css/esri-leaflet-geocoder.css')}}">
 <link rel="stylesheet" href="{{ asset('vendor/select2/dist/css/select2.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.css') }}">
 @endsection
 
 @section('inline_css')
@@ -28,6 +29,12 @@
 </style>
 @endsection
 
+@section('header-right')
+<div class="col-lg-6 col-5 text-right">
+  <button type="button" class="btn btn-sm btn-neutral" onclick="mapsTables()">Table of data Maps</button>
+</div>
+@endsection
+
 @section('content_body')
 <div class="row">
     <div class="col">
@@ -37,7 +44,33 @@
                 <h3 class="mb-0">Maps Management</h3>
             </div>
             <div class="card">
-                <div id="formtable"></div>
+                <div id="formtable">
+                  <div class="table-responsive py-4" id="mapsLayout">
+                    <table class="table table-flush" id="mapsTable">
+                      <thead class="thead-light">
+                        <tr>
+                          <th>No</th>
+                          <th>Name</th>
+                          <th>Locations</th>
+                          <th>Datetime</th>
+                          <th>Status</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                        <tr>
+                          <th>No</th>
+                          <th>Name</th>
+                          <th>Locations</th>
+                          <th>Datetime</th>
+                          <th>Status</th>
+                          <th>Action</th>
+                        </tr>
+                      </tfoot>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div>
                 <div id="mapid"></div>
                 <div class='pointer'></div>
             </div>
@@ -98,6 +131,7 @@
 <script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/select2/dist/js/select2.min.js')}}"></script>
+<script type="text/javascript" src="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.js') }}"></script>
 @endsection
 
 @section('inline_js')
@@ -110,6 +144,7 @@
     $('#villages').select2({
         'placeholder': 'Select Village',
     });
+    $('#mapsLayout').hide();
 
     $('#districts').empty();
     $.ajax({
@@ -129,6 +164,22 @@
           }
       }
     });
+  });
+
+  const mapTable = $("#mapsTable").DataTable({
+    lengthMenu: [ 5, 10, 25, 50, 75, 100 ],
+    language: {
+      "emptyTable": "Please select sort or search data"
+    },
+    pageLength: 5,
+    columnDefs: [
+      {
+        target: 5,
+        orderable: false,
+        searchable: false
+      }
+    ],
+    responsive: true,
   });
 
   // this singleton variable use in main.gis.js at formable action
@@ -173,6 +224,10 @@
           <td>: ${field.locations}</td>
         </tr>
         <tr>
+          <th>Status</th>
+          <td>: ${(field.status) ? 'Published' : 'Draft'}</td>
+        </tr>
+        <tr>
           <th>Actions</th>
           <td>: ${buttonAction}</td>
         </tr>
@@ -182,15 +237,15 @@
 
   const onEachFeatureCallback = (feature, layer) => {
     if (feature.properties && feature.properties.popupContent) {
-      let { id, name,locations,description,deaths, losts,injured,date,time } = feature.properties.popupContent;
-      let content = {id, name, locations, deaths, description, losts, injured, date, time};
+      let { id, name,locations,date,time, status } = feature.properties.popupContent;
+      let content = {id, name, locations, date, time, status};
 
       if({{ auth()->user()->can('maps-edit') }}) {
         buttonAction += '<a href="{{ route('admin.maps.edit', ':id' )}}" class="show btn btn-warning btn-sm" style="color: white" >Edit</a>';
       }
       buttonAction += '<a href="{{ route('admin.maps.show', ':id' )}}" class="show btn btn-info btn-sm" style="color: white">Detail</a>';
       if({{ auth()->user()->can('maps-delete') }}) {
-        buttonAction += '<a href="{{ route('admin.maps.edit', ':id' )}}" class="show btn btn-danger btn-sm" style="color: white">Delete</a>';
+        buttonAction += `<button type="button" onclick="deleteArea(${id})" class="show btn btn-danger btn-sm" style="color: white">Delete</button>`;
       }
       buttonAction = buttonAction.replaceAll(':id', id);
 
@@ -202,21 +257,21 @@
   function searchDistrict() {
     $('#villages').empty();
     $.ajax({
-    headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    },
-    url: "{{ route('admin.villages.index') }}?districts=" + $('#districts').val(),
-    type : "GET",
-    dataType : "json",
-    success:function(result) {
-        if(result) {
-        $.each(result.data, (key, value) => {
-            $('#villages').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
-        });
-        } else {
-        console.log("data trouble");
-        }
-    }
+      headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      url: "{{ route('admin.villages.index') }}?districts=" + $('#districts').val(),
+      type : "GET",
+      dataType : "json",
+      success:function(result) {
+          if(result) {
+          $.each(result.data, (key, value) => {
+              $('#villages').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
+          });
+          } else {
+          console.log("data trouble");
+          }
+      }
     })
   }
 
@@ -237,6 +292,125 @@
     ($('.images').html() !== undefined) ? ($('.images').remove(), $('.dz-preview li').remove()) : console.log('doesnt have');
     ($('#coordinates').html() !== undefined) ? $('#coordinates').remove() : console.log('doesnt have coordinates');
     ($('#color').html() !== undefined) ? $('#color').remove() : console.log('doesnt have color');
+  }
+
+  function deleteArea(id) {
+    let links = '{{ route('admin.maps.destroy', ':id')}}';
+    $.ajax({
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      url: links.replace(':id', id),
+      type: 'DELETE',
+      async: false,
+      cache: false,
+      error: function (xhr, status, error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Something went wrong!'
+        });
+      },
+      success: function(response){
+        if(response.status === 'success') {
+          Swal.fire({
+            position: 'middle',
+            icon: 'success',
+            title: 'Your work has been saved',
+            showConfirmButton: false,
+            timer: 1500
+          }).then(() => window.location.href = response.redirect_url);
+        } else {
+          console.log(response);
+        }
+      }
+    });
+  }
+
+  function statusAction() {
+    if ($('#status').val() === '1') {
+      $(`
+        <div class="col-md-12" id="broadcast-form">
+          <div class="form-group row">
+            <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Broadcast ?</label>
+            <div class="col-md-10">
+              <select name="broadcast" id="broadcast" class="form-control" data-toggle="select">
+                <option value=""></option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      `).insertAfter('#status-form');
+      $('#broadcast').select2({
+        'placeholder': 'Select Broadcast Status',
+      });
+    } else {
+      $('#broadcast-form').remove();
+    }
+  }
+
+  function mapsTables() {
+    $('#mapsLayout').toggle(200, () => {
+      if($('#mapsLayout').is(':visible')) {
+        $.ajax({
+          headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          },
+          url: "{{ route('admin.map.view')}}",
+          type : "GET",
+          dataType : "json",
+          success:function(result) {
+            if(result.status) {
+              mapTable.clear().draw();
+              let counting = 0;
+              $.each(result.data, (key, value) => {
+                let datetime = '';
+                let status = '';
+                const timeString12hr = new Date('1970-01-01T' + value['time'] + 'Z')
+                .toLocaleTimeString({},
+                  {timeZone:'UTC',hour12:true,hour:'numeric',minute:'numeric'}
+                );
+                datetime += value['date'] + ', ' + timeString12hr;
+                status = (value['status'] === 1) ? 'Published' : 'Draft', 
+                mapTable.row.add([
+                  counting += 1,
+                  value['name'],
+                  value['locations'],
+                  datetime,
+                  status,
+                  addActionOption(value['id'])
+                ]).draw().node().id="rows_"+value['id'];
+              });
+            } else {
+              console.log("data trouble");
+            }
+          }
+        });
+      } else {
+        mapTable.clear().draw();
+      }
+    });
+  }
+
+  function addActionOption(id) {
+    let result = '';
+    @if(auth()->user()->can('maps-edit')) {
+      result += '<a href="{{ route('admin.maps.edit', ':id' )}}" class="show btn btn-warning btn-sm" style="color: white" >Edit</a>';
+    }
+    @endif
+
+    @if(auth()->user()->can('maps-delete')) {
+      result += `<button type="button" onclick="deleteArea(${id})" class="show btn btn-danger btn-sm" style="color: white">Delete</button>`;
+    }
+    @endif
+
+    result += '<a href="{{ route('admin.maps.show', ':id' )}}" class="show btn btn-info btn-sm" style="color: white">Detail</a>';
+
+    result = result.replaceAll(':id', id);
+
+    return result;
   }
 </script>
     

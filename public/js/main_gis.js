@@ -370,41 +370,57 @@ const drawArea = () => {
 
             <div class="col-lg-6">
               <div class="card-body">
-                <div class="form-group">
-                  <div class="dropzone dropzone-multiple" data-toggle="dropzone" data-dropzone-multiple data-dropzone-url="#">
-                    <div class="fallback">
-                      <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="customFileUploadMultiple" multiple>
-                        <label class="custom-file-label" for="customFileUploadMultiple">Choose file</label>
+                <div class="row">
+                  <div class="col-md-12" id="status-form">
+                    <div class="form-group row">
+                      <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Status Publish</label>
+                      <div class="col-md-10">
+                        <select name="status" id="status" class="form-control" data-toggle="select" onchange="statusAction()">
+                          <option value=""></option>
+                          <option value="1">Publish</option>
+                          <option value="0">Draft</option>
+                        </select>
                       </div>
                     </div>
-                    <ul class="dz-preview dz-preview-multiple list-group list-group-lg list-group-flush">
-                      <li class="list-group-item px-0">
-                        <div class="row align-items-center">
-                          <div class="col-auto">
-                            <div class="avatar">
-                              <img class="avatar-img rounded" src="..." alt="..." data-dz-thumbnail>
-                            </div>
-                          </div>
-                          <div class="col ml--3">
-                            <h4 class="mb-1" data-dz-name>...</h4>
-                            <p class="small text-muted mb-0" data-dz-size>...</p>
-                          </div>
-                          <div class="col-auto">
-                            <div class="dropdown">
-                              <a href="#" class="dropdown-ellipses dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fe fe-more-vertical"></i>
-                              </a>
-                              <div class="dropdown-menu dropdown-menu-right">
-                                <a href="#" class="dropdown-item" data-dz-remove>
-                                  Remove
-                                </a>
-                              </div>
-                            </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <div class="dropzone dropzone-multiple" data-toggle="dropzone" data-dropzone-multiple data-dropzone-url="#">
+                        <div class="fallback">
+                          <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="customFileUploadMultiple" multiple>
+                            <label class="custom-file-label" for="customFileUploadMultiple">Choose file</label>
                           </div>
                         </div>
-                      </li>
-                    </ul>
+                        <ul class="dz-preview dz-preview-multiple list-group list-group-lg list-group-flush">
+                          <li class="list-group-item px-0">
+                            <div class="row align-items-center">
+                              <div class="col-auto">
+                                <div class="avatar">
+                                  <img class="avatar-img rounded" src="..." alt="..." data-dz-thumbnail>
+                                </div>
+                              </div>
+                              <div class="col ml--3">
+                                <h4 class="mb-1" data-dz-name>...</h4>
+                                <p class="small text-muted mb-0" data-dz-size>...</p>
+                              </div>
+                              <div class="col-auto">
+                                <div class="dropdown">
+                                  <a href="#" class="dropdown-ellipses dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <div class="dropdown-menu dropdown-menu-right">
+                                    <a href="#" class="dropdown-item" data-dz-remove>
+                                      Remove
+                                    </a>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -418,6 +434,9 @@ const drawArea = () => {
   `).appendTo($("#formtable")).slideDown("slow", "swing");
   $('#mapsForm').append(`<input type="text" class="form-control" id="coordinates" name="coordinates" style="display:none">`);
   $('#mapsForm').append('<input type="text" class="form-control" id="color" name="color" style="display:none" value="'+ randCol +'">');
+  $('#status').select2({
+    'placeholder': 'Select Status',
+  });
   $('#coordinates').val(JSON.stringify(polygonGeoJSON.geometry.coordinates));
 
   (function() {
