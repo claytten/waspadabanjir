@@ -80,41 +80,59 @@
 
 {{-- Modal set Address --}}
 <div class="modal fade" id="modal-add-address" tabindex="-1" role="dialog" aria-labelledby="modal-add-address" aria-hidden="true">
-    <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">>
-      <div class="modal-content">
-        <div class="modal-body p-0">
-          <div class="card bg-secondary border-0 mb-0">
-            <div class="card-body px-lg-5 py-lg-5">
-                <div class="text-center text-muted mb-4">
-                    <small>Add Address</small>
+  <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">>
+    <div class="modal-content">
+      <div class="modal-body p-0">
+        <div class="card bg-secondary border-0 mb-0">
+          <div class="card-body px-lg-5 py-lg-5">
+              <div class="text-center text-muted mb-4">
+                  <small>Add Address</small>
+              </div>
+              <div class="form-group">
+                <div class="input-group input-group-merge input-group-alternative">
+                  <label class="form-control-label" for="input-address">Province</label>
+                  <select onchange="searchProvince()" id="provinces" class="form-control" data-toggle="select">
+                    <option value=""></option>
+                  </select>
                 </div>
-                <div class="form-group">
-                  <div class="input-group input-group-merge input-group-alternative">
-                    <label class="form-control-label" for="input-address">District</label>
-                    <select onchange="searchDistrict()" id="districts" class="form-control" data-toggle="select">
-                      <option value=""></option>
-                    </select>
-                  </div>
+              </div>
+
+              <div class="form-group">
+                <div class="input-group input-group-merge input-group-alternative">
+                  <label class="form-control-label" for="input-address">Regency</label>
+                  <select onchange="searchRegency()" id="regencies" class="form-control" data-toggle="select">
+                    <option value=""></option>
+                  </select>
                 </div>
-  
-                <div class="form-group">
-                  <div class="input-group input-group-merge input-group-alternative">
-                    <label class="form-control-label" for="input-address">Village</label>
-                    <select name="village_id" id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select">
-                      <option value=""></option>
-                    </select>
-                  </div>
+              </div>
+
+              <div class="form-group">
+                <div class="input-group input-group-merge input-group-alternative">
+                  <label class="form-control-label" for="input-address">District</label>
+                  <select onchange="searchDistrict()" id="districts" class="form-control" data-toggle="select">
+                    <option value=""></option>
+                  </select>
                 </div>
-                
-                <div class="text-center">
-                  <button type="button" onclick="editAction()" class="btn btn-primary my-4">Submit</button>
+              </div>
+
+              <div class="form-group">
+                <div class="input-group input-group-merge input-group-alternative">
+                  <label class="form-control-label" for="input-address">Village</label>
+                  <select name="village_id" id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select">
+                    <option value=""></option>
+                  </select>
                 </div>
-            </div>
+              </div>
+              
+              <div class="text-center">
+                <button type="button" onclick="editAction()" class="btn btn-primary my-4">Submit</button>
+              </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
 @endsection
 
 @section('plugins_js')
@@ -238,6 +256,10 @@
   const onEachFeatureCallback = (feature, layer) => {
     if (feature.properties && feature.properties.popupContent) {
       let { id, name,locations,date,time, status } = feature.properties.popupContent;
+      time = new Date('1970-01-01T' + time + 'Z')
+      .toLocaleTimeString({},
+        {timeZone:'UTC',hour12:true,hour:'numeric',minute:'numeric'}
+      );
       let content = {id, name, locations, date, time, status};
 
       if({{ auth()->user()->can('maps-edit') }}) {
@@ -276,7 +298,7 @@
   }
 
   function editAction() {
-    const address = `Kec.${$('#villages option:selected').text()}-Kel.${$('#districts option:selected').text()}`
+    const address = `Kel.${$('#villages option:selected').text()}-Kec.${$('#districts option:selected').text()}`
     let result = '';
     if($('#locations').val()) {
         result = $('#locations').val() + ', ' + address;

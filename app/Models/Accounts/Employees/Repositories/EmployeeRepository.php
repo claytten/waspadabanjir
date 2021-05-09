@@ -37,12 +37,14 @@ class EmployeeRepository extends BaseRepository implements EmployeeRepositoryInt
     public function createEmployee(array $data): Employee
     {
         try {
-            if(substr($data['phone'],0,3) == '+62') {
-                $data['phone'] = preg_replace("/^0/", "+62", $data['phone']);
-            } else if(substr($data['phone'],0,1) == '0') {
-                $data['phone'] = preg_replace("/^0/", "+62", $data['phone']);
-            } else {
-                $data['phone'] = "+62".$data['phone'];
+            if(isset($data['phone'])) {
+                if(substr($data['phone'],0,3) == '+62') {
+                    $data['phone'] = preg_replace("/^0/", "+62", $data['phone']);
+                } else if(substr($data['phone'],0,1) == '0') {
+                    $data['phone'] = preg_replace("/^0/", "+62", $data['phone']);
+                } else {
+                    $data['phone'] = "+62".$data['phone'];
+                }
             }
             return $this->create($data);
         } catch (QueryException $e) {
@@ -61,12 +63,14 @@ class EmployeeRepository extends BaseRepository implements EmployeeRepositoryInt
     public function updateEmployee(array $params) : bool
     {
         try {
-            if(substr($params['phone'],0,3) == '+62') {
-                $params['phone'] = preg_replace("/^0/", "+62", $params['phone']);
-            } else if(substr($params['phone'],0,1) == '0') {
-                $params['phone'] = preg_replace("/^0/", "+62", $params['phone']);
-            } else {
-                $params['phone'] = "+62".$params['phone'];
+            if(isset($params['phone'])) {
+                if(substr($params['phone'],0,3) == '+62') {
+                    $params['phone'] = preg_replace("/^0/", "+62", $params['phone']);
+                } else if(substr($params['phone'],0,1) == '0') {
+                    $params['phone'] = preg_replace("/^0/", "+62", $params['phone']);
+                } else {
+                    $params['phone'] = "+62".$params['phone'];
+                }
             }
             return $this->model->update($params);
         } catch (QueryException $e) {

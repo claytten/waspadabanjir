@@ -18,6 +18,10 @@ use App\Models\Address\Villages\Repositories\Interfaces\VillageRepositoryInterfa
 use App\Models\Address\Villages\Repositories\VillageRepository;
 use App\Models\Maps\Fields\Repositories\Interfaces\FieldRepositoryInterface;
 use App\Models\Maps\Fields\Repositories\FieldRepository;
+use App\Models\Subscribers\Repositories\Interfaces\SubscribeRepositoryInterface;
+use App\Models\Subscribers\Repositories\SubscribeRepository;
+use App\Models\Reports\Repositories\Interfaces\ReportRepositoryInterface;
+use App\Models\Reports\Repositories\ReportRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -58,6 +62,14 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             FieldRepositoryInterface::class,
             FieldRepository::class
+        );
+        $this->app->bind(
+            SubscribeRepositoryInterface::class,
+            SubscribeRepository::class
+        );
+        $this->app->bind(
+            ReportRepositoryInterface::class,
+            ReportRepository::class
         );
     }
 

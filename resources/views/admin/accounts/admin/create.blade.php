@@ -27,7 +27,7 @@
 
 
 @section('content_body')
-<form action="{{ route('admin.admin.store') }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('admin.admin.store') }}" method="POST" enctype="multipart/form-data" id="adminCreate">
   {{ csrf_field() }}
   <input type="hidden" name="address_id" id="village_id" readonly>
   <div class="row">
@@ -253,23 +253,20 @@
 </form>
 
 {{-- modal change address --}}
-<div class="modal fade" id="modal-change-address" tabindex="-1" role="dialog" aria-labelledby="modal-change-address" aria-hidden="true">
+<div class="modal fade" id="modal-change-address" tabindex="-1" role="dialog" aria-labelledby="modal-add-address" aria-hidden="true">
   <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">>
     <div class="modal-content">
       <div class="modal-body p-0">
         <div class="card bg-secondary border-0 mb-0">
           <div class="card-body px-lg-5 py-lg-5">
             <div class="text-center text-muted mb-4">
-                <small>Change Address</small>
+                <small>Add Address</small>
             </div>
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
                 <label class="form-control-label" for="input-address">Province</label>
-                <select onchange="searchProvince()" id="provinces" class="form-control @error('provinces') is-invalid @enderror" data-toggle="select">
-                  <option value=""></option>
-                  @foreach($provinces as $item)
-                      <option value="{{$item['id']}}">{{$item['name']}}</option>
-                  @endforeach
+                <select onchange="searchProvince()" id="provinces" class="form-control" data-toggle="select">
+                  <option value="" disabled selected>--Select Province--</option>
                 </select>
               </div>
             </div>
@@ -277,8 +274,8 @@
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
                 <label class="form-control-label" for="input-address">Regency</label>
-                <select onchange="searchRegency()" id="regencies" class="form-control @error('regencies') is-invalid @enderror" data-toggle="select">
-                  <option value=""></option>
+                <select onchange="searchRegency()" id="regencies" class="form-control" data-toggle="select">
+                  <option value="" disabled selected>--Select Regency--</option>
                 </select>
               </div>
             </div>
@@ -286,8 +283,8 @@
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
                 <label class="form-control-label" for="input-address">District</label>
-                <select onchange="searchDistrict()" id="districts" class="form-control @error('districts') is-invalid @enderror" data-toggle="select">
-                  <option value=""></option>
+                <select onchange="searchDistrict()" id="districts" class="form-control" data-toggle="select">
+                  <option value="" disabled selected>--Select District--</option>
                 </select>
               </div>
             </div>
@@ -295,14 +292,14 @@
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
                 <label class="form-control-label" for="input-address">Village</label>
-                <select id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select">
-                  <option value=""></option>
+                <select id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select" onchange="searchVillage()">
+                  <option value="" disabled selected>--Select Village--</option>
                 </select>
               </div>
             </div>
             
             <div class="text-center">
-              <button type="button" onclick="editAction()" class="btn btn-primary my-4">Submit</button>
+              <button type="button" onclick="addAddress()" class="btn btn-primary my-4 btn-add-address">Submit</button>
             </div>
           </div>
         </div>
@@ -326,17 +323,27 @@
     $('#position').select2({
         'placeholder': 'Select Position',
     });
-    $('#provinces').select2({
-        'placeholder': 'Select Province',
-    });
-    $('#regencies').select2({
-        'placeholder': 'Select Regency',
-    });
-    $('#districts').select2({
-        'placeholder': 'Select District',
-    });
-    $('#villages').select2({
-        'placeholder': 'Select Village',
+    $("#provinces, #regencies, #districts, #villages").select2({width: "100%"});
+    $('#regencies, #districts, #villages, .btn-add-address').prop('disabled', true);
+
+    $.ajax({
+      headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      url: "{{ route('api.provinces.index') }}",
+      type : "GET",
+      dataType : "json",
+      success:function(result) {
+        if(result) {
+          $.each(result.data, (key, value) => {
+            $('#provinces').append(`
+              <option value="${value['id']}">${value['name']}
+              </option>`);
+          });
+        } else {
+          console.log("data trouble");
+        }
+      }
     });
   });
 
@@ -380,17 +387,12 @@
   }
   $("#btn-reset").click(function(e){
     e.preventDefault();
-    $("#name").val('');
-    $('#username').val('');
-    $('#phone').val('');
-    $('#email').val('');
-    $('#password').val('');
-    $('#password_confirmation').val('');
-    $('#village_id').val('');
+    $('#adminCreate')[0].reset();
     $('#btn-address').empty().append('Set Address');
+    resetPreview();
   });
 
-  function editAction() {
+  function addAddress() {
     $('#village_id').val('');
     $('#village_id').val( $('#villages').val() );
     const result = `
@@ -404,12 +406,15 @@
   }
 
   function searchProvince() {
-    $('#regencies').empty();
+    $('#regencies, #districts, #villages').empty();
+    $('#regencies').append('<option value="" disabled selected>--Select Regency--</option>');
+    $('#districts').append('<option value="" disabled selected>--Select District--</option>');
+    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       },
-      url: "{{ route('admin.regencies.index') }}?provinces=" + $('#provinces').val(),
+      url: "{{ route('api.regencies.index') }}?provinces=" + $('#provinces').val(),
       type : "GET",
       dataType : "json",
       success:function(result) {
@@ -419,6 +424,8 @@
               <option value="${value['id']}">${value['name']}
               </option>`);
           });
+          $('#regencies').prop('disabled', false);
+          $('#districts, #villages, .btn-add-address').prop('disabled', true);
         } else {
           console.log("data trouble");
         }
@@ -427,12 +434,14 @@
   }
 
   function searchRegency() {
-    $('#districts').empty();
+    $('#districts, #villages').empty();
+    $('#districts').append('<option value="" disabled selected>--Select District--</option>');
+    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       },
-      url: "{{ route('admin.districts.index') }}?regencies=" + $('#regencies').val(),
+      url: "{{ route('api.districts.index') }}?regencies=" + $('#regencies').val(),
       type : "GET",
       dataType : "json",
       success:function(result) {
@@ -440,6 +449,8 @@
           $.each(result.data, (key, value) => {
             $('#districts').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
           });
+          $('#districts').prop('disabled', false);
+          $('#villages, .btn-add-address').prop('disabled', true);
         } else {
           console.log("data trouble");
         }
@@ -449,11 +460,12 @@
 
   function searchDistrict() {
     $('#villages').empty();
+    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       },
-      url: "{{ route('admin.villages.index') }}?districts=" + $('#districts').val(),
+      url: "{{ route('api.villages.index') }}?districts=" + $('#districts').val(),
       type : "GET",
       dataType : "json",
       success:function(result) {
@@ -461,11 +473,17 @@
           $.each(result.data, (key, value) => {
             $('#villages').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
           });
+          $('#villages').prop('disabled', false);
+          $('.btn-add-address').prop('disabled', true);
         } else {
           console.log("data trouble");
         }
       }
     })
+  }
+  
+  function searchVillage() {
+    $('.btn-add-address').prop('disabled', false);
   }
 </script>
     

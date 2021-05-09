@@ -247,54 +247,48 @@
       <div class="modal-body p-0">
         <div class="card bg-secondary border-0 mb-0">
           <div class="card-body px-lg-5 py-lg-5">
-              <div class="text-center text-muted mb-4">
-                  <small>Change Address</small>
+            <div class="text-center text-muted mb-4">
+                <small>Change Address</small>
+            </div>
+            <div class="form-group">
+              <div class="input-group input-group-merge input-group-alternative">
+                <label class="form-control-label" for="input-address">Province</label>
+                <select onchange="searchProvince()" id="provinces" class="form-control" data-toggle="select">
+                  <option value="" disabled selected>--Select Province--</option>
+                </select>
               </div>
-              <div class="form-group">
-                <div class="input-group input-group-merge input-group-alternative">
-                  <label class="form-control-label" for="input-address">Province</label>
-                  <select onchange="searchProvince()" id="provinces" class="form-control @error('provinces') is-invalid @enderror" data-toggle="select">
-                    <option value=""></option>
-                    @foreach($provinces as $item)
-                        <option value="{{$item['id']}}" {{ ($item['id'] === $admin->village->district->regency->province->id) ? 'selected' : ''}}>{{$item['name']}}</option>
-                    @endforeach
-                  </select>
-                </div>
-              </div>
+            </div>
 
-              <div class="form-group">
-                <div class="input-group input-group-merge input-group-alternative">
-                  <label class="form-control-label" for="input-address">Regency</label>
-                  <select onchange="searchRegency()" id="regencies" class="form-control @error('regencies') is-invalid @enderror" data-toggle="select">
-                    <option value=""></option>
-                    <option value="{{$admin->village->district->regency->id}}" selected>{{$admin->village->district->regency->name}}</option>
-                  </select>
-                </div>
+            <div class="form-group">
+              <div class="input-group input-group-merge input-group-alternative">
+                <label class="form-control-label" for="input-address">Regency</label>
+                <select onchange="searchRegency()" id="regencies" class="form-control" data-toggle="select">
+                  <option value="" disabled selected>--Select Regency--</option>
+                </select>
               </div>
+            </div>
 
-              <div class="form-group">
-                <div class="input-group input-group-merge input-group-alternative">
-                  <label class="form-control-label" for="input-address">District</label>
-                  <select onchange="searchDistrict()" id="districts" class="form-control @error('districts') is-invalid @enderror" data-toggle="select">
-                    <option value=""></option>
-                    <option value="{{$admin->village->district->id}}" selected>{{$admin->village->district->name}}</option>
-                  </select>
-                </div>
+            <div class="form-group">
+              <div class="input-group input-group-merge input-group-alternative">
+                <label class="form-control-label" for="input-address">District</label>
+                <select onchange="searchDistrict()" id="districts" class="form-control" data-toggle="select">
+                  <option value="" disabled selected>--Select District--</option>
+                </select>
               </div>
+            </div>
 
-              <div class="form-group">
-                <div class="input-group input-group-merge input-group-alternative">
-                  <label class="form-control-label" for="input-address">Village</label>
-                  <select name="village_id" id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select">
-                    <option value=""></option>
-                    <option value="{{$admin->village->id}}" selected>{{$admin->village->name}}</option>
-                  </select>
-                </div>
+            <div class="form-group">
+              <div class="input-group input-group-merge input-group-alternative">
+                <label class="form-control-label" for="input-address">Village</label>
+                <select id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select" onchange="searchVillage()">
+                  <option value="" disabled selected>--Select Village--</option>
+                </select>
               </div>
-              
-              <div class="text-center">
-                <button type="button" onclick="editAction('{{auth()->user()->id}}', '{{auth()->user()->role}}')" class="btn btn-primary my-4">Submit</button>
-              </div>
+            </div>
+            
+            <div class="text-center">
+              <button type="button" onclick="addAddress('{{auth()->user()->id}}', '{{auth()->user()->role}}')" class="btn btn-primary my-4 btn-add-address">Submit</button>
+            </div>
           </div>
         </div>
       </div>
@@ -355,18 +349,27 @@
 <script>
   "use strict"
   $(document).ready(function() {
-      $('#province_id').select2({
-          'placeholder': 'Select Province',
-      });
-      $('#regency_id').select2({
-          'placeholder': 'Select Regency',
-      });
-      $('#district_id').select2({
-          'placeholder': 'Select District',
-      });
-      $('#village_id').select2({
-          'placeholder': 'Select Village',
-      });
+    $("#provinces, #regencies, #districts, #villages").select2({width: "100%"});
+    $('#regencies, #districts, #villages, .btn-add-address').prop('disabled', true);
+    $.ajax({
+      headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      url: "{{ route('api.provinces.index') }}",
+      type : "GET",
+      dataType : "json",
+      success:function(result) {
+        if(result) {
+          $.each(result.data, (key, value) => {
+            $('#provinces').append(`
+              <option value="${value['id']}">${value['name']}
+              </option>`);
+          });
+        } else {
+          console.log("data trouble");
+        }
+      }
+    });
   });
   // Add More Image
   function previewImage(input){
@@ -399,7 +402,7 @@
       $(preview_form).val('');
   }
 
-  function editAction(userId, userRole) {
+  function addAddress(userId, userRole) {
     const village_id = $('#villages').val();
     let link = '{{ route('admin.update.address.profile', [':id', ':role']) }}';
     link = link.replace(':id', userId);
@@ -418,6 +421,7 @@
           console.log(data, data['address_name'])
           $('#btn-address').empty().append(`${data['address_name']}, ${data['district_name']}, ${data['regency_name']}, ${data['province_name']}`);
           $('#regencies, #districts, #villages').empty();
+          $('#regencies, #districts, #villages, .btn-add-address').prop('disabled', true);
           $('#regencies').append(`<option value="${data['regency_id']}" selected>${data['regency_name']}</option>`);
           $('#districts').append(`<option value="${data['district_id']}" selected>${data['district_name']}</option>`);
           $('#villages').append(`<option value="${data['address_id']}" selected>${data['address_name']}</option>`);
@@ -429,12 +433,15 @@
   }
 
   function searchProvince() {
-    $('#regencies').empty();
+    $('#regencies, #districts, #villages').empty();
+    $('#regencies').append('<option value="" disabled selected>--Select Regency--</option>');
+    $('#districts').append('<option value="" disabled selected>--Select District--</option>');
+    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       },
-      url: "{{ route('admin.regencies.index') }}?provinces=" + $('#provinces').val(),
+      url: "{{ route('api.regencies.index') }}?provinces=" + $('#provinces').val(),
       type : "GET",
       dataType : "json",
       success:function(result) {
@@ -444,6 +451,8 @@
               <option value="${value['id']}">${value['name']}
               </option>`);
           });
+          $('#regencies').prop('disabled', false);
+          $('#districts, #villages, .btn-add-address').prop('disabled', true);
         } else {
           console.log("data trouble");
         }
@@ -452,12 +461,14 @@
   }
 
   function searchRegency() {
-    $('#districts').empty();
+    $('#districts, #villages').empty();
+    $('#districts').append('<option value="" disabled selected>--Select District--</option>');
+    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       },
-      url: "{{ route('admin.districts.index') }}?regencies=" + $('#regencies').val(),
+      url: "{{ route('api.districts.index') }}?regencies=" + $('#regencies').val(),
       type : "GET",
       dataType : "json",
       success:function(result) {
@@ -465,6 +476,8 @@
           $.each(result.data, (key, value) => {
             $('#districts').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
           });
+          $('#districts').prop('disabled', false);
+          $('#villages, .btn-add-address').prop('disabled', true);
         } else {
           console.log("data trouble");
         }
@@ -474,11 +487,12 @@
 
   function searchDistrict() {
     $('#villages').empty();
+    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       },
-      url: "{{ route('admin.villages.index') }}?districts=" + $('#districts').val(),
+      url: "{{ route('api.villages.index') }}?districts=" + $('#districts').val(),
       type : "GET",
       dataType : "json",
       success:function(result) {
@@ -486,11 +500,17 @@
           $.each(result.data, (key, value) => {
             $('#villages').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
           });
+          $('#villages').prop('disabled', false);
+          $('.btn-add-address').prop('disabled', true);
         } else {
           console.log("data trouble");
         }
       }
     })
+  }
+  
+  function searchVillage() {
+    $('.btn-add-address').prop('disabled', false);
   }
 </script>
     

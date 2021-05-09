@@ -1,0 +1,211 @@
+html { height: 100% }
+body { height: 100%; margin: 0; }
+#mapid { width: 100%; height: 100%; }
+.leaflet-popup-content table tr {
+  height: 30px;
+}
+.leaflet-bar {
+  background-color: #fff !important;
+  border: none !important;
+  border-bottom: 1px solid #ccc !important;
+  line-height: 26px;
+  display: block;
+  color: black;
+}
+input:not([type]) {
+  height: 26px !important;
+}
+.wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index:1000;
+}
+
+.text {
+  color: #fbae17;
+  display: inline-block;
+  margin-left: 5px;
+}
+
+.bounceball {
+  position: relative;
+  display: inline-block;
+  height: 37px;
+  width: 15px;
+}
+.bounceball:before {
+  position: absolute;
+  content: "";
+  display: block;
+  top: 0;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #fbae17;
+  transform-origin: 50%;
+  -webkit-animation: bounce 500ms alternate infinite ease;
+          animation: bounce 500ms alternate infinite ease;
+}
+
+@-webkit-keyframes bounce {
+  0% {
+    top: 30px;
+    height: 5px;
+    border-radius: 60px 60px 20px 20px;
+    transform: scaleX(2);
+  }
+  35% {
+    height: 15px;
+    border-radius: 50%;
+    transform: scaleX(1);
+  }
+  100% {
+    top: 0;
+  }
+}
+
+@keyframes bounce {
+  0% {
+    top: 30px;
+    height: 5px;
+    border-radius: 60px 60px 20px 20px;
+    transform: scaleX(2);
+  }
+  35% {
+    height: 15px;
+    border-radius: 50%;
+    transform: scaleX(1);
+  }
+  100% {
+    top: 0;
+  }
+}
+
+/* modal widget */
+.select2 .selection .select2-selection--single, .select2-container--default .select2-search--dropdown .select2-search__field {
+  border-width: 0 0 1px 0 !important;
+  border-radius: 0 !important;
+  height: 2.05rem;
+}
+
+.select2-container--default .select2-selection--multiple, .select2-container--default.select2-container--focus .select2-selection--multiple {
+  border-width: 0 0 1px 0 !important;
+  border-radius: 0 !important;
+}
+
+.select2-results__option {
+  color: #26a69a;
+  padding: 8px 16px;
+  font-size: 16px;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: #eee !important;
+  color: #26a69a !important;
+}
+
+.select2-container--default .select2-results__option[aria-selected=true] {
+  background-color: #e1e1e1 !important;
+}
+
+.select2-dropdown {
+  border: none !important;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+}
+
+.select2-container--default .select2-results__option[role=group] .select2-results__group {
+  background-color: #333333;
+  color: #fff;
+}
+
+.select2-container .select2-search--inline .select2-search__field {
+  margin-top: 0 !important;
+}
+
+.select2-container .select2-search--inline .select2-search__field:focus {
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+.select2-container .select2-selection--multiple {
+  min-height: 2.05rem !important;
+}
+
+.select2-container--default.select2-container--disabled .select2-selection--single {
+  background-color: #ddd !important;
+  color: rgba(0,0,0,0.26);
+  border-bottom: 1px dotted rgba(0,0,0,0.26);
+}
+
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=url],
+input[type=time],
+input[type=date],
+input[type=datetime-local],
+input[type=tel],
+input[type=number],
+input[type=search],
+textarea.materialize-textarea {
+&.valid + label::after,
+&.invalid + label::after,
+&:focus.valid + label::after,
+&:focus.invalid + label::after {
+  white-space: pre;
+}
+&.empty {
+  &:not(:focus).valid + label::after,
+  &:not(:focus).invalid + label::after {
+    top: 2.8rem;
+
+  } 
+}
+}
+
+.tap-target .tap-target-content {
+  padding-left: 90px !important;
+}
+
+/* Media Queries */
+@media only screen and (max-width: 601px) {
+  .header-modal {
+    text-align: left !important;
+  }
+}
+
+@media only screen and (min-width : 601px) and (max-width : 1260px) {
+  .toast {
+    width: 100%;
+    border-radius: 0;
+  } 
+}
+
+@media only screen and (min-width : 1261px) {
+  .toast {
+    width: 100%;
+    border-radius: 0; 
+  } 
+}
+
+@media only screen and (min-width : 601px) and (max-width : 1260px) {
+  #toast-container {
+    min-width: 100%;
+    bottom: 0%;
+    top: 90%;
+    right: 0%;
+    left: 0%;
+  } 
+}
+
+@media only screen and (min-width : 1261px) {
+  #toast-container {
+    min-width: 100%;
+    bottom: 0%;
+    top: 90%;
+    right: 0%;
+    left: 0%; 
+  } 
+}

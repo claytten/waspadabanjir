@@ -11,6 +11,9 @@ use App\Http\Controllers\Admin\Address\RegencyController;
 use App\Http\Controllers\Admin\Address\DistrictController;
 use App\Http\Controllers\Admin\Address\VillageController;
 use App\Http\Controllers\Admin\Maps\MapController;
+use App\Http\Controllers\Admin\Reports\ReportController;
+use App\Http\Controllers\Admin\Subscribers\SubscribeController;
+use App\Http\Controllers\Front\LandingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,10 +61,21 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth'], 'as' => 'admin.' ],
     Route::get('/maps/view', [MapController::class, 'indexView'])->name('map.view');
     Route::delete('/maps/image/{id}/destroy', [MapController::class, 'destroyImage'])->name('maps.image.destroy');
     Route::resource('/maps', MapController::class, ['except' => ['create']]);
+
+    //Subscribers
+    Route::resource('/subscribers', SubscribeController::class);
+
+    Route::resource('/reports', ReportController::class);
 });
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+
+/**
+ * User routes
+ */
+Route::get('/', [LandingController::class, 'index'])->name('home');
+Route::post('/subscribe/store', [LandingController::class, 'store'])->name('home.store');
+Route::get('/maps/{id}/show', [LandingController::class, 'show'])->name('maps.show');
+Route::get('/report', [LandingController::class, 'formReport'])->name('form.report');
+Route::post('/report', [LandingController::class, 'storeReport'])->name('form.report.store');
 
 

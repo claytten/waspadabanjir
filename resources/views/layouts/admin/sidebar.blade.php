@@ -39,7 +39,7 @@
 
           @can('reports-list')
             <li class="nav-item">
-              <a class="nav-link" href="#">
+              <a class="nav-link" href="{{ route('admin.reports.index')}}">
                 <i class="ni ni-chat-round text-orange"></i>
                 <span class="nav-link-text">Reports</span>
               </a>
