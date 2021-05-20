@@ -42,10 +42,11 @@
         <div class="col-lg-12">
           <div class="card-header">
             <div class="row align-items-center">
-              <div class="col-lg-8 col-md-6">
+              <div class="col-lg-6 col-md-4">
                 <h3 class="mb-0" id="form-map-title">Edit {{ ucwords($map->name) }} Map</h3>
               </div>
-              <div class="col-lg-4 col-md-6 d-flex justify-content-end">
+              <div class="col-lg-6 col-md-8 d-flex justify-content-end">
+                <a class="btn btn-info" href="{{ route('admin.map.view') }}">Back</a>
                 <button type="button" class="btn btn-danger" onclick="deleteArea('{{ $map->id }}')">Delete</button>
                 <button type="button" class="btn btn-warning" onclick="resetForm()" >Reset</button>
                 <button type="submit" class="btn btn-primary" id="btn-submit" >Submit</button>
@@ -65,7 +66,10 @@
                         <div class="input-group-prepend">
                           <span class="input-group-text"><i class="fas fa-chart-area"></i></span>
                         </div>
-                        <input class="form-control @error('name') is-invalid @enderror" placeholder="Place Name" type="text" name="name" id="name" value="{{ $map->name }}">
+                        <input class="form-control @error('name') is-invalid @enderror" placeholder="Place Name" type="text" name="name" id="name" value="{{ $map->name }}" readonly="readonly">
+                        <div class="input-group-append">
+                          <span class="input-group-text" data-toggle="modal" data-target="#modal-add-district"><i class="fas fa-plus"></i></span>
+                        </div>
                         @error('name')
                           <div class="invalid-feedback">
                               {{ $message }}
@@ -288,43 +292,63 @@
   </div>
 </form>
 
-{{-- Modal set Address --}}
-<div class="modal fade" id="modal-add-address" tabindex="-1" role="dialog" aria-labelledby="modal-add-address" aria-hidden="true">
-    <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">>
-      <div class="modal-content">
-        <div class="modal-body p-0">
-          <div class="card bg-secondary border-0 mb-0">
-            <div class="card-body px-lg-5 py-lg-5">
-                <div class="text-center text-muted mb-4">
-                    <small>Add Address</small>
+{{-- modal set district name  --}}
+<div class="modal fade" id="modal-add-district" tabindex="-1" role="dialog" aria-labelledby="modal-add-district" aria-hidden="true">
+  <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">>
+    <div class="modal-content">
+      <div class="modal-body p-0">
+        <div class="card bg-secondary border-0 mb-0">
+          <div class="card-body px-lg-5 py-lg-5">
+              <div class="text-center text-muted mb-4">
+                  <small>Add Address</small>
+              </div>
+              <div class="form-group">
+                <div class="input-group input-group-merge input-group-alternative">
+                  <label class="form-control-label" for="input-address">District</label>
+                  <select onchange="searchDistrict()" id="districts" class="form-control" data-toggle="select">
+                    <option value="" disabled selected>--Select District--</option>
+                  </select>
                 </div>
-                <div class="form-group">
-                  <div class="input-group input-group-merge input-group-alternative">
-                    <label class="form-control-label" for="input-address">District</label>
-                    <select onchange="searchDistrict()" id="districts" class="form-control" data-toggle="select">
-                      <option value=""></option>
-                    </select>
-                  </div>
-                </div>
-  
-                <div class="form-group">
-                  <div class="input-group input-group-merge input-group-alternative">
-                    <label class="form-control-label" for="input-address">Village</label>
-                    <select name="village_id" id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select">
-                      <option value=""></option>
-                    </select>
-                  </div>
-                </div>
-                
-                <div class="text-center">
-                  <button type="button" onclick="editAction()" class="btn btn-primary my-4">Submit</button>
-                </div>
-            </div>
+              </div>
+              <div class="text-center">
+                <button type="button" onclick="editAction('district')" class="btn btn-primary my-4">Submit</button>
+              </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
+
+{{-- Modal set Address --}}
+<div class="modal fade" id="modal-add-address" tabindex="-1" role="dialog" aria-labelledby="modal-add-address" aria-hidden="true">
+  <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">>
+    <div class="modal-content">
+      <div class="modal-body p-0">
+        <div class="card bg-secondary border-0 mb-0">
+          <div class="card-body px-lg-5 py-lg-5">
+              <div class="text-center text-muted mb-4">
+                  <small>Add Address</small>
+              </div>
+
+              <div class="form-group">
+                <div class="input-group input-group-merge input-group-alternative">
+                  <label class="form-control-label" for="input-address">Village</label>
+                  <select name="village_id" id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select">
+                    <option value="" disabled selected>--Select Village--</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="text-center">
+                <button type="button" onclick="editAction('village')" class="btn btn-primary my-4 btn-submit-action">Submit</button>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 @section('plugins_js')
@@ -396,26 +420,31 @@
     dataType : "json",
     success:function(result) {
         if(result) {
-        $.each(result.data, (key, value) => {
-            $('#villages').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
-        });
+          $.each(result.data, (key, value) => {
+              $('#villages').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
+          });
         } else {
-        console.log("data trouble");
+          console.log("data trouble");
         }
     }
     })
   }
 
-  function editAction() {
-    const address = `Kec.${$('#villages option:selected').text()}-Kel.${$('#districts option:selected').text()}`
-    let result = '';
-    if($('#locations').val()) {
-        result = $('#locations').val() + ', ' + address;
+  function editAction(input) {
+    if(input === 'district') {
+      $('#name').val('').val($('#districts option:selected').text());
+      $('#locations').val('');
     } else {
-        result += address;
-    }
+      const address = `Kelurahan ${$('#villages option:selected').text()}`
+      let result = '';
+      if($('#locations').val()) {
+          result = $('#locations').val() + ', ' + address;
+      } else {
+          result += address;
+      }
 
-    $('#locations').val(result);
+      $('#locations').val(result);
+    }
   }
 
   function deleteImage(id) {

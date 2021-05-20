@@ -37,6 +37,7 @@
               <h3 class="mb-0" id="form-map-title">Show {{ ucwords($map->name) }} Map</h3>
             </div>
             <div class="col-lg-4 col-md-6 d-flex justify-content-end">
+              <a class="btn btn-info" href="{{ route('admin.map.view') }}">Back</a>
               <a href="{{ route('admin.maps.edit', $map->id)}}">
                 <button type="button" class="btn btn-warning">Edit</button>
               </a>
@@ -52,7 +53,7 @@
               <div class="row">
                 <div class="col-md-12">
                   <div class="form-group row">
-                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Name</label>
+                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">District Name</label>
                     <div class="col-md-10">
                       <input class="form-control" name="name" type="text" value="{{ $map->name }}" id="name" disabled>
                     </div>
@@ -84,7 +85,7 @@
                 </div>
                 <div class="col-md-12">
                   <div class="form-group row">
-                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Locations</label>
+                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Detail Location</label>
                     <div class="col-md-10">
                       <input class="form-control" name="locations" type="text" value="{{ $map->locations }}" id="elocations" disabled>
                     </div>

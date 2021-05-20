@@ -69,7 +69,7 @@ body {
                 </div>
                 <div class="row">
                   <div class="input-field col s6">
-                    <h6>Nama Area</h6>
+                    <h6>Nama Daerah (Kecamatan)</h6>
                   </div>
                   <div class="input-field col s6">
                     <h6>: {{ $map->name }}</h6>
@@ -101,7 +101,7 @@ body {
                 </div>
                 <div class="row">
                   <div class="input-field col s6">
-                    <h6>Lokasi Banjir</h6>
+                    <h6>Detail Lokasi Banjir</h6>
                   </div>
                   <div class="input-field col s6">
                     <h6>: {{ $map->locations }}</h6>

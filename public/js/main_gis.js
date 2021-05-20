@@ -44,14 +44,6 @@ let color = undefined;
 let firstPoint = L.circleMarker();
 let drawingState = false;
 
-// Searching Place
-const searchControl = new L.esri.Controls.Geosearch().addTo(maps);
-const results = new L.LayerGroup().addTo(maps);
-searchControl.on('results', function(data){
-  results.clearLayers();
-});
-setTimeout(function(){$('.pointer').fadeOut('slow');},3400);
-
 // Start Drawing Button
 const startDrawingButton = L.easyButton({
   id: 'start-drawing-button',
@@ -136,6 +128,14 @@ const finishButton = L.easyButton({
 });
 finishButton.addTo(maps);
 finishButton.disable();
+
+// Searching Place
+const searchControl = new L.esri.Controls.Geosearch().addTo(maps);
+const results = new L.LayerGroup().addTo(maps);
+searchControl.on('results', function(data){
+  results.clearLayers();
+});
+setTimeout(function(){$('.pointer').fadeOut('slow');},3400);
 
 const cancelPolyline = () => {
   if(polyline === undefined) return;
@@ -280,9 +280,12 @@ const drawArea = () => {
                     <div class="form-group">
                       <div class="input-group input-group-merge">
                         <div class="input-group-prepend">
-                          <span class="input-group-text"><i class="fas fa-chart-area"></i></span>
+                          <span class="input-group-text" disabled><i class="fas fa-chart-area"></i></span>
                         </div>
-                        <input class="form-control" placeholder="Place Name" type="text" name="name" id="area_name">
+                        <input class="form-control" placeholder="District Name" type="text" name="name" id="area_name" readonly="readonly">
+                        <div class="input-group-append">
+                          <span class="input-group-text" data-toggle="modal" data-target="#modal-add-district"><i class="fas fa-plus"></i></span>
+                        </div>
                       </div>
                     </div>
                   </div>

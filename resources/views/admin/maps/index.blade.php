@@ -78,8 +78,8 @@
     </div>
 </div>
 
-{{-- Modal set Address --}}
-<div class="modal fade" id="modal-add-address" tabindex="-1" role="dialog" aria-labelledby="modal-add-address" aria-hidden="true">
+{{-- modal set district name  --}}
+<div class="modal fade" id="modal-add-district" tabindex="-1" role="dialog" aria-labelledby="modal-add-district" aria-hidden="true">
   <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">>
     <div class="modal-content">
       <div class="modal-body p-0">
@@ -90,42 +90,44 @@
               </div>
               <div class="form-group">
                 <div class="input-group input-group-merge input-group-alternative">
-                  <label class="form-control-label" for="input-address">Province</label>
-                  <select onchange="searchProvince()" id="provinces" class="form-control" data-toggle="select">
-                    <option value=""></option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <div class="input-group input-group-merge input-group-alternative">
-                  <label class="form-control-label" for="input-address">Regency</label>
-                  <select onchange="searchRegency()" id="regencies" class="form-control" data-toggle="select">
-                    <option value=""></option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <div class="input-group input-group-merge input-group-alternative">
                   <label class="form-control-label" for="input-address">District</label>
                   <select onchange="searchDistrict()" id="districts" class="form-control" data-toggle="select">
-                    <option value=""></option>
+                    <option value="" disabled selected>--Select District--</option>
                   </select>
                 </div>
+              </div>
+              <div class="text-center">
+                <button type="button" onclick="editAction('district')" class="btn btn-primary my-4">Submit</button>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{-- Modal set Address --}}
+<div class="modal fade" id="modal-add-address" tabindex="-1" role="dialog" aria-labelledby="modal-add-address" aria-hidden="true">
+  <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">>
+    <div class="modal-content">
+      <div class="modal-body p-0">
+        <div class="card bg-secondary border-0 mb-0">
+          <div class="card-body px-lg-5 py-lg-5">
+              <div class="text-center text-muted mb-4">
+                  <small>Add Address</small>
               </div>
 
               <div class="form-group">
                 <div class="input-group input-group-merge input-group-alternative">
                   <label class="form-control-label" for="input-address">Village</label>
-                  <select name="village_id" id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select">
-                    <option value=""></option>
+                  <select name="village_id" id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select" onchange="searchVillage()">
+                    <option value="" disabled selected>--Select Village--</option>
                   </select>
                 </div>
               </div>
               
               <div class="text-center">
-                <button type="button" onclick="editAction()" class="btn btn-primary my-4">Submit</button>
+                <button type="button" onclick="editAction('village')" class="btn btn-primary my-4 btn-submit-action">Submit</button>
               </div>
           </div>
         </div>
@@ -156,12 +158,8 @@
 <script>
   "use strict"
   $(document).ready(function() {
-    $('#districts').select2({
-        'placeholder': 'Select District',
-    });
-    $('#villages').select2({
-        'placeholder': 'Select Village',
-    });
+    $('#districts, #villages').select2({width: "100%"});
+    $('#villages, .btn-submit-action').prop('disabled', true);
     $('#mapsLayout').hide();
 
     $('#districts').empty();
@@ -230,7 +228,7 @@
     return `
       <table>
         <tr>
-          <th>Name</th>
+          <th>District Name</th>
           <td>: ${field.name}</td>
         </tr>
         <tr>
@@ -238,7 +236,7 @@
           <td>: ${field.date}, ${field.time}</td>
         </tr>
         <tr>
-          <th>Locations</th>
+          <th>Detail Location</th>
           <td>: ${field.locations}</td>
         </tr>
         <tr>
@@ -278,6 +276,7 @@
 
   function searchDistrict() {
     $('#villages').empty();
+    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -290,6 +289,8 @@
           $.each(result.data, (key, value) => {
               $('#villages').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
           });
+          $('#villages').prop('disabled', false);
+          $('.btn-submit-action').prop('disabled', true);
           } else {
           console.log("data trouble");
           }
@@ -297,16 +298,24 @@
     })
   }
 
-  function editAction() {
-    const address = `Kel.${$('#villages option:selected').text()}-Kec.${$('#districts option:selected').text()}`
-    let result = '';
-    if($('#locations').val()) {
-        result = $('#locations').val() + ', ' + address;
-    } else {
-        result += address;
-    }
+  function searchVillage() {
+    $('.btn-submit-action').prop('disabled', false);
+  }
 
-    $('#locations').val(result);
+  function editAction(input) {
+    if(input === 'district') {
+      $('#area_name').val('').val($('#districts option:selected').text());
+    } else {
+      const address = `Kelurahan ${$('#villages option:selected').text()}`
+      let result = '';
+      if($('#locations').val()) {
+          result = $('#locations').val() + ', ' + address;
+      } else {
+          result += address;
+      }
+
+      $('#locations').val(result);
+    }
   }
 
   function resetForm() {

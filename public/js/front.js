@@ -72,7 +72,7 @@ const getPopupContent = (field) => {
   return `
       <table>
       <tr>
-          <th>Nama Daerah</th>
+          <th>Nama Daerah (Kecamatan)</th>
           <td>: ${field.name}</td>
       </tr>
       <tr>
@@ -80,7 +80,7 @@ const getPopupContent = (field) => {
           <td>: ${field.date}, ${field.time}</td>
       </tr>
       <tr>
-          <th>Lokasi</th>
+          <th>Detail Lokasi</th>
           <td>: ${field.locations}</td>
       </tr>
       <tr>
