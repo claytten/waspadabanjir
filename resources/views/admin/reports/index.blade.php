@@ -53,7 +53,13 @@
                     <tr id="rows_{{ $item->id }}">
                       <th>{{ $index +1 }}</th>
                       <td>{{ ucwords($item->name) }}</td>
-                      <td>{{ $item->report_type }}</td>
+                      @if($item->report_type === 'report')
+                        <td>Laporan Banjir</td>
+                      @elseif ($item->report_type === 'suggest')
+                        <td>Kritik & Saran</td>
+                      @else
+                        <td>Pertanyaan</td>
+                      @endif
                       @if ($item->status)
                         <td><button type="button" class="btn btn-success btn-sm" onclick="changeStatus('{{$item->id}}', '{{$index}}')">Verified</button></td>
                       @else
@@ -175,10 +181,18 @@
             showConfirmButton: false,
             timer: 1500
           }).then(() => {
+            let reportResult = '';
+            if(result.data['report_type'] === 'report') {
+              reportResult = 'Laporan Banjir';
+            } else if(result.data['report_type'] === 'suggest') {
+              reportResult = 'Kritik & Saran';
+            } else {
+              reportResult = 'Pertanyaan'
+            }
             const updateData = [
               no,
               result.data['name'],
-              result.data['report_type'],
+              reportResult,
               '<button type="button" class="btn btn-'+ (status === 1 ? 'success' : 'danger')+' btn-sm" onclick="changeStatus('+id+', '+no+')">'+ (status === 1 ? 'Verified' : 'Non-Verified') +'</button>',
               addActionOption(id),
             ];

@@ -93,6 +93,18 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
     }
 
     /**
+     * Find all field filtered by name address
+     * 
+     * @param string $address
+     * 
+     * @return collection or null
+     */
+    public function findFieldByAddress(string $address)
+    {
+        return $this->model->where('name', 'LIKE', "%{$address}%")->get();
+    }
+
+    /**
      * Update field
      *
      * @param array $params
@@ -153,5 +165,32 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
     public function deleteFile(string $get_data)
     {
         return File::delete("storage/{$get_data}");
+    }
+
+    /**
+     * Listing data flood on Klaten Regency
+     * 
+     * @return string
+     */
+    public function listFieldsAndGeo(): string
+    {
+      $fields = $this->listFields()->sortBy('name')->where('status', 1);
+      if(count($fields) > 0) {
+        $message = "--MENU BANJIR TERKINI--\nBerikut daftar banjir terkini di Kabupaten Klaten: \n";
+        $coundColumn = 1;
+        foreach($fields as $item) {
+          $detailFields = route('maps.show', $item['id']);
+          $message .= "\n{$coundColumn}. Daerah Kecamatan {$item['name']}";
+          $message .= "\n  -Waktu & Tgl Kejadian : {$item['time']}, {$item['date']}";
+          $message .= "\n  -Detail Lokasi : {$item['locations']}";
+          $message .= "\n  -Deskripsi : {$item['description']}";
+          $message .= "\n  -Detail informasi peta dan gambar : {$detailFields}\n";
+          $coundColumn += 1;
+        }
+      } else {
+        $message = "Sementara belum ada berita banjir di Kabupaten Klaten.";
+      }
+      
+      return $message;
     }
 }

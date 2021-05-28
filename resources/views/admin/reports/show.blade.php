@@ -53,7 +53,16 @@
                   <div class="form-group row">
                     <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Report Type</label>
                     <div class="col-md-10">
-                      <input class="form-control" name="report_type" type="text" value="{{ ($report->report_type === 'suggest') ? 'Kritik & Saran' : 'Laporan Banjir' }}" id="report_type" disabled>
+                      @php
+                        if($report->report_type === 'report') {
+                          $report->report_type = 'Laporan Banjir';
+                        } else if($report->report_type === 'suggest') {
+                          $report->report_type = 'Kritik & Saran';
+                        } else {
+                          $report->report_type = 'Pertanyaan';
+                        }
+                      @endphp
+                      <input class="form-control" name="report_type" type="text" value="{{ $report->report_type }}" id="report_type" disabled>
                     </div>
                   </div>
                 </div>

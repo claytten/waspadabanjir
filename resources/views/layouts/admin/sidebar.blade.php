@@ -48,7 +48,7 @@
 
           @can('subscriber-list')
             <li class="nav-item">
-              <a class="nav-link" href="#">
+              <a class="nav-link" href="{{ route('admin.subscribers.index')}}">
                 <i class="ni ni-book-bookmark text-info"></i>
                 <span class="nav-link-text">Subscriber</span>
               </a>

@@ -67,56 +67,53 @@ body {
                     <h5>Form Pelaporan</h5>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="input-field col s12">
-                    <input id="name" type="text" class="validate" name="name" required>
-                    <label for="name">Nama Lengkap</label>
-                    <span class="helper-text" data-error="Tolong Masukan Nama Dengan Benar"></span>
+                <form id="reportForm">
+                  <div class="row">
+                    <div class="input-field col s12">
+                      <input id="name" type="text" class="validate" name="name" required>
+                      <label for="name">Nama Lengkap</label>
+                      <span class="helper-text" data-error="Tolong Masukan Nama Dengan Benar"></span>
+                    </div>
                   </div>
-                </div>
-                <div class="row report-input">
-                  <div class="input-field col s12">
-                    <select id="reporting" onchange="reportingAction()" required>
-                      <option value="" disabled selected></option>
-                      <option value="suggest">Kritik & Saran</option>
-                      <option value="report">Laporan Banjir</option>
-                    </select>
-                    <label>Jenis Pelaporan</label>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="input-field col s12">
-                    <textarea id="message" class="materialize-textarea" data-length="120" required></textarea>
-                    <label for="message">Isi Laporan</label>
-                    <span class="helper-text" data-error="Jumlah Karakter yang digunakan melebihi batas"></span>
+                  <div class="row report-input">
+                    <div class="input-field col s12">
+                      <select id="reporting" onchange="reportingAction()" required>
+                        <option value="" disabled selected></option>
+                        <option value="ask">Pertanyaan</option>
+                        <option value="suggest">Kritik & Saran</option>
+                        <option value="report">Laporan Banjir</option>
+                      </select>
+                      <label>Jenis Pelaporan</label>
+                    </div>
                   </div>
                   <div class="row">
                     <div class="input-field col s12">
-                      <button class="btn waves-effect waves-light right" type="button" onclick="submitSubForm()">Send
-                        <i class="material-icons right">send</i>
-                      </button>
-                      <a href="{{ route('home') }}" class="btn waves-effect waves-light red right">Cancel
-                        <i class="material-icons right">cancel</i>
-                      </a>
+                      <textarea id="message" class="materialize-textarea" data-length="120" required></textarea>
+                      <label for="message">Isi Laporan</label>
+                      <span class="helper-text" data-error="Jumlah Karakter yang digunakan melebihi batas"></span>
                     </div>
+                  </div>
+                </form>
+                <div class="row">
+                  <div class="input-field col s12" style="text-align: right">
+                    <a href="{{ route('home') }}" class="btn waves-effect waves-light red">Back
+                      <i class="material-icons left">arrow_back</i>
+                    </a>
+                    <button class="btn waves-effect waves-light orange" type="button" onclick="resetForm()">Reset</button>
+                    <button class="btn waves-effect waves-light" type="button" onclick="submitSubForm()">Send
+                      <i class="material-icons right">send</i>
+                    </button>
                   </div>
                 </div>
               </div>                      
               <div class="col s12 m6">
                 <ul class="collapsible collapsible-accordion" data-collapsible="accordion">
-                  <li>
-                    <div class="collapsible-header"><i class="material-icons right">live_help</i> FAQ</div>
+                  <li class="active">
+                    <div class="collapsible-header active"><i class="material-icons right">live_help</i> FAQ</div>
                     <div class="collapsible-body" style="">
                       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                    </div>
-                  </li>
-                  <li class="active">
-                    <div class="collapsible-header active"><i class="material-icons right">mail</i>Perlu Bantuan?</div>
-                    <div class="collapsible-body" style="display: none;">
-                      <p>We welcome your inquiries at the email address <a mailto="support@geekslabs.com">support@geekslabs.com</a>.We will get in touch with you soon.</p>
-                      <p>As a creative studio we believe no client is too big nor too small to work with us to obtain good advantage.By combining the creativity of artists with the precision of engineers we develop custom solutions that achieve results. <a href="http://themeforest.net/user/geekslabs/portfolio" target="_blank">See our work.</a></p>
                     </div>
                   </li>
                 </ul>
@@ -395,6 +392,11 @@ body {
   
   function searchVillage() {
     $('.btn-add-address').prop('disabled', false);
+  }
+
+  function resetForm() {
+    $('#reportForm')[0].reset();
+    $('.address-input, .phone-input').remove();
   }
 </script>
 @endsection

@@ -21,5 +21,6 @@ class DatabaseSeeder extends Seeder
         $this->call(RegenciesSeederTable::class);
         $this->call(DistrictsSeederTable::class);
         $this->call(VillagesSeederTable::class);
+        // $this->call(SubscribersTable::class);
     }
 }

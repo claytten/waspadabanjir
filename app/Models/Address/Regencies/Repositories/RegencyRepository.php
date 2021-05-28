@@ -116,6 +116,18 @@ class RegencyRepository extends BaseRepository implements RegencyRepositoryInter
     }
 
     /**
+     * Find the regency by name
+     * 
+     * @param string $name
+     * 
+     * @return Regency
+     */
+    public function findRegencyByName(string $name)
+    {
+        return Regency::where('name', 'LIKE', "%{$name}%")->get();
+    }
+
+    /**
      * @param string $text
      * @return mixed
      */

@@ -12,6 +12,10 @@
     <meta name="mobile-web-app-capable" content="yes">
     
     <!-- Icon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/logo/apple-touch-icon.png')}}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo/favicon-32x32.png')}}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/logo/favicon-16x16.png')}}">
+    <link rel="manifest" href="{{ asset('images/logo/site.webmanifest')}}">
 
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">

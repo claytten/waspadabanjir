@@ -19,5 +19,7 @@ interface RegencyRepositoryInterface extends BaseRepositoryInterface
 
     public function findRegencyById(int $id) : Regency;
 
+    public function findRegencyByName(string $name);
+
     public function searchRegency(string $text) : Collection;
 }

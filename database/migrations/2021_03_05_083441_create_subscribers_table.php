@@ -17,7 +17,7 @@ class CreateSubscribersTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('address');
-            $table->string('phone');
+            $table->string('phone')->unique();
             $table->boolean('status')->default(true);
             $table->timestamps();
         });

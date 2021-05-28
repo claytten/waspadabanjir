@@ -15,6 +15,8 @@ interface UserRepositoryInterface extends BaseRepositoryInterface
 
     public function findUserById(int $id) : User;
 
+    public function findUserByUsername($name): User;
+
     public function updateUser(array $params): bool;
 
     public function syncRoles(array $roleIds);
@@ -30,4 +32,6 @@ interface UserRepositoryInterface extends BaseRepositoryInterface
     public function saveCoverImage(UploadedFile $file) : string;
 
     public function deleteFile(string $get_data);
+
+    public function defaultMenu(string $name) : string;
 }

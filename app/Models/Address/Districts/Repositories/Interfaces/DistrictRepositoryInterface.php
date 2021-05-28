@@ -19,4 +19,8 @@ interface DistrictRepositoryInterface extends BaseRepositoryInterface
     public function findDistrictById(int $id) : District;
 
     public function searchDistrict(string $text) : Collection;
+
+    public function listDistrictByRegencies(): string;
+
+    public function createListDistrictMenu(): array;
 }

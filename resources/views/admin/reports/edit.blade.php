@@ -60,6 +60,7 @@
                       <div class="col-md-10">
                         <select name="report_type" onchange="changeType()" id="report_type" class="form-control @error('report_type') is-invalid @enderror" data-toggle="select" required>
                           <option value=""></option>
+                          <option value="ask" {{ ($report->report_type === 'ask') ? 'selected' : '' }}>Pertanyaan</option>
                           <option value="suggest" {{ ($report->report_type === 'suggest') ? 'selected': '' }}>Kritik & Saran</option>
                           <option value="report" {{ ($report->report_type === 'report') ? 'selected': '' }}>Laporan Banjir</option>
                         </select>

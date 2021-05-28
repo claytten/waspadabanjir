@@ -17,4 +17,6 @@ interface ReportRepositoryInterface extends BaseRepositoryInterface
     public function updateReport(array $params): bool;
 
     public function deleteReport() : bool;
+
+    public function storeReportWhatsapp(array $data) : string;
 }

@@ -55,6 +55,7 @@
                       <div class="col-md-10">
                         <select name="report_type" onchange="changeType()" id="report_type" class="form-control @error('report_type') is-invalid @enderror" data-toggle="select" required>
                           <option value=""></option>
+                          <option value="ask">Pertanyaan</option>
                           <option value="suggest">Kritik & Saran</option>
                           <option value="report">Laporan Banjir</option>
                         </select>

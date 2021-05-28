@@ -57,12 +57,13 @@ class RegencyController extends Controller
             $regencies = [];
             if(!empty($request->provinces)) {
                 $regencies = $this->regencyRepo->listRegencies()->sortBy('name')->where('province_id', $request->provinces);
+            } else {
+                $regencies = $this->regencyRepo->listRegencies()->sortBy('name');
             }
             return response()->json([
                 'data'=> $regencies
             ]);
         }
-
         $provinces = $this->provinceRepo->listProvinces()->sortBy('name');
         
         return view('admin.address.regencies.index', compact('provinces'));

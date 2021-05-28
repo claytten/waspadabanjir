@@ -73,6 +73,22 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
+     * Find the user by role
+     * 
+     * @param string $username
+     * 
+     * @return User
+     */
+    public function findUserByUsername($username): User
+    {
+        try {
+            return $this->model->where('username', $username)->first();
+        } catch(ModelNotFoundException $e) {
+            throw new UserNotFoundException();
+        }
+    }
+
+    /**
      * Update user
      *
      * @param array $params
@@ -157,5 +173,15 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function deleteFile(string $get_data)
     {
         return File::delete("storage/{$get_data}");
+    }
+
+    /**
+     * Default Menu WhatsApp Message
+     * @param string $name name of subscriber
+     * @return string
+     */
+    public function defaultMenu(string $name) : string
+    {
+        return "Halo Kak {$name}. Berikut beberapa portal informasi yang bisa kamu akses sebagai Admin. Apa yang ingin kamu ketahui ?\nA. Statistik Pengguna\nB. Daftar Laporan\nC. Daftar Pengguna \n\n Balas *SATU HURUF* saja yaa.";
     }
 }

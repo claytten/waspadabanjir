@@ -10,6 +10,7 @@ use App\Models\Tools\UploadableTrait;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Cache;
 
 class ReportRepository extends BaseRepository implements ReportRepositoryInterface
 {
@@ -107,5 +108,17 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
     public function deleteReport() : bool
     {
         return $this->delete();
+    }
+
+    /**
+     * Creating Report By Whatsapp
+     * 
+     * @return string
+     */
+    public function storeReportWhatsapp(array $data) : string
+    {
+        $this->createReport($data);
+        Cache::forget($data['from']);
+        return "Terima Kasih sudah memberikan laporan.\nLaporan kamu akan diperiksa admin secepatnya\n\nSilahkan ketik *menu* jika ingin menampilkan daftar layanan portal banjir.";
     }
 }

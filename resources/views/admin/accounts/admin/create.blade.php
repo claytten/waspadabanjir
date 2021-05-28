@@ -42,6 +42,7 @@
                 <h3 class="mb-0">Users Information</h3>
               </div>
               <div class="col-lg-4 col-md-6 d-flex justify-content-end">
+                <a class="btn btn-info" href="{{ route('admin.admin.index') }}">Back</a>
                 <button type="button" class="btn btn-danger" id="btn-reset">Reset</button>
                 <button type="submit" class="btn btn-primary">Submit</button>
               </div>

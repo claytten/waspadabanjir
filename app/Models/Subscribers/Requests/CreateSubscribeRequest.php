@@ -26,7 +26,7 @@ class CreateSubscribeRequest extends FormRequest
         return [
             'name'      => ['required', 'string'],
             'address'   => ['required'],
-            'phone'     => ['required']
+            'phone'     => ['required', 'unique:subscribers']
         ];
     }
 }

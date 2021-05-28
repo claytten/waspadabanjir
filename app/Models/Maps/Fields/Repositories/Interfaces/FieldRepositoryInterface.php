@@ -15,6 +15,8 @@ interface FieldRepositoryInterface extends BaseRepositoryInterface
 
     public function findFieldById(int $id) : Field;
 
+    public function findFieldByAddress(string $address);
+
     public function updateField(array $params): bool;
 
     public function deleteField() : bool;
@@ -24,4 +26,6 @@ interface FieldRepositoryInterface extends BaseRepositoryInterface
     public function deleteFiles(Collection $collection);
 
     public function deleteFile(string $get_data);
+
+    public function listFieldsAndGeo(): string;
 }

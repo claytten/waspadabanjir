@@ -63,8 +63,12 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth'], 'as' => 'admin.' ],
     Route::resource('/maps', MapController::class, ['except' => ['create']]);
 
     //Subscribers
-    Route::resource('/subscribers', SubscribeController::class);
+    Route::resource('/subscribers', SubscribeController::class, ['except' => ['show', 'create']]);
+    Route::post('/subscribers/personal', [SubscribeController::class, 'personalBroadcast'])->name('subscribers.personal');
+    Route::post('/subscribers/multiple', [SubscribeController::class, 'multipleBroadcast'])->name('subscribers.multiple');
+    Route::get('/subscribers/regency', [SubscribeController::class, 'getRegency'])->name('subscribers.getRegency');
 
+    //Reports
     Route::resource('/reports', ReportController::class);
 });
 

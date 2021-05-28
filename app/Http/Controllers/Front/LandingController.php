@@ -6,6 +6,7 @@ use App\Models\Maps\Fields\Repositories\Interfaces\FieldRepositoryInterface;
 use App\Models\Subscribers\Repositories\Interfaces\SubscribeRepositoryInterface;
 use App\Models\Reports\Repositories\Interfaces\ReportRepositoryInterface;
 use App\Models\Subscribers\Requests\CreateSubscribeRequest;
+use App\Notifications\SubscribeProcessed;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -103,7 +104,9 @@ class LandingController extends Controller
     {
         $data = $request->except('_token','_method');
 
-        $this->subscribeRepo->createSubscribe($data);
+        $subscribe = $this->subscribeRepo->createSubscribe($data);
+
+        $subscribe->notify(new SubscribeProcessed($subscribe));
 
         return response()->json([
             'code'  => 200,

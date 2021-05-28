@@ -125,4 +125,45 @@ class DistrictRepository extends BaseRepository implements DistrictRepositoryInt
         }
         return $this->model->searchDistrict($text)->get();
     }
+
+    /**
+     * Listing data regency of Kabupaten Klaten
+     * 
+     * @return string
+     */
+    public function listDistrictByRegencies(): string
+    {
+        $districts = $this->listDistricts()->sortBy('name')->where('regency_id', 3310);
+        $message = "--MENU KECAMATAN--\nBerikut Daftar Kecamatan yang ada pada Kabupaten Klaten : \n";
+        $reportForm = route('form.report');
+        if(count($districts) > 0) {
+            $count = 0;
+            foreach($districts as $index => $item) {
+                $count = $count+1;
+                $message .= "{$count}. {$item['name']} \n";
+            }
+            $message .= "\nPilih *SATU ANGKA* diatas untuk melihat daftar banjir di kecamatan tersebut.";
+        } else {
+            $message .= "Belum ada data Kecamatan pada sistem . Silahkan  kamu bikin laporan pada form berikut {$reportForm}.";
+        }
+        return $message;
+    }
+
+    /** Sample filter listing regency of kabupaten klaten
+     * 
+     * @return array
+     */
+    public function createListDistrictMenu(): array
+    {
+      return Cache::rememberForever('listDistrictsMenu', function () {
+        $districts = $this->listDistricts()->sortBy('name')->where('regency_id', 3310);
+        $setAddress = array();
+        $count = 0;
+        foreach($districts as $item) {
+            array_push($setAddress, array('id' => $count+1, 'name' => $item['name']));
+            $count += 1;
+        }
+        return $setAddress;
+      });
+    }
 }

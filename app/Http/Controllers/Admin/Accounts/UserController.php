@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use App\Models\Tools\UploadableTrait;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
 
 class UserController extends Controller
 {
@@ -73,10 +74,34 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = $this->userRepo->listUsers()->sortBy('name')->take(5);
-        return view('admin.accounts.admin.index', compact('users'));
+        if ($request->ajax()) {
+            if (Cache::has('adminWA')) {
+                Cache::forget('adminWA');
+            }
+            $user =  Cache::rememberForever('adminWA', function () use ($request) {
+                return $this->userRepo->findUserById($request->id);
+            });
+            $role = $user->role;
+            $data[] = array(
+                "id"  => $user->id,
+                "name" => $user->$role->name
+            );
+            return response()->json([
+                'code'      => 200,
+                'status'    => 'success',
+                'data'      => $data[0]
+            ]);
+        }
+
+        $users = $this->userRepo->listUsers()->sortBy('name');
+        if(Cache::has('adminWA')) {
+            $statusWA = Cache::get('adminWA');
+        } else {
+            $statusWA['id'] = null;
+        }
+        return view('admin.accounts.admin.index', compact('users', 'statusWA'));
     }
 
     /**

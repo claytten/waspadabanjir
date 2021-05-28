@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Address\Districts\District;
 use App\Models\Address\Provinces\Province;
+use App\Models\Subscribers\Subscribe;
 
 class Regency extends Model
 {
@@ -58,5 +59,15 @@ class Regency extends Model
     public function countProvince()
     {
         return $this->province()->count();
+    }
+
+    /**
+     * Get all of the subscribers for the Regency
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function subscribers()
+    {
+        return $this->hasMany(Subscribe::class);
     }
 }
