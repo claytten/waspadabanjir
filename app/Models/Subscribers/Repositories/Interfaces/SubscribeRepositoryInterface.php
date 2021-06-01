@@ -27,4 +27,16 @@ interface SubscribeRepositoryInterface extends BaseRepositoryInterface
     public function sendWhatsAppMessage(string $message, string $recipient) : bool;
 
     public function defaultMenu(string $name) : string;
+
+    public function listDefaultMenu(string $from, object $findNumber, string $body, object $districtRepo, object $fieldRepo) : string;
+
+    public function subscribersWhatsapp(): string;
+
+    public function reportAdmin(int $daily, int $month, int $year, int $dailyReport): string;
+    
+    public function registerStep1(string $from, string $body, array $answerID, object $regencyRepo): string;
+
+    public function listDistrictMenu(string $from, string $body, object $districtRepo, object $fieldRepo) :string;
+
+    public function OptionReportMenu(string $answerID, string $from, string $body, object $findNumber, object $reportRepo): string;
 }

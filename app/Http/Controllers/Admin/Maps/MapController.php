@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Maps;
 
+use App\Models\Subscribers\Repositories\Interfaces\SubscribeRepositoryInterface;
 use App\Models\Maps\Fields\Repositories\Interfaces\FieldRepositoryInterface;
 use App\Models\Maps\Fields\Repositories\FieldRepository;
 use App\Models\Maps\FieldImages\FieldImage;
@@ -9,10 +10,17 @@ use App\Models\Maps\Fields\Field;
 use App\Models\Maps\Fields\Requests\CreateFieldRequest;
 use App\Models\Maps\Fields\Requests\UpdateFieldRequest;
 use App\Http\Controllers\Controller;
+use App\Notifications\SubscribeBroadcastProcessed;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class MapController extends Controller
 {
+    /**
+     * @var SubscribeRepositoryInterface
+     */
+    private $subscribeRepo;
+
     /**
      * @var FieldRepositoryInterface
      */
@@ -25,7 +33,8 @@ class MapController extends Controller
      * @return void
      */
     public function __construct(
-        FieldRepositoryInterface $fieldRepository
+        FieldRepositoryInterface $fieldRepository,
+        SubscribeRepositoryInterface $subscribeRepository
     ) {
         // Spatie ACL Provinces
         $this->middleware('permission:maps-list');
@@ -35,6 +44,7 @@ class MapController extends Controller
 
         // binding repository
         $this->fieldRepo = $fieldRepository;
+        $this->subscribeRepo = $subscribeRepository;
     }
 
     /**
@@ -44,15 +54,15 @@ class MapController extends Controller
      */
     public function indexView(Request $request)
     {
-        if ($request->ajax()) {
-            $fields = $this->fieldRepo->listFields()->sortBy('name');
-            return response()->json([
-                'code'      => 200,
-                'status'    => 'success',
-                'data'      => $fields
-            ]);
-        }
-        return view('admin.maps.index');
+      if ($request->ajax()) {
+          $fields = $this->fieldRepo->listFields()->sortBy('name');
+          return response()->json([
+              'code'      => 200,
+              'status'    => 'success',
+              'data'      => $fields
+          ]);
+      }
+      return view('admin.maps.index');
     }
 
     /**
@@ -107,13 +117,29 @@ class MapController extends Controller
     public function store(CreateFieldRequest $request)
     {
         $data = $request->except('_token','_method');
-        
         $field = $this->fieldRepo->createField($data);
 
         $fieldRepo = new FieldRepository($field);
 
         if ($request->hasFile('images')) {
-            $fieldRepo->saveMapImages(collect($request->file('images')));
+          $fieldRepo->saveMapImages(collect($request->file('images')));
+        }
+
+        if ($request->has('broadcast') && $data['broadcast'] === "1") {
+          // Broadcast Message
+          $detailLink = route('maps.show', $field['id']);
+          $detailLink = str_replace('http','https',$detailLink);
+          $message = "--Update Data Terbaru--\nTelah terjadi banjir di daerah Kecamatan {$field->name}:";
+          $message .= "\n  -Waktu & Tgl Kejadian : {$field->time}, {$field->date}";
+          $message .= "\n  -Detail Lokasi : {$field->locations}";
+          $message .= "\n  -Deskripsi : {$field->description}";
+          $message .= "\n  -Detail informasi peta dan gambar: {$detailLink} ";
+
+          $subscribers = $this->subscribeRepo->listSubscribes()->sortBy('name');
+          foreach($subscribers->where('status', 1) as $item) {
+            $item->body = strval($message);
+            $item->notify(new SubscribeBroadcastProcessed($item));
+          }
         }
 
         return redirect()->route('admin.map.view')->with([

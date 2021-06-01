@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class ReportRepository extends BaseRepository implements ReportRepositoryInterface
 {
@@ -120,5 +121,51 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
         $this->createReport($data);
         Cache::forget($data['from']);
         return "Terima Kasih sudah memberikan laporan.\nLaporan kamu akan diperiksa admin secepatnya\n\nSilahkan ketik *menu* jika ingin menampilkan daftar layanan portal banjir.";
+    }
+
+    /**
+     * Response List all report
+     * 
+     * @return string
+     */
+    public function reportWhatsapp(): string
+    {
+      $reports = $this->listReports()->sortBy('name');
+      if(count($reports) > 0) {
+        $message = "--MENU LAPORAN--\nBerikut daftar laporan terkini di Kabupaten Klaten: \n";
+        $coundColumn = 1;
+        foreach($reports as $item) {
+          $typeReport = ($item['report_type'] === 'report') ? 'Laporan Banjir' : ( ($item['report_type'] === 'suggest') ? 'kritik & saran' : 'Pertanyaan' );
+          $statusReport = ($item['status'] === 1 ? 'Verified' : 'Non-Verified');
+          $message .= "\n{$coundColumn}. Laporan dari {$item['name']}";
+          $message .= "\n  -Tipe laporan : {$typeReport}";
+          if($item['report_type'] === 'report') {
+            $message .= "\n  -Nomor pelapor : {$item['phone']}";
+            $message .= "\n  -Alamat pelapor : {$item['address']}";
+          }
+          $message .= "\n  -Isi laporan : {$item['message']}";
+          $message .= "\n  -Status laporan : {$statusReport}";
+          $message .= "\n  -Tanggal lapor: {$item['created_at']->format('d/m/Y')}\n";
+          $coundColumn += 1;
+        }
+      } else {
+        $message = "Sementara belum ada berita banjir di Kabupaten Klaten.";
+      }
+
+      return $message;
+    }
+
+    /**
+     * Filtering report based on date today
+     * 
+     * @params string $date
+     * 
+     * @return int
+     */
+    public function dailyReport($date): int
+    {
+        $countReport = $this->model->whereDate('created_at', '=', $date)->get();
+
+        return count($countReport);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Broadcasting;
 
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 use Twilio\Rest\Client;
 
 class WhatsAppChannel
@@ -11,8 +12,8 @@ class WhatsAppChannel
     {
         $message = $notification->toWhatsApp($notifiable);
 
-
-        $to = $notification->subscriber->routeNotificationForWhatsApp();
+        $modelTable = $notifiable->phoneTo;
+        $to = $notification->$modelTable->routeNotificationForWhatsApp();
         $from = config('services.twilio.whatsapp_from');
 
 
@@ -20,7 +21,7 @@ class WhatsAppChannel
 
         $response = $twilio->messages->create('whatsapp:' . $to, [
             "from" => 'whatsapp:' . $from,
-            "body" => $message->content
+            "body" => strval($message->content)
         ]);
 
         return $response;

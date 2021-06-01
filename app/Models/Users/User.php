@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Accounts\Admins\Admin;
 use App\Models\Accounts\Employees\Employee;
+use Illuminate\Support\Facades\Cache;
 
 class User extends Authenticatable
 {
@@ -53,5 +54,17 @@ class User extends Authenticatable
     public function employee()
     {
         return $this->hasOne(Employee::class, 'id_user', 'id');
+    }
+
+    /**
+     * Get Phone Number
+     * 
+     * @return string $this->phone
+     */
+    public function routeNotificationForWhatsApp()
+    {
+        $user = Cache::get('adminWA');
+        $role = $user->role;
+        return $user->$role->phone;
     }
 }

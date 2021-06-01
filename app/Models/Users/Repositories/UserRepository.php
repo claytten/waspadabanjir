@@ -182,6 +182,22 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
      */
     public function defaultMenu(string $name) : string
     {
-        return "Halo Kak {$name}. Berikut beberapa portal informasi yang bisa kamu akses sebagai Admin. Apa yang ingin kamu ketahui ?\nA. Statistik Pengguna\nB. Daftar Laporan\nC. Daftar Pengguna \n\n Balas *SATU HURUF* saja yaa.";
+      $menu = collect([
+        [
+          "body" => "A. Statistik Pengguna"
+        ],
+        [
+          "body" => "B. Daftar Laporan",
+        ],
+        [
+          "body" => "C. Daftar Pengguna",
+        ]
+      ]);
+      $message = "--MENU UTAMA--\nHalo Kak {$name}, Berikut daftar layanan yang bisa kamu gunakan sebagai admin. Apa yang ingin kamu ketahui ?\n";
+      foreach($menu as $item) {
+        $message .= "{$item['body']}\n";
+      }
+      $message .= "\n\nBalas *SATU HURUF* saja yaa; A,B,C,D dan seterusnya";
+      return $message;
     }
 }
