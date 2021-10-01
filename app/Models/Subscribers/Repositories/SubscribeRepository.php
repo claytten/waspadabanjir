@@ -279,7 +279,7 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
           $coundColumn += 1;
         }
       } else {
-        $message = "Sementara belum ada berita banjir di Kabupaten Klaten.";
+        $message = "Sementara belum ada pengguna.";
       }
 
       return $message;
@@ -304,8 +304,8 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
                         : '0';
       $message = "--MENU STATISTIK--\nBerikut daftar statistik penggunaan portal informasi banjir: \n";
       $message .= "\n1. Aktivitas pengguna whatsapp harian : {$daily} request";
-      $message .= "\n2. Aktivitas pengguna whatsapp bulanan : 0 request";
-      $message .= "\n3. Aktivitas pengguna whatsapp tahunan : 0 request";
+      $message .= "\n2. Aktivitas pengguna whatsapp bulanan : {$month} request";
+      $message .= "\n3. Aktivitas pengguna whatsapp tahunan : {$year} request";
       $message .= "\n4. Jumlah laporan harian : {$dailyReport} laporan";
       $message .= "\n5. Jumlah pengguna Aktif : {$activeSub} orang";
       $message .= "\n6. Jumlah pengguna Tidak Aktif: {$nonActiveSub} orang";

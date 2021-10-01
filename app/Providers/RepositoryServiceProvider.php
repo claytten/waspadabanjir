@@ -4,10 +4,6 @@ namespace App\Providers;
 
 use App\Models\Users\Repositories\UserRepository;
 use App\Models\Users\Repositories\Interfaces\UserRepositoryInterface;
-use App\Models\Accounts\Admins\Repositories\AdminRepository;
-use App\Models\Accounts\Admins\Repositories\Interfaces\AdminRepositoryInterface;
-use App\Models\Accounts\Employees\Repositories\EmployeeRepository;
-use App\Models\Accounts\Employees\Repositories\Interfaces\EmployeeRepositoryInterface;
 use App\Models\Address\Provinces\Repositories\Interfaces\ProvinceRepositoryInterface;
 use App\Models\Address\Provinces\Repositories\ProvinceRepository;
 use App\Models\Address\Regencies\Repositories\Interfaces\RegencyRepositoryInterface;
@@ -34,14 +30,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             UserRepositoryInterface::class,
             UserRepository::class
-        );
-        $this->app->bind(
-            AdminRepositoryInterface::class,
-            AdminRepository::class
-        );
-        $this->app->bind(
-            EmployeeRepositoryInterface::class,
-            EmployeeRepository::class
         );
         $this->app->bind(
             ProvinceRepositoryInterface::class,

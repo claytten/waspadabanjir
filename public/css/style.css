@@ -18916,7 +18916,6 @@ a.btn-icon-only
     transition: all .15s ease; 
     transform: translate(-50%, -50%) scale(1);
 
-    border: 3px solid #fff;
     border-radius: .375rem;
 }
 .card-profile-image img:hover

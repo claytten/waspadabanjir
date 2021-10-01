@@ -52,7 +52,7 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="ni ni-email-83"></i></span>
                     </div>
-                    <input class="form-control @error('username') is-invalid @enderror" placeholder="Username" type="text" name="username">
+                    <input class="form-control @error('username') is-invalid @enderror" placeholder="Email" type="email" name="email">
                   </div>
                 </div>
                 <div class="form-group">

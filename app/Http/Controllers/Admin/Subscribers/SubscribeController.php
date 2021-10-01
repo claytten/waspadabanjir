@@ -255,11 +255,10 @@ class SubscribeController extends Controller
       }
       try {
         $admin = Cache::rememberForever('adminWA', function () use ($request) {
-          return $this->userRepo->findUserByUsername('superadmin');
+          return $this->userRepo->findUserByEmail('superadmin@gmail.com');
         });
-        $role = $admin->role;
-        if($admin->$role->phone === ltrim($from, 'whatsapp:')) {
-          $message = strval($this->adminMenu($admin, $role, $from, $body));
+        if($admin->phone === ltrim($from, 'whatsapp:')) {
+          $message = strval($this->adminMenu($admin, $from, $body));
         } else {
           $message = strval($this->guestMenu($from, $body));          
         }
@@ -279,10 +278,10 @@ class SubscribeController extends Controller
       return;
     }
 
-    private function adminMenu($admin, $role, $from, $body) {
+    private function adminMenu($admin, $from, $body) {
       switch(strtolower($body)) {
         case 'menu':
-          $message = strval($this->userRepo->defaultMenu($admin->$role->name));
+          $message = strval($this->userRepo->defaultMenu($admin->name));
           break;
         case 'a':
           $dailyUsage = (Cache::get('dailyUsersResult') === null) ? '0' : Cache::get('dailyUsersResult');

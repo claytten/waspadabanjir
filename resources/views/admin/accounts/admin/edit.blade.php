@@ -28,7 +28,7 @@
 @endsection
 
 @section('content_body')
-<form action="{{ route('admin.admin.update', [$user->user->id, $user->user->role]) }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('admin.admin.update', $user->id) }}" method="POST" enctype="multipart/form-data">
   {{ csrf_field() }}
   <input type="hidden" name="address_id" id="village_id" readonly value="{{ $user->address_id}}">
   <input type="hidden" name="_method" value="PUT" readonly>
@@ -77,10 +77,10 @@
                   <div class="form-group">
                     <div class="input-group input-group-merge">
                       <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                       </div>
-                      <input class="form-control @error('username') is-invalid @enderror" placeholder="Username" type="text" name="username" value="{{ $user->user->username }}" id="username">
-                      @error('username')
+                      <input class="form-control @error('email') is-invalid @enderror" placeholder="Email address" type="email" name="email" value="{{ $user->email }}" id="email">
+                      @error('email')
                           <div class="invalid-feedback">
                               {{ $message }}
                           </div>
@@ -94,10 +94,10 @@
                   <div class="form-group">
                     <div class="input-group input-group-merge">
                       <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                        <span class="input-group-text">+62</span>
                       </div>
-                      <input class="form-control @error('email') is-invalid @enderror" placeholder="Email address" type="email" name="email" value="{{ $user->email }}" id="email">
-                      @error('email')
+                      <input class="form-control @error('phone') is-invalid @enderror" placeholder="Phone Number (ex. 85702142789)" type="text" name="phone" value="{{ $user->phone }}" id="phone">
+                      @error('phone')
                           <div class="invalid-feedback">
                               {{ $message }}
                           </div>
@@ -108,15 +108,10 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <div class="input-group input-group-merge">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text">+62</span>
+                      <div class="custom-file">
+                        <input type="file" accept=".jpg, .jpeg, .png" name="image" class="form-control imgs" onchange="previewImage(this)"id="projectCoverUploads">
+                        <label class="custom-file-label" for="projectCoverUploads">Choose file</label>
                       </div>
-                      <input class="form-control @error('phone') is-invalid @enderror" placeholder="Phone Number (ex. 85702142789)" type="text" name="phone" value="{{ $user->phone }}" id="phone">
-                      @error('phone')
-                          <div class="invalid-feedback">
-                              {{ $message }}
-                          </div>
-                      @enderror
                     </div>
                   </div>
                 </div>
@@ -139,16 +134,6 @@
                 </div>
               </div>
               <div class="row images-content">
-                <div class="col-md-12">
-                  <div class="form-group">
-                    <div class="input-group input-group-merge">
-                      <div class="custom-file">
-                        <input type="file" accept=".jpg, .jpeg, .png" name="image" class="form-control imgs" onchange="previewImage(this)"id="projectCoverUploads">
-                        <label class="custom-file-label" for="projectCoverUploads">Choose file</label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
                 <div class="col-md-12">
                   <div class="form-group" style="align-items: center">
                     <div class="input-group">
@@ -179,7 +164,7 @@
           <!-- Card body -->
           <div class="card-body">
             <label class="custom-toggle custom-toggle-default">
-              <input type="checkbox" name="status" {{ ($user->user->status == 1) ? 'checked' : '' }}>
+              <input type="checkbox" name="status" {{ ($user->status == 1) ? 'checked' : '' }}>
               <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
             </label>
           </div>
@@ -192,41 +177,16 @@
           </div>
           <!-- Card body -->
           <div class="card-body">
-            <select name="role" id="role" class="form-control @error('role') is-invalid @enderror" data-toggle="select" onchange="roleAction()">
-              <option value=""></option>
-              <option value="employee" {{ ($user->user->role === 'employee') ? 'selected' : '' }}>Employee</option>
-              <option value="admin" {{ ($user->user->role === 'admin') ? 'selected' : '' }}>Admin</option>
-            </select>
-            @error('role')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-            @enderror
-            <div class="input-group input-group-merge pt-3" id="id-card-input">
-              @if ($user->user->role === 'employee')
-                <input type="text" id="input-id_card" class="form-control" placeholder="ID Card" name="id_card" value="{{ $user->id_card }}">
-              @endif
-            </div>
-          </div>
-        </div>
-        <!-- Positions -->
-        <div class="card">
-          <!-- Card header -->
-          <div class="card-header">
-            <h3 class="mb-0">Position</h3>
-          </div>
-          <!-- Card body -->
-          <div class="card-body">
-            <select name="position" id="position" class="form-control @error('position') is-invalid @enderror" data-toggle="select">
+            <select name="role" id="role" class="form-control @error('role') is-invalid @enderror" data-toggle="select">
               <option value=""></option>
               @forelse ($roles as $item)
-                <option value="{{ $item }}" {{ ($item == $user->user->getRoleNames()[0]) ? 'selected' : '' }}>{{ $item }}</option>
+                <option value="{{ $item }}" {{ ($item == $user->getRoleNames()[0]) ? 'selected' : '' }}>{{ $item }}</option>
               @empty
                 <option value=""></option>
               @endforelse
             </select>
-            @error('position')
-                <span class="invalid-feedback" position="alert">
+            @error('role')
+                <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>
             @enderror
@@ -303,7 +263,7 @@
               <div class="text-center text-muted mb-4">
                   <small>Change Password</small>
               </div>
-              <form role="form" action="{{ route('admin.reset.password', $user->user->id) }}" method="POST">
+              <form role="form" action="{{ route('admin.reset.password', $user->id) }}" method="POST">
                   {{ csrf_field() }}
                   <input type="hidden" name="_method" value="PUT" readonly>
                   <input type="hidden" name="statStages" value="user" readonly>
@@ -348,9 +308,6 @@
     $('#role').select2({
         'placeholder': 'Select Role',
     });
-    $('#position').select2({
-        'placeholder': 'Select Position',
-    });
     $("#provinces, #regencies, #districts, #villages").select2({width: "100%"});
     $('#regencies, #districts, #villages, .btn-add-address').prop('disabled', true);
 
@@ -375,19 +332,11 @@
     });
   });
 
-  function roleAction() {
-    if ($('#role').val() === 'employee') {
-      $('#id-card-input').empty().append('<input type="text" id="input-id_card" class="form-control" placeholder="ID Card" name="id_card">');
-    } else {
-      $('#id-card-input').empty();
-    }
-  }
-
   // Add More Image
   function previewImage(input){
     console.log("Preview Image");
-    let preview_image = $(input).closest('.images-content').find('.img-responsive');
-    let preview_button = $(input).closest('.images-content').find('.remove_preview');
+    let preview_image = $('.images-content').find('.img-responsive');
+    let preview_button = $('.images-content').find('.remove_preview');
 
     if (input.files && input.files[0]) {
         var reader = new FileReader();

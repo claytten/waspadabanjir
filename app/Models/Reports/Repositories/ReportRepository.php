@@ -149,7 +149,7 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
           $coundColumn += 1;
         }
       } else {
-        $message = "Sementara belum ada berita banjir di Kabupaten Klaten.";
+        $message = "Sementara belum ada laporan.";
       }
 
       return $message;

@@ -44,7 +44,9 @@ class PermissionSeeder extends Seeder
             'villages-list',
             'villages-create',
             'villages-edit',
-            'villages-delete'
+            'villages-delete',
+
+            'setting-list'
         ];
 
         $employeePermissions = [

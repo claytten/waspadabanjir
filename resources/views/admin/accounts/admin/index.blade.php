@@ -41,7 +41,6 @@
               <th>No</th>
               <th>Name</th>
               <th>Email</th>
-              <th>Position</th>
               <th>Role</th>
               <th>Status</th>
               <th>Action</th>
@@ -60,13 +59,9 @@
           <tbody>
             @foreach($users as $index => $item)
                 <tr id="rows_{{ $item->id }}">
-                  @php
-                      $role = $item->role;
-                  @endphp
                   <th>{{ $index +1 }}</th>
-                  <td>{{ ucwords($item->$role->name) }}</td>
-                  <td>{{ $item->$role->email }}</td>
-                  <td>{{ $item->getRoleNames()[0] }}</td>
+                  <td>{{ ucwords($item->name) }}</td>
+                  <td>{{ $item->email }}</td>
                   <td>{{ $item->role }}</td>
                   <td>{{ $item->status ?  'Active' : 'Inactive' }}</td>
                   <td>
@@ -106,13 +101,10 @@
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
                 <label class="form-control-label" for="statusWA">Select Admin</label>
-                <select id="statusWA" class="form-control @error('statusWA') is-invalid @enderror" data-toggle="select" onchange="chnageStatusWA(this)">
+                <select id="statusWA" class="form-control @error('statusWA') is-invalid @enderror" data-toggle="select" onchange="changeStatusWA(this)">
                   <option value=""></option>
                   @foreach($users as $index => $item)
-                    @php
-                        $role = $item->role;
-                    @endphp
-                    <option value="{{ $item->id }}" {{ ($item->id === $statusWA['id']) ? 'selected' : '' }}>{{ ucwords($item->$role->name) }}</option>
+                    <option value="{{ $item->id }}" {{ ($item->id === $statusWA['id']) ? 'selected' : '' }}>{{ ucwords($item->name) }}</option>
                   @endforeach
                 </select>
               </div>
@@ -275,7 +267,7 @@
       });
   }
 
-  function chnageStatusWA(input) {
+  function changeStatusWA(input) {
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

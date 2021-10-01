@@ -17,32 +17,42 @@ class UserSeederTable extends Seeder
     {
         $users = [
             [
-                'username'  => 'superadmin',
+                'email'     => 'superadmin@gmail.com',
                 'password'  => bcrypt('superadmin'),
-                'role'      => 'admin',
-                'assignRole'=> 'Super Admin',
-                'status'    => true,
+                'name'      => 'Superadmin',
+                'role'      => 'Super Admin',
+                'address_id'=> '34480',
+                'phone'     => '+62',
+                'image'     => null,
+                'status'    => true
             ],
             [
-                'username'  => 'employee1',
+                'email'     => 'employee@gmail.com',
                 'password'  => bcrypt('employee'),
-                'role'      => 'employee',
-                'assignRole'=> 'Secretary',
-                'status'    => true,
+                'name'      => 'Employee 1',
+                'role'      => 'Secretary',
+                'address_id'=> '49088',
+                'phone'     => '+62',
+                'image'     => null,
+                'status'    => true
             ]
         ];
 
         foreach($users as $item) {
-            $user = User::where('username', $item['username'])->first();
+            $user = User::where('email', $item['email'])->first();
             if(empty($user)){
                 $store = User::create([
-                    'username' => $item['username'],
-                    'password' => $item['password'],
-                    'role' => $item['role'],
-                    'status' => $item['status']
+                    'email'     => $item['email'],
+                    'password'  => $item['password'],
+                    'name'      => $item['name'],
+                    'address_id'=> $item['address_id'],
+                    'phone'     => $item['phone'],
+                    'image'     => $item['image'],
+                    'role'      => $item['role'],
+                    'status'    => $item['status']
                 ]);
 
-                $store->assignRole($item['assignRole']);
+                $store->assignRole($item['role']);
                 
             }
         }

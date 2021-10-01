@@ -1,6 +1,3 @@
-@php
-    $role = auth()->user()->role;
-@endphp
 <nav class="navbar navbar-top navbar-expand navbar-dark bg-primary border-bottom">
   <div class="container-fluid">
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -29,13 +26,13 @@
               <span class="avatar avatar-sm rounded-circle">
                 <img class="user-avatar rounded-circle mr-1" 
                     src="{{ 
-                        !empty(auth()->user()->$role->image)
-                            ? url('/storage'.'/'.auth()->user()->$role->image)
+                        !empty(auth()->user()->image)
+                            ? url('/storage'.'/'.auth()->user()->image)
                                 : asset('images/default/team-4.jpg')
-                    }}" alt="User Avatar" height="40" width="40">
+                    }}" alt="User Avatar" height="40" width="40" style="object-fit:cover">
               </span>
               <div class="media-body ml-2 d-none d-lg-block">
-                <span class="mb-0 text-sm  font-weight-bold">{{ auth()->user()->$role->name}}</span>
+                <span class="mb-0 text-sm  font-weight-bold">{{ auth()->user()->name}}</span>
               </div>
             </div>
           </a>
@@ -43,11 +40,11 @@
             <div class="dropdown-header noti-title">
               <h6 class="text-overflow m-0">Welcome!</h6>
             </div>
-            <a href="{{ route('admin.edit.profile', [auth()->user()->id, $role]) }}" class="dropdown-item">
+            <a href="{{ route('admin.edit.profile', auth()->user()->id) }}" class="dropdown-item">
               <i class="ni ni-single-02"></i>
               <span>My profile</span>
             </a>
-            <a href="#" class="dropdown-item">
+            <a href="{{ route('admin.setting.index')}}" class="dropdown-item">
               <i class="ni ni-settings-gear-65"></i>
               <span>Settings</span>
             </a>

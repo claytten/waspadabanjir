@@ -115,19 +115,6 @@
             </li>
           @endif
         </ul>
-        <!-- Divider -->
-        <hr class="my-3">
-        <!-- Heading -->
-        <h6 class="navbar-heading p-0 text-muted">Repository</h6>
-        <!-- Navigation -->
-        <ul class="navbar-nav mb-md-3">
-          <li class="nav-item">
-            <a class="nav-link" href="https://github.com/claytten/sig_kab.git" target="_blank">
-              <i class="ni ni-collection"></i>
-              <span class="nav-link-text">Claytten</span>
-            </a>
-          </li>
-        </ul>
       </div>
     </div>
   </div>

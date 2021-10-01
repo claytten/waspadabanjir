@@ -11,7 +11,7 @@
   <div class="container-fluid d-flex align-items-center">
     <div class="row col-lg-7">
       <div class="col-lg-7 col-md-10">
-        <h1 class="display-2 text-white">Hello {{ $admin->name }}</h1>
+        <h1 class="display-2 text-white">Hello {{ $user->name }}</h1>
       </div>
     </div>
   </div>
@@ -31,8 +31,8 @@
         <div class="col-lg-3 order-lg-2">
           <div class="card-profile-image">
             <img src="{{ 
-                  !empty($admin->image)
-                      ? url('/storage'.'/'.$admin->image)
+                  !empty($user->image)
+                      ? url('/storage'.'/'.$user->image)
                           : asset('images/default/team-4.jpg')
               }}" alt="User Avatar" class="rounded-circle">
           </div>
@@ -40,23 +40,21 @@
       </div>
       <br>
       <div class="text-center">
-        <h5 class="h3">
-          ==========
-        </h5>
+        <br>
         <div class="h5 mt-4">
-          <i class="ni business_briefcase-24 mr-2"></i>{{ $admin->name }} - @foreach (auth()->user()->roles->pluck('name') as $item )
+          <i class="ni business_briefcase-24 mr-2"></i>{{ $user->name }} - @foreach (auth()->user()->roles->pluck('name') as $item )
             {{ $item }} 
           @endforeach
         </div>
         <div>
-          <i class="ni education_hat mr-2"></i>{{ ucfirst(auth()->user()->role) }}
+          <i class="ni education_hat mr-2"></i>{{ ucfirst(auth()->user()->email) }}
         </div>
       </div>
       <br>
     </div>
     <!-- Upload Photo -->
     <div class="card">
-      <form action="{{ route('admin.update.profile.avatar', [auth()->user()->id, auth()->user()->role] )}}" method="POST" enctype="multipart/form-data" id="dropzone-form">
+      <form action="{{ route('admin.update.profile.avatar', auth()->user()->id )}}" method="POST" enctype="multipart/form-data" id="dropzone-form">
         {{ csrf_field() }}
         <input type="hidden" name="_method" value="PUT" readonly>
         <input type="hidden" name="statStages" value="photo" readonly>
@@ -100,16 +98,20 @@
   <div class="col-xl-8 order-xl-1">
     <div class="card">
       {{-- Edit Profile --}}
-      <form action="{{ route('admin.update.profile', [auth()->user()->id, auth()->user()->role] )}}" method="POST">
+      <form action="{{ route('admin.update.profile', auth()->user()->id )}}" method="POST">
         {{ csrf_field() }}
         <input type="hidden" name="_method" value="PUT" readonly>
         <input type="hidden" name="statStages" value="user" readonly>
         <div class="card-header">
           <div class="row align-items-center">
-            <div class="col-8">
+            <div class="col-6">
               <h3 class="mb-0">Edit profile </h3>
             </div>
-            <div class="col-4 text-right">
+            <div class="col-6 text-right">
+              <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-change-password">
+                <i class="ni ni-lock-circle-open"></i>
+                Change Password
+              </button>
               <button type="submit" class="btn btn-primary">Submit</button>
             </div>
           </div>
@@ -121,7 +123,7 @@
               <div class="col-lg-6">
                 <div class="form-group">
                   <label class="form-control-label" for="input-name">Name</label>
-                  <input type="text" id="input-name" class="form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ $admin->name }}" name="name">
+                  <input type="text" id="input-name" class="form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ $user->name }}" name="name">
                   @error('name')
                       <div class="invalid-feedback">
                           {{ $message }}
@@ -132,7 +134,7 @@
               <div class="col-lg-6">
                 <div class="form-group">
                   <label class="form-control-label" for="input-email">Email address</label>
-                  <input type="email" id="input-email" class="form-control @error('email') is-invalid @enderror" placeholder="Email" name="email" value="{{ $admin->email }}">
+                  <input type="email" id="input-email" class="form-control @error('email') is-invalid @enderror" placeholder="Email" name="email" value="{{ $user->email }}">
                   @error('email')
                       <div class="invalid-feedback">
                           {{ $message }}
@@ -141,94 +143,32 @@
                 </div>
               </div>
             </div>
-
             <div class="row">
               <div class="col-lg-6">
                 <div class="form-group">
-                  <label class="form-control-label" for="input-id_card">ID Card</label>
-                  <input type="text" id="input-id_card" class="form-control @error('id_card') is-invalid @enderror" placeholder="ID Card" value="{{ $admin->id_card }}" name="id_card">
-                  @error('id_card')
-                      <div class="invalid-feedback">
-                          {{ $message }}
-                      </div>
-                  @enderror
+                  <label class="form-control-label" for="input-address">Address</label>
+                  <button type="button" class="form-control" id="btn-address" data-toggle="modal" data-target="#modal-change-address">
+                    {{$user->village->name}},
+                    {{$user->village->district->name}},
+                    {{$user->village->district->regency->name}},
+                    {{$user->village->district->regency->province->name}}
+                  </button>
                 </div>
               </div>
               <div class="col-lg-6">
                 <div class="form-group">
                   <label class="form-control-label" for="input-phone">Phone</label>
-                  <input type="text" id="input-phone" class="form-control @error('phone') is-invalid @enderror" placeholder="Phone Number" value="{{ $admin->phone }}" name="phone">
-                  @error('phone')
-                      <div class="invalid-feedback">
-                          {{ $message }}
-                      </div>
-                  @enderror
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-lg-12">
-                <div class="form-group">
-                  <label class="form-control-label" for="input-address">Address</label>
-                  <button type="button" class="form-control" id="btn-address" data-toggle="modal" data-target="#modal-change-address">
-                    {{$admin->village->name}},
-                    {{$admin->village->district->name}},
-                    {{$admin->village->district->regency->name}},
-                    {{$admin->village->district->regency->province->name}}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <hr class="my-4" />
-        </div>
-      </form>
-    </div>
-    <div class="card">
-      {{-- Edit Account --}}
-      <form action="{{ route('admin.update.setting', auth()->user()->id )}}" method="POST">
-        {{ csrf_field() }}
-        <input type="hidden" name="_method" value="PUT" readonly>
-        <input type="hidden" name="statStages" value="users" readonly>
-        <div class="card-header">
-          <div class="row align-items-center">
-            <div class="col-7">
-              <h3 class="mb-0">Edit Account </h3>
-            </div>
-            <div class="col-5 text-right">
-              <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-change-password">
-                <i class="ni ni-lock-circle-open"></i>
-                Change Password
-              </button>
-              <button type="submit" class="btn btn-primary">Submit</button>
-            </div>
-          </div>
-        </div>
-        <div class="card-body">
-          <h6 class="heading-small text-muted mb-4">Account information</h6>
-          <div class="pl-lg-4">
-            <div class="row">
-              <div class="col-lg-6">
-                <div class="form-group">
-                  <label class="form-control-label" for="input-username">Username</label>
-                  <input type="text" id="input-username" class="form-control @error('username') is-invalid @enderror" placeholder="Username" value="{{ $admin->user->username }}" name="username">
-                  @error('username')
-                      <div class="invalid-feedback">
-                          {{ $message }}
-                      </div>
-                  @enderror
-                </div>
-              </div>
-              <div class="col-lg-6">
-                <div class="form-group">
-                  <label class="form-control-label" for="input-password_confirmation">Confirmation Password</label>
-                  <input type="password" id="input-password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" placeholder="Confirmation Password" name="password_confirmation">
-                  @error('password_confirmation')
-                      <div class="invalid-feedback">
-                          {{ $message }}
-                      </div>
-                  @enderror
+                  <div class="input-group input-group-merge">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">+62</span>
+                    </div>
+                    <input type="number" step="1" min="0" id="input-phone" class="form-control @error('phone') is-invalid @enderror" placeholder="Phone Number" value="{{ $user->phone }}" name="phone">
+                    @error('phone')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                  </div>
                 </div>
               </div>
             </div>
@@ -287,7 +227,7 @@
             </div>
             
             <div class="text-center">
-              <button type="button" onclick="addAddress('{{auth()->user()->id}}', '{{auth()->user()->role}}')" class="btn btn-primary my-4 btn-add-address">Submit</button>
+              <button type="button" onclick="addAddress('{{auth()->user()->id}}')" class="btn btn-primary my-4 btn-add-address">Submit</button>
             </div>
           </div>
         </div>
@@ -402,11 +342,10 @@
       $(preview_form).val('');
   }
 
-  function addAddress(userId, userRole) {
+  function addAddress(userId) {
     const village_id = $('#villages').val();
-    let link = '{{ route('admin.update.address.profile', [':id', ':role']) }}';
+    let link = '{{ route('admin.update.address.profile', ':id') }}';
     link = link.replace(':id', userId);
-    link = link.replace(':role', userRole);
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -429,7 +368,7 @@
           console.log("data trouble");
         }
       }
-    })
+    });
   }
 
   function searchProvince() {

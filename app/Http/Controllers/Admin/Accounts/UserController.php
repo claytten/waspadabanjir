@@ -8,8 +8,6 @@ use App\Models\Users\User;
 use App\Models\Users\Repositories\UserRepository;
 use App\Models\Users\Repositories\Interfaces\UserRepositoryInterface;
 use App\Models\Address\Provinces\Repositories\Interfaces\ProvinceRepositoryInterface;
-use App\Models\Accounts\Admins\Repositories\Interfaces\AdminRepositoryInterface;
-use App\Models\Accounts\Employees\Repositories\Interfaces\EmployeeRepositoryInterface;
 use App\Models\Accounts\Admins\Repositories\AdminRepository;
 use App\Models\Accounts\Employees\Repositories\EmployeeRepository;
 
@@ -35,16 +33,6 @@ class UserController extends Controller
     private $userRepo;
 
     /**
-     * @var AdminRepositoryInterface
-     */
-    private $adminRepo;
-
-    /**
-     * @var EmployeeRepositoryInterface
-     */
-    private $employeeRepo;
-
-    /**
      * Admin Controller Constructor
      *
      * @param UserRepositoryInterface $userRepository
@@ -52,9 +40,7 @@ class UserController extends Controller
      */
     public function __construct(
         ProvinceRepositoryInterface $provinceRepository,
-        UserRepositoryInterface $userRepository,
-        AdminRepositoryInterface $adminRepository,
-        EmployeeRepositoryInterface $employeeRepository
+        UserRepositoryInterface $userRepository
     )
     {
         // Spatie ACL
@@ -64,8 +50,6 @@ class UserController extends Controller
         $this->middleware('permission:admin-delete', ['only' => ['destroy']]);
 
         $this->userRepo = $userRepository;
-        $this->adminRepo = $adminRepository;
-        $this->employeeRepo = $employeeRepository;
         $this->provinceRepo = $provinceRepository;
     }
 
@@ -83,10 +67,9 @@ class UserController extends Controller
             $user =  Cache::rememberForever('adminWA', function () use ($request) {
                 return $this->userRepo->findUserById($request->id);
             });
-            $role = $user->role;
             $data[] = array(
                 "id"  => $user->id,
-                "name" => $user->$role->name
+                "name" => $user->name
             );
             return response()->json([
                 'code'      => 200,
@@ -136,16 +119,7 @@ class UserController extends Controller
         } else {
             $data['status'] = 0;
         }
-        $storeUser = $this->userRepo->createUser($data);
-
-        if (!empty($storeUser)) {
-            $data['id_user'] = $storeUser->id;
-            if($storeUser->role == 'admin') {
-                $this->adminRepo->createAdmin($data);
-            } else {
-                $this->employeeRepo->createEmployee($data);
-            }
-        }
+        $this->userRepo->createUser($data);
 
         return redirect()->route('admin.admin.index')->with([
             'status'    => 'success',
@@ -172,9 +146,7 @@ class UserController extends Controller
     public function edit($id)
     {
         $roles = Role::pluck('name', 'name')->all();
-        $getUser = $this->userRepo->findUserById($id);
-        $role = $getUser->role;
-        $user = $getUser->$role;
+        $user = $this->userRepo->findUserById($id);
         $provinces = $this->provinceRepo->listProvinces()->sortBy('name');
         if(substr($user['phone'],0,3) == '+62') {
             $user['phone'] = substr($user['phone'],3);
@@ -190,7 +162,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateUserRequest $request, $id, $role)
+    public function update(UpdateUserRequest $request, $id)
     {
         $data = $request->except('_token','_method');
         $user = $this->userRepo->findUserById($id);
@@ -219,36 +191,16 @@ class UserController extends Controller
         }
 
         if ($request->hasFile('image') && $request->file('image') instanceof UploadedFile) {
-            if(!empty($user->$role->image)) {
-                $userRepo->deleteFile($user->$role->image);
+            if(!empty($user->image)) {
+                $userRepo->deleteFile($user->image);
             }
             $data['image'] = $this->userRepo->saveCoverImage($request->file('image'));
         } else {
-            $data['image'] = $user->$role->image;
-        }
-
-        if ($role !== $request->role) {
-            $data['id_user'] = $user->id;
-            if ($request->role === 'admin') {
-                $user->employee()->delete();
-                $this->adminRepo->createAdmin($data);
-            } else {
-                $this->employeeRepo->createEmployee($data);
-                $user->admin()->delete();
-            }
-        } else {
-            if ($role === 'admin') {
-                $admin = $this->adminRepo->findAdminById($user->admin->id);
-                $adminRepo = new AdminRepository($admin);
-                $adminRepo->updateAdmin($data);
-            } else {
-                $employee = $this->employeeRepo->findEmployeeById($user->employee->id);
-                $employeeRepo = new EmployeeRepository($employee);
-                $employeeRepo->updateEmployee($data);
-            }
+            $data['image'] = $user->image;
         }
 
         $userRepo->updateUser($data);
+        $user->assignRole($data['role']);
 
         return redirect()->route('admin.admin.index')->with([
             'status'    => 'success',
@@ -276,9 +228,8 @@ class UserController extends Controller
             $users->save();
             $message = 'User successfully restored';
         } else {
-            $role = $users->role;
-            if(!empty($users->$role->image) ) {
-                $user->deleteFile($users->$role->image);
+            if(!empty($users->image) ) {
+                $user->deleteFile($users->image);
             }
             $message = 'User successfully destroy';
             $user->deleteUser();

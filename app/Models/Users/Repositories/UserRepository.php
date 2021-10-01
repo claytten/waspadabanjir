@@ -51,8 +51,17 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function createUser(array $data): User
     {
         $data['password'] = Hash::make($data['password']);
+        if(isset($data['phone'])) {
+            if(substr($data['phone'],0,3) == '+62') {
+                $data['phone'] = preg_replace("/^0/", "+62", $data['phone']);
+            } else if(substr($data['phone'],0,1) == '0') {
+                $data['phone'] = preg_replace("/^0/", "+62", $data['phone']);
+            } else {
+                $data['phone'] = "+62".$data['phone'];
+            }
+        }
         $store = $this->create($data);
-        $store->assignRole($data['position']);
+        $store->assignRole($data['role']);
         return $store; 
     }
 
@@ -75,14 +84,14 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     /**
      * Find the user by role
      * 
-     * @param string $username
+     * @param string $email
      * 
      * @return User
      */
-    public function findUserByUsername($username): User
+    public function findUserByEmail($email): User
     {
         try {
-            return $this->model->where('username', $username)->first();
+            return $this->model->where('email', $email)->first();
         } catch(ModelNotFoundException $e) {
             throw new UserNotFoundException();
         }
@@ -99,6 +108,15 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     {
         if (isset($params['password'])) {
             $params['password'] = Hash::make($params['password']);
+        }
+        if(isset($params['phone'])) {
+            if(substr($params['phone'],0,3) == '+62') {
+                $params['phone'] = preg_replace("/^0/", "+62", $params['phone']);
+            } else if(substr($params['phone'],0,1) == '0') {
+                $params['phone'] = preg_replace("/^0/", "+62", $params['phone']);
+            } else {
+                $params['phone'] = "+62".$params['phone'];
+            }
         }
 
         $filtered = collect($params)->all();

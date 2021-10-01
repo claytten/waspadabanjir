@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Accounts\ProfileController;
 use App\Http\Controllers\Admin\Accounts\UserController;
 use App\Http\Controllers\Admin\Accounts\RoleController;
+use App\Http\Controllers\Admin\Accounts\SettingController;
 use App\Http\Controllers\Admin\Address\ProvinceController;
 use App\Http\Controllers\Admin\Address\RegencyController;
 use App\Http\Controllers\Admin\Address\DistrictController;
@@ -40,16 +41,18 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth'], 'as' => 'admin.' ],
 
     // Account Routing
     Route::resource('/account/admin', UserController::class, ['except' => ['update']]);
-    Route::put('/account/admin/{id}/{role}/edit', [UserController::class, 'update'])->name('admin.update');
+    Route::put('/account/admin/{id}/edit', [UserController::class, 'update'])->name('admin.update');
     Route::resource('/account/role', RoleController::class);
 
     // Profile Routing
-    Route::get('/profile/{userId}/{role}', [ProfileController::class, 'editProfile'])->name('edit.profile');
-    Route::put('/profile/{userId}/{role}/edit', [ProfileController::class, 'updateProfile'])->name('update.profile');
-    Route::put('/profile/address/{userId}/{role}/edit', [ProfileController::class, 'updateProfileAddress'])->name('update.address.profile');
-    Route::put('/profile/avatar/{userId}/{role}/edit', [ProfileController::class, 'updateProfileAvatar'])->name('update.profile.avatar');
-    Route::put('/settings/{userId}/edit', [ProfileController::class, 'updateSetting'])->name('update.setting');
+    Route::get('/profile/{userId}', [ProfileController::class, 'editProfile'])->name('edit.profile');
+    Route::put('/profile/{userId}/edit', [ProfileController::class, 'updateProfile'])->name('update.profile');
+    Route::put('/profile/address/{userId}/edit', [ProfileController::class, 'updateProfileAddress'])->name('update.address.profile');
+    Route::put('/profile/avatar/{userId}/edit', [ProfileController::class, 'updateProfileAvatar'])->name('update.profile.avatar');
     Route::put('/settings/reset-password/{userId}/edit', [ProfileController::class, 'resetPassword'])->name('reset.password');
+
+    // Setting Routing
+    Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
 
     // Addressing
     Route::resource('/address/provinces', ProvinceController::class, ['only' => ['index', 'store', 'update', 'destroy', 'show']]);

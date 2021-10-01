@@ -15,7 +15,7 @@ interface UserRepositoryInterface extends BaseRepositoryInterface
 
     public function findUserById(int $id) : User;
 
-    public function findUserByUsername($name): User;
+    public function findUserByEmail($email): User;
 
     public function updateUser(array $params): bool;
 

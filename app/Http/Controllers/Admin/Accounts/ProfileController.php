@@ -33,16 +33,6 @@ class ProfileController extends Controller
     private $userRepo;
 
     /**
-     * @var AdminRepositoryInterface
-     */
-    private $adminRepo;
-
-    /**
-     * @var EmployeeRepositoryInterface
-     */
-    private $employeeRepo;
-
-    /**
      * Profile Controller Constructor
      *
      * @param UserRepositoryInterface $UserRepository
@@ -51,14 +41,10 @@ class ProfileController extends Controller
      * @return void
      */
     public function __construct(
-        UserRepositoryInterface $userRepository,
-        AdminRepositoryInterface $adminRepository,
-        EmployeeRepositoryInterface $employeeRepository
+        UserRepositoryInterface $userRepository
     )
     {
         $this->userRepo = $userRepository;
-        $this->adminRepo = $adminRepository;
-        $this->employeeRepo = $employeeRepository;
     }
     
     /**
@@ -68,19 +54,16 @@ class ProfileController extends Controller
      * @param  string   $role
      * @return \Illuminate\Http\Response
      */
-    public function editProfile($userId, $role)
+    public function editProfile($userId)
     {
         $user = $this->userRepo->findUserById($userId);
-        $admin = $user->$role;
         $provinces = Cache::get('provinces');
 
-        if(substr($admin['phone'],0,3) == '+62') {
-            $admin['phone'] = substr($admin['phone'],3);
+        if(substr($user['phone'],0,3) == '+62') {
+            $user['phone'] = substr($user['phone'],3);
         }
-        if($user->role == 'admin') {
-            return view('admin.profiles.profile_admin', compact('admin', 'provinces')); 
-        } 
-        return view('admin.profiles.profile_employee', compact('admin', 'provinces'));
+
+        return view('admin.accounts.profile', compact('user', 'provinces'));
     }
 
     /**
@@ -91,32 +74,19 @@ class ProfileController extends Controller
      * @param  string   $role
      * @return \Illuminate\Http\Response
      */
-    public function updateProfile(Request $request, $userId, $role)
+    public function updateProfile(Request $request, $userId)
     {
         $data = $request->except('_token', '_method');
         $user = $this->userRepo->findUserById($userId);
-        if($user->role == 'admin') {
-            $request->validate([
-                'name' => ['required', 'string', 'max:191'],
-                'email' => ['required', 'email', 'max:191', 'unique:admin,email,'.$user->$role->id],
-                'phone' => ['required', 'string', 'max:191'],
-            ]);
-            $admin = $this->adminRepo->findAdminById($user->$role->id);
-            $adminRepo = new AdminRepository($admin);
-            $adminRepo->updateAdmin($data);
-        } else {
-            $request->validate([
-                'name' => ['required', 'string', 'max:191'],
-                'email' => ['required', 'email', 'max:191', 'unique:employees,email,'.$user->$role->id],
-                'phone' => ['required', 'string', 'max:191'],
-                'id_card' => ['required', 'string', 'max:191'],
-            ]);
-            $admin = $this->employeeRepo->findEmployeeById($user->$role->id);
-            $adminRepo = new EmployeeRepository($admin);
-            $adminRepo->updateEmployee($data);
-        }
+        $request->validate([
+            'name' => ['required', 'string', 'max:191'],
+            'email' => ['required', 'email', 'max:191', 'unique:users,email,'.$user->id],
+            'phone' => ['required', 'string', 'max:191'],
+        ]);
+        $userRepo = new UserRepository($user);
+        $userRepo->updateUser($data);
         
-        return redirect()->route('admin.edit.profile', [$user->id, $user->role])->with([
+        return redirect()->route('admin.edit.profile', $user->id)->with([
             'status'    => 'success',
             'message'   => 'Update Profile Successfull!'
         ]);
@@ -130,43 +100,25 @@ class ProfileController extends Controller
      * @param  string   $role
      * @return \Illuminate\Http\Response
      */
-    public function updateProfileAvatar(Request $request, $userId, $role)
+    public function updateProfileAvatar(Request $request, $userId)
     {
         $data = $request->except('_token', '_method');
         $user = $this->userRepo->findUserById($userId);
-        if($user->role == 'admin') {
-            $admin = $this->adminRepo->findAdminById($user->$role->id);
-            $adminRepo = new AdminRepository($admin);
-            if ($request->hasFile('image') && $request->file('image') instanceof UploadedFile) {
-                if(!empty($admin->image)) {
-                    $adminRepo->deleteFile($admin->image);
-                }
-                $data['image'] = $this->employeeRepo->saveCoverImage($request->file('image'));
-                $adminRepo->updateAdmin($data);
-            } else {
-                return redirect()->route('admin.edit.profile', [$user->id, $user->role])->with([
-                    'status'    => 'danger',
-                    'message'   => "You can't Update Blank Photo"
-                ]);
+        $userRepo = new UserRepository($user);
+        if ($request->hasFile('image') && $request->file('image') instanceof UploadedFile) {
+            if(!empty($user->image)) {
+                $userRepo->deleteFile($user->image);
             }
+            $data['image'] = $this->userRepo->saveCoverImage($request->file('image'));
+            $userRepo->updateUser($data);
         } else {
-            $admin = $this->employeeRepo->findEmployeeById($user->$role->id);
-            $adminRepo = new EmployeeRepository($admin);
-            if ($request->hasFile('image') && $request->file('image') instanceof UploadedFile) {
-                if(!empty($admin->image)) {
-                    $adminRepo->deleteFile($admin->image);
-                }
-                $data['image'] = $this->employeeRepo->saveCoverImage($request->file('image'));
-                $adminRepo->updateEmployee($data);
-            } else {
-                return redirect()->route('admin.edit.profile', [$user->id, $user->role])->with([
-                    'status'    => 'danger',
-                    'message'   => "You can't Update Blank Photo"
-                ]);
-            }
+            return redirect()->route('admin.edit.profile', $user->id)->with([
+                'status'    => 'danger',
+                'message'   => "You can't Update Blank Photo"
+            ]);
         }
         
-        return redirect()->route('admin.edit.profile', [$user->id, $user->role])->with([
+        return redirect()->route('admin.edit.profile', $user->id)->with([
             'status'    => 'success',
             'message'   => 'Update Profile Successfull!'
         ]);
@@ -179,22 +131,22 @@ class ProfileController extends Controller
      * @param  int  $userId
      * @return \Illuminate\Http\Response
      */
-    public function updateSetting(UpdateUserRequest $request, $userId)
-    {
-        $user = $this->userRepo->findUserById($userId);
-        $userRepo = new UserRepository($user);
-        $chkOldPassword = Hash::check($request->password_confirmation, $user->password);
-        if ($chkOldPassword) {
-            $user->username = $request->username;
-            $user->save();
+    // public function updateSetting(UpdateUserRequest $request, $userId)
+    // {
+    //     $user = $this->userRepo->findUserById($userId);
+    //     $userRepo = new UserRepository($user);
+    //     $chkOldPassword = Hash::check($request->password_confirmation, $user->password);
+    //     if ($chkOldPassword) {
+    //         $user->username = $request->username;
+    //         $user->save();
             
-            return redirect()->route('admin.logout');
-        }
-        return redirect()->route('admin.edit.profile', [$user->id, $user->role])->with([
-            'status'    => 'danger',
-            'message'   => "Your confirmation password something wrong"
-        ]);
-    }
+    //         return redirect()->route('admin.logout');
+    //     }
+    //     return redirect()->route('admin.edit.profile', [$user->id, $user->role])->with([
+    //         'status'    => 'danger',
+    //         'message'   => "Your confirmation password something wrong"
+    //     ]);
+    // }
 
     /**
      * Update the specified resource in storage.
@@ -219,7 +171,7 @@ class ProfileController extends Controller
             ]);
         }
         
-        return redirect()->route('admin.edit.profile', [$user->id, $user->role])->with([
+        return redirect()->route('admin.edit.profile', $user->id)->with([
             'status'    => 'danger',
             'message'   => "Your confirmation password something wrong"
         ]);
@@ -235,46 +187,24 @@ class ProfileController extends Controller
      */
     public function updateProfileAddress(Request $request, $userId, $role)
     {
+        $request->validate([
+            'address_id' =>  ['required', 'string']
+        ]);
         $data = $request->except('_token', '_method');
         $user = $this->userRepo->findUserById($userId);
+        $userRepo = new UserRepository($user);
         $address = array();
-        if($request->ajax()) {
-            if($user->role == 'admin') {
-                $request->validate([
-                    'address_id' =>  ['required', 'string']
-                ]);
-                $admin = $this->adminRepo->findAdminById($user->$role->id);
-                $adminRepo = new AdminRepository($admin);
-                $adminRepo->updateAdmin($data);
-                $address[] = array(
-                    "address_id"    => $admin->address_id,
-                    "address_name"  => $admin->village->name,
-                    "district_id"   => $admin->village->district->id,
-                    "district_name" => $admin->village->district->name,
-                    "regency_id"    => $admin->village->district->regency->id,
-                    "regency_name"  => $admin->village->district->regency->name,
-                    "province_id"   => $admin->village->district->regency->province->id,
-                    "province_name" => $admin->village->district->regency->province->name
-                );
-            } else {
-                $request->validate([
-                    'address_id' =>  ['required', 'string']
-                ]);
-                $admin = $this->employeeRepo->findEmployeeById($user->$role->id);
-                $adminRepo = new EmployeeRepository($admin);
-                $adminRepo->updateEmployee($data);
-                $address[] = array(
-                    "address_id"    => $admin->address_id,
-                    "address_name"  => $admin->village->name,
-                    "district_id"   => $admin->village->district->id,
-                    "district_name" => $admin->village->district->name,
-                    "regency_id"    => $admin->village->district->regency->id,
-                    "regency_name"  => $admin->village->district->regency->name,
-                    "province_id"   => $admin->village->district->regency->province->id,
-                    "province_name" => $admin->village->district->regency->province->name
-                );
-            }
-        }
+        $userRepo->updateUser($data);
+        $address[] = array(
+            "address_id"    => $user->address_id,
+            "address_name"  => $user->village->name,
+            "district_id"   => $user->village->district->id,
+            "district_name" => $user->village->district->name,
+            "regency_id"    => $user->village->district->regency->id,
+            "regency_name"  => $user->village->district->regency->name,
+            "province_id"   => $user->village->district->regency->province->id,
+            "province_name" => $user->village->district->regency->province->name
+        );
 
         return response()->json([
             'status'    => 'success',

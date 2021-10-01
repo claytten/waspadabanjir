@@ -39,8 +39,8 @@ class monthlyUsersUsage extends Command
      */
     public function handle()
     {
-        $dailyUsage = Cache::get('dailyUsersResult');
-        Cache::forever('monthlyUsersResult', $dailyUsage);
+        $monthlyUsage = Cache::get('dailyUsersResult');
+        Cache::forever('monthlyUsersResult', $monthlyUsage);
         Cache::forget('dailyUsersResult');
         Log::info("Successfully accumulate user monthly usage to result");
         $this->info('Successfully accumulate user monthly usage to result');

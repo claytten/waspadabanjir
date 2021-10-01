@@ -2,13 +2,11 @@
 
 namespace App\Models\Users;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Address\Villages\Village;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
-use App\Models\Accounts\Admins\Admin;
-use App\Models\Accounts\Employees\Employee;
 use Illuminate\Support\Facades\Cache;
 
 class User extends Authenticatable
@@ -21,8 +19,12 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'username',
+        'email',
         'password',
+        'name',
+        'address_id',
+        'phone',
+        'image',
         'role',
         'status'
     ];
@@ -37,23 +39,13 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the admin associated with the User
+     * Get the village that owns the Admin
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function admin()
+    public function village()
     {
-        return $this->hasOne(Admin::class, 'id_user', 'id');
-    }
-
-    /**
-     * Get the employee associated with the User
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function employee()
-    {
-        return $this->hasOne(Employee::class, 'id_user', 'id');
+        return $this->belongsTo(Village::class, 'address_id', 'id');
     }
 
     /**
@@ -64,7 +56,6 @@ class User extends Authenticatable
     public function routeNotificationForWhatsApp()
     {
         $user = Cache::get('adminWA');
-        $role = $user->role;
-        return $user->$role->phone;
+        return $user->phone;
     }
 }
