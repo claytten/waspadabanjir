@@ -167,7 +167,6 @@ return [
          */
         Spatie\Permission\PermissionServiceProvider::class,
         Jsdecena\Baserepo\BaseRepositoryProvider::class,
-        Barryvdh\Debugbar\ServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
 
         /*
