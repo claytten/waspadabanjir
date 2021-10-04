@@ -7,8 +7,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use App\Broadcasting\WhatsAppChannel;
 use App\Models\Users\User;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class AskingReportProcessed extends Notification
+class AskingReportProcessed extends Notification implements ShouldQueue
 {
   use Queueable;
 

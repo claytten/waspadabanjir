@@ -5,12 +5,11 @@ namespace App\Notifications;
 use App\Broadcasting\Messages\WhatsAppMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Broadcasting\WhatsAppChannel;
 use App\Models\Subscribers\Subscribe;
 
-class SubscribeProcessed extends Notification
+class SubscribeProcessed extends Notification implements ShouldQueue
 {
   use Queueable;
 

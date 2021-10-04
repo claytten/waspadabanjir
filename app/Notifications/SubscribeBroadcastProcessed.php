@@ -7,9 +7,10 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use App\Broadcasting\WhatsAppChannel;
 use App\Models\Subscribers\Subscribe;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
-class SubscribeBroadcastProcessed extends Notification
+class SubscribeBroadcastProcessed extends Notification implements ShouldQueue
 {
   use Queueable;
 
