@@ -50,5 +50,8 @@ jobs:
           ssh-known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
       - name: Deploy to PRODUCTION Server
         env:
+          hostname: ${{ secrets.HOSTNAME }}
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
           DOT_ENV: ${{ secrets.DOT_ENV_PRODUCTION }}
         run: dep deploy production --tag=${{ env.GITHUB_REF }} -vvv

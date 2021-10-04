@@ -35,11 +35,11 @@ task('deploy:secrets', function () {
 });
 
 // Production Server
-host(getenv('HOST')) // Name of the server
-->hostname(getenv('HOSTNAME')) // Hostname or IP address
+host(getenv('host')) // Name of the server
+->hostname(getenv('hostname')) // Hostname or IP address
 ->stage('production') // Deployment stage (production, staging, etc)
-->user(getenv('USERNAME')) // SSH user
-->set('deploy_path', '/var/'.getenv('HOST').''); // Deploy path
+->user(getenv('username')) // SSH user
+->set('deploy_path', '/var/'.getenv('host').''); // Deploy path
 
 after('deploy:failed', 'deploy:unlock'); // Unlock after failed deploy
 
