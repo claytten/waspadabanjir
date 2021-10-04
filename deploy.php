@@ -39,7 +39,7 @@ host(getenv('host')) // Name of the server
 ->hostname(getenv('hostname')) // Hostname or IP address
 ->stage('production') // Deployment stage (production, staging, etc)
 ->user(getenv('username')) // SSH user
-->set('deploy_path', '/var/'.getenv('host').''); // Deploy path
+->set('deploy_path', '/var/www/'.getenv('host').''); // Deploy path
 
 after('deploy:failed', 'deploy:unlock'); // Unlock after failed deploy
 
