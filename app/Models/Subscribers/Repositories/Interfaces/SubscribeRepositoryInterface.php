@@ -24,7 +24,7 @@ interface SubscribeRepositoryInterface extends BaseRepositoryInterface
 
     public function deleteSubscribe() : bool;
 
-    public function sendWhatsAppMessage(string $message, string $recipient) : bool;
+    public function sendWhatsAppMessage(string $message, string $recipient);
 
     public function defaultMenu(string $name) : string;
 

@@ -9,9 +9,9 @@ use App\Models\Address\Districts\Repositories\Interfaces\DistrictRepositoryInter
 use App\Models\Maps\Fields\Repositories\Interfaces\FieldRepositoryInterface;
 use App\Models\Reports\Repositories\Interfaces\ReportRepositoryInterface;
 use App\Http\Controllers\Controller;
+use App\Jobs\onCompleteSubscribe;
+use App\Jobs\onSubscribeProcessing;
 use App\Models\Subscribers\Repositories\SubscribeRepository;
-use App\Notifications\SubscribeProcessed;
-use App\Notifications\SubscribeBroadcastProcessed;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -140,8 +140,7 @@ class SubscribeController extends Controller
       
       foreach($subscribers->where('status', 1) as $item) {
         $item->body = $request->body;
-        $item->phoneTo = 'subscriber';
-        $item->notify(new SubscribeBroadcastProcessed($item));
+        onSubscribeProcessing::dispatch($item);
       }
 
       return response()->json([
@@ -178,7 +177,7 @@ class SubscribeController extends Controller
             "province_name" => $subscribe->regency->province->name
         );
         $subscribe->phoneTo = 'subscriber';
-        $subscribe->notify(new SubscribeProcessed($subscribe));
+        onCompleteSubscribe::dispatch($subscribe);
 
         return response()->json([
           'code'  => 200,

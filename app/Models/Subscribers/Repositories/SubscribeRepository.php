@@ -2,18 +2,20 @@
 
 namespace App\Models\Subscribers\Repositories;
 
+use App\Jobs\onAskingReportToAdmin;
+use App\Jobs\onResponServiced;
 use App\Models\Subscribers\Exceptions\CreateSubscribeInvalidArgumentException;
 use Jsdecena\Baserepo\BaseRepository;
 use App\Models\Subscribers\Subscribe;
 use App\Models\Subscribers\Exceptions\SubscribeNotFoundException;
 use App\Models\Subscribers\Repositories\Interfaces\SubscribeRepositoryInterface;
-use App\Notifications\AskingReportProcessed;
 use Carbon\Carbon;
 use App\Models\Tools\UploadableTrait;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Twilio\Rest\Client;
 
 class SubscribeRepository extends BaseRepository implements SubscribeRepositoryInterface
@@ -161,20 +163,10 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
      * @param string $message Body of sms
      * @param string $recipient Number of recipient
      */
-    public function sendWhatsAppMessage(string $message, string $recipient) : bool
+    public function sendWhatsAppMessage(string $message, string $recipient)
     {
       try {
-        $twilio_whatsapp_number = config('services.twilio.whatsapp_from');
-        $account_sid = config('services.twilio.sid');
-        $auth_token = config('services.twilio.token');
-
-        $client = new Client($account_sid, $auth_token);
-        $response = $client->messages->create($recipient, array('from' => "whatsapp:$twilio_whatsapp_number", 'body' => $message));
-        if($response->status === "queued") {
-          return true;
-        } else {
-          return false;
-        }
+        onResponServiced::dispatch($message, $recipient);
       } catch(QueryException $e) {
         throw new CreateSubscribeInvalidArgumentException($e);
       }
@@ -519,8 +511,7 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
         $message .= "\n Waktu pelaporan : {$date}";
         $message .= "\n Isi pertanyaan: {$body}";
         $user->body = strval($message);
-        $user->phoneTo = 'user';
-        $user->notify(new AskingReportProcessed($user));
+        onAskingReportToAdmin::dispatch($user);
       }
 
       return $reportRepo->storeReportWhatsapp($data[0]);

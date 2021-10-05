@@ -10,7 +10,7 @@ use App\Models\Maps\Fields\Field;
 use App\Models\Maps\Fields\Requests\CreateFieldRequest;
 use App\Models\Maps\Fields\Requests\UpdateFieldRequest;
 use App\Http\Controllers\Controller;
-use App\Notifications\SubscribeBroadcastProcessed;
+use App\Jobs\onSubscribeProcessing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -138,7 +138,7 @@ class MapController extends Controller
           $subscribers = $this->subscribeRepo->listSubscribes()->sortBy('name');
           foreach($subscribers->where('status', 1) as $item) {
             $item->body = strval($message);
-            $item->notify(new SubscribeBroadcastProcessed($item));
+            onSubscribeProcessing::dispatch($item);
           }
         }
 
