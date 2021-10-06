@@ -56,16 +56,16 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
     public function createSubscribe(array $data): Subscribe
     {
         try {
-            if(isset($data['phone'])) {
-                if(substr($data['phone'],0,3) == '+62') {
-                    $data['phone'] = preg_replace("/^0/", "+62", $data['phone']);
-                } else if(substr($data['phone'],0,1) == '0') {
-                    $data['phone'] = preg_replace("/^0/", "+62", $data['phone']);
-                } else {
-                    $data['phone'] = "+62".$data['phone'];
-                }
+          if(isset($data['phone'])) {
+            if(substr($data['phone'],0,3) == '+62') {
+                $data['phone'] = preg_replace("/^0/", "+62", $data['phone']);
+            } else if(substr($data['phone'],0,1) == '0') {
+                $data['phone'] = preg_replace("/^0/", "+62", $data['phone']);
+            } else {
+                $data['phone'] = "+62".$data['phone'];
             }
-            return $this->model->create($data);
+          }
+          return $this->model->create($data);
         } catch (QueryException $e) {
             throw new SubscribeNotFoundException($e);
         }
@@ -137,16 +137,16 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
      */
     public function updateSubscribe(array $params): bool
     {
-        if(isset($params['phone'])) {
-            if(substr($params['phone'],0,3) == '+62') {
-                $params['phone'] = preg_replace("/^0/", "+62", $params['phone']);
-            } else if(substr($params['phone'],0,1) == '0') {
-                $params['phone'] = preg_replace("/^0/", "+62", $params['phone']);
-            } else {
-                $params['phone'] = "+62".$params['phone'];
-            }
+      if(isset($params['phone'])) {
+        if(substr($params['phone'],0,3) == '+62') {
+            $params['phone'] = preg_replace("/^0/", "+62", $params['phone']);
+        } else if(substr($params['phone'],0,1) == '0') {
+            $params['phone'] = preg_replace("/^0/", "+62", $params['phone']);
+        } else {
+            $params['phone'] = "+62".$params['phone'];
         }
-        return $this->model->update($params);
+      }
+      return $this->model->update($params);
     }
 
     /**
@@ -237,8 +237,9 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
           $message = "--MENU PILIHAN LAPORAN--\n\nBerikut merupakan pilihan dalam opsi laporan. Jenis laporan apa yang kamu inginkan?\n1. Kritik & Saran\n2. Laporan Kejadian Banjir\n3. Pertanyaan\n\nBalas *SATU ANGKA* saja yaa.";
           break;
         case 'd':
+          $subRepo = new SubscribeRepository($findNumber);
+          $subRepo->updateSubscribe([ 'status' => 0 ]);
           Cache::forget($from);
-          $this->updateSubscribe([ 'status' => 0]);
           $message = "Selamat tinggal kak {$findNumber->name}. jika ingin berlangganan kembali ketik *subscribe*.";
           break;
         default:

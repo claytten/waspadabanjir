@@ -305,7 +305,6 @@ class SubscribeController extends Controller
     private function guestMenu($from, $body) {
       $findNumber = $this->subscribeRepo->findSubscriberByPhone(ltrim($from, 'whatsapp:'));
       if(!empty($findNumber)) {
-        $subRepo = new SubscribeRepository($findNumber);
         if ($findNumber->status === 1) {
           $answerID = Cache::has($from) ? Cache::get($from) : null;
           if ($answerID !== null) {
@@ -339,7 +338,8 @@ class SubscribeController extends Controller
             $message = $this->subscribeRepo->listDefaultMenu($from, $findNumber, $body, $this->districtRepo, $this->fieldRepo);
           }
         } elseif ($body == 'subscribe') {
-          $this->subscribeRepo->updateSubscribe([ 'status' => 1 ]);
+          $subRepo = new SubscribeRepository($findNumber);
+          $subRepo->updateSubscribe([ 'status' => 1 ]);
           $message = "Selamat datang kembali Kak {$findNumber->name}. Silahkan ketik *menu* untuk menampilkan daftar layanan";
         } else {
           $message = "Nomor Whatsapp kamu dalam status tidak berlangganan. Silahkan ketik *subscribe* untuk kembali berlangganan";

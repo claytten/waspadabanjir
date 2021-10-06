@@ -231,6 +231,9 @@ class UserController extends Controller
             if(!empty($users->image) ) {
                 $user->deleteFile($users->image);
             }
+            if($users->id === Cache::get('adminWA')->id) {
+                Cache::forget('adminWA');
+            }
             $message = 'User successfully destroy';
             $user->deleteUser();
         }
