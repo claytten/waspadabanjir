@@ -65,8 +65,8 @@
               <div class="collapsible-header"><i class="material-icons">arrow_drop_down</i>1. Silahkan join ke portal informasi banjir terlebih dahulu</div>
               <div class="collapsible-body">
                 <p>Terdapat 2 Pilihan yang bisa kamu gunakan</p>
-                <p>- Tambahkan &nbsp;"<strong>join slowly-happen</strong>"&nbsp; pada kolom pesan WhatsApp. Kemudian kirim pesan tersebut ke "+14155238886"</p>
-                <p>- Scan Barcode di bawah ini atau <a href="http://wa.me/+14155238886?text=join%20slowly-happen" target="_blank">Klik Disini</a>.
+                <p>- Tambahkan &nbsp;"<strong>plain-fifteen</strong>"&nbsp; pada kolom pesan WhatsApp. Kemudian kirim pesan tersebut ke "+14155238886"</p>
+                <p>- Scan Barcode di bawah ini atau <a href="http://wa.me/+14155238886?text=join%20plain-fifteen" target="_blank">Klik Disini</a>.
                   Maka kolom pesan WhatsApp akan terisi otomatis dengan kalimat &nbsp;"<strong>join slowly-happen</strong>"&nbsp;. Kemudian kirim pesan tersebut
                 </p>
                 <img class="materialboxed" width="200" src="{{ asset('images/step/whatsapp_scan_me.png') }}">
