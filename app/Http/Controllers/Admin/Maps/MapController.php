@@ -11,6 +11,7 @@ use App\Models\Maps\Fields\Requests\CreateFieldRequest;
 use App\Models\Maps\Fields\Requests\UpdateFieldRequest;
 use App\Http\Controllers\Controller;
 use App\Jobs\onSubscribeProcessing;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -52,17 +53,24 @@ class MapController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function indexView(Request $request)
+    public function indexView($date_in, $date_out, Request $request)
     {
       if ($request->ajax()) {
-          $fields = $this->fieldRepo->listFields()->sortBy('name');
-          return response()->json([
-              'code'      => 200,
-              'status'    => 'success',
-              'data'      => $fields
-          ]);
+        $date_in = Carbon::createFromFormat('m-d-Y', $date_in)->format('Y-m-d');
+        $date_out = Carbon::createFromFormat('m-d-Y', $date_out)->format('Y-m-d');
+        $fields = $this->fieldRepo->listFields($date_in, $date_out);
+        return response()->json([
+          'code'      => 200,
+          'status'    => 'success',
+          'data'      => $fields,
+        ]);
       }
-      return view('admin.maps.index');
+      return view('admin.maps.index', [
+        'date_in'   => $date_in,
+        'date_out'  => $date_out,
+        'title_date_in' => Carbon::createFromFormat('m-d-Y', $date_in)->format('d-m-Y'),
+        'title_date_out' => Carbon::createFromFormat('m-d-Y', $date_out)->format('d-m-Y'),
+      ]);
     }
 
     /**
@@ -70,42 +78,46 @@ class MapController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($date_in, $date_out)
     {
-        $fields = $this->fieldRepo->listFields()->sortBy('name');
+      $date_in = Carbon::createFromFormat('m-d-Y', $date_in)->format('Y-m-d');
+      $date_out = Carbon::createFromFormat('m-d-Y', $date_out)->format('Y-m-d');
+      $fields = $this->fieldRepo->listFields($date_in, $date_out);
 
-        $field_response = array(
-            "type" => "FeatureCollection",
-            "features" => array()
-        );
-        foreach($fields as $item){
-            $temp = array(
-                "type" => "Feature",
-                "properties" => array(
-                    "color" => $item->color,
-                    "popupContent" => array(
-                        "id"          => $item->id,
-                        "name"        => $item->name,
-                        "locations"   => $item->locations,
-                        "date"        => $item->date,
-                        "time"        => $item->time,
-                        "status"      => $item->status
-                    )
-                ),
-                "geometry" => array(
-                "type" => $item->geometries->geo_type,
-                "coordinates" => json_decode($item->geometries->coordinates)
-                )
-            );
+      $field_response = array(
+          "type" => "FeatureCollection",
+          "features" => array()
+      );
+      foreach($fields as $item){
+          $temp = array(
+            "type" => "Feature",
+            "properties" => array(
+              "color" => $item->color,
+              "popupContent" => array(
+                "id"          => $item->id,
+                "total_victims"=> ($item->deaths + $item->injured + $item->losts),
+                "total_village"=> $item->detailLocations()->count(),
+                "date_in"     => $this->fieldRepo->convertDateAttribute($item->date_in),
+                "date_in_time"=> $this->fieldRepo->convertTimeAttribute($item->date_in),
+                "date_out"    => ($item->date_out !== null ? $this->fieldRepo->convertDateAttribute($item->date_out) : false),
+                "date_out_time"=> ($item->date_out !== null ? $this->fieldRepo->convertTimeAttribute($item->date_out) : false),
+                "status"      => $item->status
+              )
+            ),
+            "geometry" => array(
+            "type" => 'Polygon',
+            "coordinates" => json_decode($item->area)
+            )
+          );
 
-            $field_response["features"][] = $temp;
-        }
+          $field_response["features"][] = $temp;
+      }
 
-        return response()->json([
-            'code'    => 200,
-            'status'  => 'success',
-            'data'    => $field_response
-        ]);
+      return response()->json([
+          'code'    => 200,
+          'status'  => 'success',
+          'data'    => $field_response
+      ]);
     }
 
     /**
@@ -117,6 +129,10 @@ class MapController extends Controller
     public function store(CreateFieldRequest $request)
     {
         $data = $request->except('_token','_method');
+        $data['date_in'] = $this->fieldRepo->getDateAttribute($data['date_in'],$data['date_in_time']);
+        if(!empty($data['date_out'])) {
+            $data['date_out'] = $this->fieldRepo->getDateAttribute($data['date_out'],$data['date_out_time']);
+        }
         $field = $this->fieldRepo->createField($data);
 
         $fieldRepo = new FieldRepository($field);
@@ -142,7 +158,10 @@ class MapController extends Controller
           }
         }
 
-        return redirect()->route('admin.map.view')->with([
+        return redirect()->route('admin.map.view', [
+            str_replace("/","-", $request->date_in),
+            (!empty($request->date_out) ? str_replace("/","-", $request->date_out) : str_replace("/","-", $request->date_in))
+        ])->with([
             'status'    => 'success',
             'message'   => 'Create Map successful!'
         ]);
@@ -154,9 +173,10 @@ class MapController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id, Request $request)
+    public function edit($id, $date_in, $date_out, Request $request)
     {
         $field = $this->fieldRepo->findFieldById($id);
+        
         if($request->ajax()) {
             $field_response = array(
                 "type" => "FeatureCollection",
@@ -168,8 +188,8 @@ class MapController extends Controller
                     "color" => $field->color,
                 ),
                 "geometry" => array(
-                    "type" => $field->geometries->geo_type,
-                    "coordinates" => json_decode($field->geometries->coordinates)
+                    "type" => 'Polygon',
+                    "coordinates" => json_decode($field->area)
                 )
             );
 
@@ -182,7 +202,9 @@ class MapController extends Controller
             ]);
         }
         return view('admin.maps.edit', [
-            'map' => $field
+            'map' => $field,
+            'date_in' => $date_in,
+            'date_out' => $date_out,
         ]);
     }
 
@@ -192,11 +214,13 @@ class MapController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id,$date_in, $date_out, Request $request)
     {
         $field = $this->fieldRepo->findFieldById($id);
         return view('admin.maps.show', [
-            'map' => $field
+            'map' => $field,
+            'date_in' => $date_in,
+            'date_out' => $date_out
         ]);
     }
 
@@ -214,24 +238,18 @@ class MapController extends Controller
         $fieldRepo = new FieldRepository($field);
 
         if ($request->ajax()) {
-            $field->geometries()->update([
-                'coordinates' => $request->coordinates,
-            ]);
-            $fieldRepo->updateField($data);
+            $field->area = $request->area;
+            $field->save();
             return response()->json([
                 'code'    => 200,
                 'status'  => 'success'
             ]);
         }
         $rules = [
-            'name'      => ['required', 'string'],
-            'locations' => ['required', 'string'],
             'description'=>['required', 'string'],
             'deaths'    => ['required', 'numeric', 'min:0'],
             'losts'     => ['required', 'numeric', 'min:0'],
             'injured'   => ['required', 'numeric', 'min:0'],
-            'date'      => ['required', 'string'],
-            'time'      => ['required', 'string'],
             'status'    => ['required']
         ];
         $customMessages = [
@@ -243,11 +261,17 @@ class MapController extends Controller
         if ($request->hasFile('images')) {
             $fieldRepo->saveMapImages(collect($request->file('images')));
         }
+        $data['date_in'] = $this->fieldRepo->getDateAttribute($data['date_in'],$data['date_in_time']);
+        if(!empty($data['date_out'])) {
+            $data['date_out'] = $this->fieldRepo->getDateAttribute($data['date_out'],$data['date_out_time']);
+        } else {
+            $data['date_out'] = null;
+        }
         $fieldRepo->updateField($data);
-        return redirect()->route('admin.map.view')->with([
+        return redirect()->route('admin.map.view', [$data['date_in_edit'], $data['date_out_edit']])->with([
             'status'    => 'success',
             'message'   => 'Update Map successful!'
-        ]);         
+        ]);
     }
 
     /**
@@ -256,7 +280,7 @@ class MapController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id, $date_in, $date_out)
     {
         $field = $this->fieldRepo->findFieldById($id);
         $fieldRepo = new FieldRepository($field);
@@ -268,7 +292,7 @@ class MapController extends Controller
         return  response()->json([
             'code'          => 200,
             'status'        => 'success',
-            'redirect_url'  => route('admin.map.view')
+            'redirect_url'  => route('admin.map.view', [$date_in, $date_out])
         ]);
     }
 

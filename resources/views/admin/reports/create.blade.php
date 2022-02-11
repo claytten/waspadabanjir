@@ -1,10 +1,10 @@
 @extends('layouts.admin.app',[
   'headers' => 'active',
   'menu' => 'reports',
-  'title' => 'Reports',
-  'first_title' => 'Reports',
+  'title' => 'Laporan',
+  'first_title' => 'Laporan',
   'first_link' => route('admin.reports.index'),
-  'second_title' => 'Create'
+  'second_title' => 'Pembuatan'
 ])
 
 @section('plugins_css')
@@ -21,10 +21,11 @@
           <div class="card-header">
             <div class="row align-items-center">
               <div class="col-lg-8 col-md-6">
-                <h3 class="mb-0" id="form-map-title">Create Report</h3>
+                <h3 class="mb-0" id="form-map-title">Form Laporan</h3>
               </div>
               <div class="col-lg-4 col-md-6 d-flex justify-content-end">
-                <button type="button" class="btn btn-warning" onclick="resetReport()" >Reset</button>
+                <a class="btn btn-info" href="{{ route('admin.admin.index') }}">Kembali</a>
+                <button type="button" class="btn btn-warning" onclick="resetReport()" >Atur Ulang Form</button>
                 <button type="submit" class="btn btn-primary" id="btn-submit" >Submit</button>
               </div>
             </div>
@@ -38,7 +39,7 @@
                 <div class="row">
                   <div class="col-md-12">
                     <div class="form-group row">
-                      <label for="name" class="col-md-2 col-form-label form-control-label @error('name') is-invalid @enderror">Full Name</label>
+                      <label for="name" class="col-md-2 col-form-label form-control-label @error('name') is-invalid @enderror">Nama Pelapor</label>
                       <div class="col-md-10">
                         <input class="form-control @error('name') is-invalid @enderror" name="name" type="text" id="name" required>
                         @error('name')
@@ -51,7 +52,7 @@
                   </div>
                   <div class="col-md-12 report-input">
                     <div class="form-group row">
-                      <label for="report_type" class="col-md-2 col-form-label form-control-label">Report Type</label>
+                      <label for="report_type" class="col-md-2 col-form-label form-control-label">Tipe Laporan</label>
                       <div class="col-md-10">
                         <select name="report_type" onchange="changeType()" id="report_type" class="form-control @error('report_type') is-invalid @enderror" data-toggle="select" required>
                           <option value=""></option>
@@ -69,7 +70,7 @@
                   </div>
                   <div class="col-md-12">
                     <div class="form-group row">
-                      <label for="message" class="col-md-2 col-form-label form-control-label">Messages</label>
+                      <label for="message" class="col-md-2 col-form-label form-control-label">Isi Laporan</label>
                       <div class="col-md-10">
                         <textarea class="form-control @error('message') is-invalid @enderror" name="message" id="message" required></textarea>
                         @error('message')
@@ -87,12 +88,12 @@
             <div class="col-lg-6">
               <div class="card-body">
                 <div class="form-group row">
-                  <label for="status" class="col-md-2 col-form-label form-control-label">Status</label>
+                  <label for="status" class="col-md-2 col-form-label form-control-label">Status Laporan</label>
                   <div class="col-md-10">
                     <select name="status" id="status" class="form-control @error('status') is-invalid @enderror" data-toggle="select">
                       <option value=""></option>
-                      <option value="0">Non-Verified</option>
-                      <option value="1">Verified</option>
+                      <option value="1">Terverifikasi</option>
+                      <option value="0">Belum Terverifikasi</option>
                     </select>
                     @error('status')
                       <span class="invalid-feedback" role="alert">
@@ -118,40 +119,40 @@
         <div class="card bg-secondary border-0 mb-0">
           <div class="card-body px-lg-5 py-lg-5">
             <div class="text-center text-muted mb-4">
-                <small>Add Address</small>
+                <small>Masukan Alamat Pelapor</small>
             </div>
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
-                <label class="form-control-label" for="input-address">Province</label>
+                <label class="form-control-label" for="input-address">Provinsi</label>
                 <select onchange="searchProvince()" id="provinces" class="form-control" data-toggle="select">
-                  <option value="" disabled selected>--Select Province--</option>
+                  <option value="" disabled selected>--Pilih Provinsi--</option>
                 </select>
               </div>
             </div>
 
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
-                <label class="form-control-label" for="input-address">Regency</label>
+                <label class="form-control-label" for="input-address">Kabupaten/Kota</label>
                 <select onchange="searchRegency()" id="regencies" class="form-control" data-toggle="select">
-                  <option value="" disabled selected>--Select Regency--</option>
+                  <option value="" disabled selected>--Pilih Kabupaten/Kota--</option>
                 </select>
               </div>
             </div>
 
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
-                <label class="form-control-label" for="input-address">District</label>
+                <label class="form-control-label" for="input-address">Kecamatan</label>
                 <select onchange="searchDistrict()" id="districts" class="form-control" data-toggle="select">
-                  <option value="" disabled selected>--Select District--</option>
+                  <option value="" disabled selected>--Pilih Kecamatan--</option>
                 </select>
               </div>
             </div>
 
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
-                <label class="form-control-label" for="input-address">Village</label>
+                <label class="form-control-label" for="input-address">Kelurahan</label>
                 <select name="village_id" id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select" onchange="searchVillage()">
-                  <option value="" disabled selected>--Select Village--</option>
+                  <option value="" disabled selected>--Pilih Kelurahan--</option>
                 </select>
               </div>
             </div>
@@ -176,10 +177,10 @@
   "use strict"
   $(document).ready(function() {
     $('#report_type').select2({
-        'placeholder': 'Select Report Type',
+        'placeholder': 'Pilih Tipe Laporan',
     });
     $('#status').select2({
-        'placeholder': 'Select Status',
+        'placeholder': 'Pilih Status',
     });
     $("#provinces, #regencies, #districts, #villages").select2({width: "100%"});
     $('#regencies, #districts, #villages, .btn-add-address').prop('disabled', true);
@@ -216,7 +217,7 @@
       $('#phone').next('span').remove();
       $('#phone').addClass('is-invalid').after(`
         <span class="invalid-feedback" role="alert">
-            <strong>Please Check again your phone number (+62xx/08xx)</strong>
+          <strong>Tolong cek kembali nomor HP yang diberikan (+62xx/08xx)</strong>
         </span>
       `);
     }
@@ -232,9 +233,9 @@
       $('.report-input').after(`
         <div class="col-md-12 phone">
           <div class="form-group row">
-            <label for="phone" class="col-md-2 col-form-label form-control-label">Phone Number</label>
+            <label for="phone" class="col-md-2 col-form-label form-control-label">Nomor HP</label>
             <div class="col-md-10">
-              <input class="form-control @error('phone') is-invalid @enderror" name="phone" type="text" id="phone" placeholder="example (+62xx/08xx)" onblur="phoneNumber(this)" onfocus="phoneNumber(this)" onchange="phoneNumber(this)" onkeyup="phoneNumber(this)">
+              <input class="form-control @error('phone') is-invalid @enderror" name="phone" type="text" id="phone" placeholder="contoh (+62xx/08xx)" onblur="phoneNumber(this)" onfocus="phoneNumber(this)" onchange="phoneNumber(this)" onkeyup="phoneNumber(this)">
               @error('phone')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
@@ -245,7 +246,7 @@
         </div>
         <div class="col-md-12 address">
           <div class="form-group row">
-            <label for="address" class="col-md-2 col-form-label form-control-label">Address</label>
+            <label for="address" class="col-md-2 col-form-label form-control-label">Alamat</label>
             <div class="col-md-10 input-group input-group-merge">
               <input type="text" id="address" class="form-control @error('address') is-invalid @enderror" name="address">
               <div class="input-group-append">
@@ -273,8 +274,8 @@
 
   function searchProvince() {
     $('#regencies, #districts, #villages').empty();
-    $('#regencies').append('<option value="" disabled selected>--Select Regency--</option>');
-    $('#districts').append('<option value="" disabled selected>--Select District--</option>');
+    $('#regencies').append('<option value="" disabled selected>--Pilih Kabupaten/Kota--</option>');
+    $('#districts').append('<option value="" disabled selected>--Pilih Kecamatan--</option>');
     $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
     $.ajax({
       headers: {
@@ -301,7 +302,7 @@
 
   function searchRegency() {
     $('#districts, #villages').empty();
-    $('#districts').append('<option value="" disabled selected>--Select District--</option>');
+    $('#districts').append('<option value="" disabled selected>--Pilih Kecamatan--</option>');
     $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
     $.ajax({
       headers: {
@@ -326,7 +327,7 @@
 
   function searchDistrict() {
     $('#villages').empty();
-    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
+    $('#villages').append('<option value="" disabled selected>--Pilih Kelurahan--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

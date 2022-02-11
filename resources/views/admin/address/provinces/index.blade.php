@@ -1,8 +1,8 @@
 @extends('layouts.admin.app',[
   'headers' => 'active',
   'menu' => 'address',
-  'title' => 'Province',
-  'first_title' => 'Province',
+  'title' => 'Provinsi',
+  'first_title' => 'Provinsi',
   'first_link' => route('admin.provinces.index')
 ])
 
@@ -27,10 +27,10 @@
           <div class="card-header">
             <div class="row align-items-center">
               <div class="col-lg-8 col-md-6">
-                <h3 class="mb-0" id="form_title">Create Province Information</h3>
+                <h3 class="mb-0" id="form_title">Form Buat Data Provinsi</h3>
               </div>
               <div class="col-lg-4 col-md-6 d-flex justify-content-end">
-                <button type="button" onclick="resetForm()" class="btn btn-danger" id="btn-reset">Reset</button>
+                <button type="button" onclick="resetForm()" class="btn btn-danger" id="btn-reset">Atur Ulang</button>
                 @if (auth()->user()->can('provinces-create'))
                   <button type="submit" class="btn btn-primary" id="btn-submit">Submit</button>
                 @endif
@@ -47,7 +47,7 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text"><i class="fas fa-map-marker"></i></span>
                       </div>
-                      <input class="form-control @error('name') is-invalid @enderror" placeholder="Name Province" type="text" name="name" value="{{ old('name')}}" id="name">
+                      <input class="form-control @error('name') is-invalid @enderror" placeholder="Nama Provinsi" type="text" name="name" value="{{ old('name')}}" id="name">
                       @error('name')
                           <div class="invalid-feedback">
                               {{ $message }}
@@ -67,7 +67,7 @@
         <div class="card">
           <!-- Card header -->
           <div class="card-header">
-            <h3 class="mb-0">List Provinces have been registered</h3>
+            <h3 class="mb-0">Daftar Provinsi yang telah terdaftar</h3>
           </div>
           <!-- Card body -->
           <div class="card-body">
@@ -75,9 +75,9 @@
                 <thead class="thead-light">
                   <tr>
                     <th>No</th>
-                    <th>Name</th>
-                    <th>Total Regencies</th>
-                    <th>Action</th>
+                    <th>Nama</th>
+                    <th>Jumlah Kabupaten/Kota</th>
+                    <th>Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -88,12 +88,12 @@
                     <td>{{ $item['regencies_count'] }}</td>
                     <td>
                       @if(auth()->user()->can('provinces-edit'))
-                        <button type="button" onclick="editAction('{{ $item['id']}}', '{{ $item['name'] }}', '{{ $index +1 }}')" class="edit btn btn-success btn-sm">Edit</button>
+                        <button type="button" onclick="editAction('{{ $item['id']}}', '{{ $item['name'] }}', '{{ $index +1 }}')" class="edit btn btn-success btn-sm">Ubah</button>
                       @endif
                       @if(auth()->user()->can('provinces-delete'))
-                        <button type="button" onclick="deleteAction('{{$item['id']}}')" class="delete btn btn-danger btn-sm">Delete</button>
+                        <button type="button" onclick="deleteAction('{{$item['id']}}')" class="delete btn btn-danger btn-sm">Hapus</button>
                       @endif
-                      <a href="#" class="show btn btn-info btn-sm">Show</a>
+                      <a href="#" class="show btn btn-info btn-sm">Rincian</a>
                     </td>
                   </tr>
                   @endforeach
@@ -101,9 +101,9 @@
                 <tfoot>
                   <tr>
                     <th>No</th>
-                    <th>Name</th>
-                    <th>Total Regencies</th>
-                    <th>Action</th>
+                    <th>Nama</th>
+                    <th>Jumlah Kabupaten/Kota</th>
+                    <th>Aksi</th>
                   </tr>
                 </tfoot>
               </table>
@@ -129,7 +129,7 @@
   const provincesTable = $("#provincesTable").DataTable({
       lengthMenu: [ 5, 10, 25, 50, 75, 100 ],
       language: {
-        "emptyTable": "Please select sort or search data"
+        "emptyTable": "Urutkan atau cari data"
       },
       pageLength: 5,
       columnDefs: [
@@ -193,7 +193,7 @@
         Swal.fire({
           icon: 'error',
           title: 'Oops... ' + textStatus,
-          text: 'Please Try Again or Refresh Page!'
+          text: 'Tolong Coba Lagi atau Muat Ulang Halaman!'
         });
     });
   });
@@ -204,19 +204,19 @@
     $("#_method").val('PUT');
     $("#name").val(name);
 
-    $("#form_title").text('Update Province Information');
+    $("#form_title").text('Form Ubah Data Provinsi');
     $("#btn-submit").text("Update");
   }
 
   function deleteAction(id) {
     Swal.fire({
-      title: 'Are you sure?',
-      text: "This data will be deleted!",
+      title: 'Apakah Kamu Yakin',
+      text: "Data ini akan terhapus!",
       type: 'info',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'Ya, hapus!'
     }).then((result) => {
         if (result.value) {
             let link = "{{ route('admin.provinces.index') }}/"+id;
@@ -231,7 +231,7 @@
               Swal.fire({
                 icon: 'error',
                 title: 'Oops... ' + textStatus,
-                text: 'Please Try Again or Refresh Page!'
+                text: 'Tolong Coba Lagi atau Muat Ulang Halaman!'
               });
             });
         }
@@ -242,16 +242,16 @@
     let setName = "'"+name+"'";
     let editOption = '', deleteOption = '', showOption = '';
     @if(auth()->user()->can('provinces-edit')) {
-      editOption = '<button type="button" onclick="editAction('+id+', '+setName+', '+idEdit+')" class="edit btn btn-success btn-sm">Edit</button>';
+      editOption = '<button type="button" onclick="editAction('+id+', '+setName+', '+idEdit+')" class="edit btn btn-success btn-sm">Ubah</button>';
     }
     @endif
 
     @if(auth()->user()->can('provinces-delete')) {
-      deleteOption = '<button type="button" onclick="deleteAction('+id+')" class="delete btn btn-danger btn-sm">Delete</button>';
+      deleteOption = '<button type="button" onclick="deleteAction('+id+')" class="delete btn btn-danger btn-sm">Hapus</button>';
     }
     @endif
 
-    showOption = '<a href="#" class="show btn btn-info btn-sm">Show</a>';
+    showOption = '<a href="#" class="show btn btn-info btn-sm">Rincian</a>';
 
     return editOption+deleteOption+showOption;
   }
@@ -262,7 +262,7 @@
     $("#_method").val('POST');
     $("#name").val('');
 
-    $("#form_title").text('Create Province Information');
+    $("#form_title").text('Form Buat Data Provinsi');
     $("#btn-submit").text("Submit");
   }
 </script>

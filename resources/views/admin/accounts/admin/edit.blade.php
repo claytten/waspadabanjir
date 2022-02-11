@@ -1,10 +1,10 @@
 @extends('layouts.admin.app',[
   'headers' => 'active',
   'menu' => 'accounts',
-  'title' => 'Users',
-  'first_title' => 'Users',
+  'title' => 'Pengguna',
+  'first_title' => 'Pengguna',
   'first_link' => route('admin.dashboard'),
-  'second_title' => 'Edit',
+  'second_title' => 'Ubah',
   'second_link' => route('admin.admin.edit', $user->id),
   'third_title'  => $user->name
 ])
@@ -41,15 +41,15 @@
           <div class="card-header">
             <div class="row align-items-center">
               <div class="col-lg-4 col-md-4">
-                <h3 class="mb-0">Users Information</h3>
+                <h3 class="mb-0">Informasi Pengguna</h3>
               </div>
               <div class="col-lg-8 col-md-8 d-flex justify-content-end">
-                <a class="btn btn-info" href="{{ route('admin.admin.index') }}">Back</a>
+                <a class="btn btn-info" href="{{ route('admin.admin.index') }}">Kembali</a>
                 <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-change-password">
                   <i class="ni ni-lock-circle-open"></i>
-                  Change Password
+                  Ubah Password
                 </button>
-                <button type="button" class="btn btn-danger" id="btn-reset">Reset</button>
+                <button type="button" class="btn btn-danger" id="btn-reset">Atur Ulang</button>
                 <button type="submit" class="btn btn-primary">Submit</button>
               </div>
             </div>
@@ -64,7 +64,7 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text"><i class="fas fa-user"></i></span>
                       </div>
-                      <input class="form-control @error('name') is-invalid @enderror" placeholder="Your name" type="text" name="name" value="{{ $user->name }}" id="name">
+                      <input class="form-control @error('name') is-invalid @enderror" placeholder="Nama Pengguna" type="text" name="name" value="{{ $user->name }}" id="name">
                       @error('name')
                           <div class="invalid-feedback">
                               {{ $message }}
@@ -79,7 +79,7 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                       </div>
-                      <input class="form-control @error('email') is-invalid @enderror" placeholder="Email address" type="email" name="email" value="{{ $user->email }}" id="email">
+                      <input class="form-control @error('email') is-invalid @enderror" placeholder="Email" type="email" name="email" value="{{ $user->email }}" id="email">
                       @error('email')
                           <div class="invalid-feedback">
                               {{ $message }}
@@ -96,7 +96,7 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text">+62</span>
                       </div>
-                      <input class="form-control @error('phone') is-invalid @enderror" placeholder="Phone Number (ex. 85702142789)" type="text" name="phone" value="{{ $user->phone }}" id="phone">
+                      <input class="form-control @error('phone') is-invalid @enderror" placeholder="Nomor HP (ex. 85702142789)" type="text" name="phone" value="{{ $user->phone }}" id="phone">
                       @error('phone')
                           <div class="invalid-feedback">
                               {{ $message }}
@@ -110,7 +110,7 @@
                     <div class="input-group input-group-merge">
                       <div class="custom-file">
                         <input type="file" accept=".jpg, .jpeg, .png" name="image" class="form-control imgs" onchange="previewImage(this)"id="projectCoverUploads">
-                        <label class="custom-file-label" for="projectCoverUploads">Choose file</label>
+                        <label class="custom-file-label" for="projectCoverUploads">Pilih Avatar</label>
                       </div>
                     </div>
                   </div>
@@ -137,7 +137,7 @@
                 <div class="col-md-12">
                   <div class="form-group" style="align-items: center">
                     <div class="input-group">
-                      <button type="button" class="btn btn-sm btn-danger d-block mb-2 mx-auto remove_preview text-center" onclick="resetPreview(this)" {{ ($user->image) ? '' : 'disabled'}}>Reset Preview</button>
+                      <button type="button" class="btn btn-sm btn-danger d-block mb-2 mx-auto remove_preview text-center" onclick="resetPreview(this)" {{ ($user->image) ? '' : 'disabled'}}>Atur Ulang Tampilan Avatar</button>
                     </div>
                     <div class="input-group" style="justify-content: center">
                       @if(!empty($user->image))
@@ -159,13 +159,13 @@
         <div class="card">
           <!-- Card header -->
           <div class="card-header">
-            <h3 class="mb-0">Publish</h3>
+            <h3 class="mb-0">Terbitkan</h3>
           </div>
           <!-- Card body -->
           <div class="card-body">
             <label class="custom-toggle custom-toggle-default">
               <input type="checkbox" name="status" {{ ($user->status == 1) ? 'checked' : '' }}>
-              <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
+              <span class="custom-toggle-slider rounded-circle" data-label-off="Tidak" data-label-on="Ya"></span>
             </label>
           </div>
         </div>
@@ -205,40 +205,40 @@
         <div class="card bg-secondary border-0 mb-0">
           <div class="card-body px-lg-5 py-lg-5">
             <div class="text-center text-muted mb-4">
-                <small>Add Address</small>
+                <small>Tambahkan Alamat</small>
             </div>
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
-                <label class="form-control-label" for="input-address">Province</label>
+                <label class="form-control-label" for="input-address">Provinsi</label>
                 <select onchange="searchProvince()" id="provinces" class="form-control" data-toggle="select">
-                  <option value="" disabled selected>--Select Province--</option>
+                  <option value="" disabled selected>--Pilh Provinsi--</option>
                 </select>
               </div>
             </div>
 
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
-                <label class="form-control-label" for="input-address">Regency</label>
+                <label class="form-control-label" for="input-address">Kabupaten/Kota</label>
                 <select onchange="searchRegency()" id="regencies" class="form-control" data-toggle="select">
-                  <option value="" disabled selected>--Select Regency--</option>
+                  <option value="" disabled selected>--Pilih Kabupaten/Kota--</option>
                 </select>
               </div>
             </div>
 
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
-                <label class="form-control-label" for="input-address">District</label>
+                <label class="form-control-label" for="input-address">Kecamatan</label>
                 <select onchange="searchDistrict()" id="districts" class="form-control" data-toggle="select">
-                  <option value="" disabled selected>--Select District--</option>
+                  <option value="" disabled selected>--Pilih Kecamatan--</option>
                 </select>
               </div>
             </div>
 
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
-                <label class="form-control-label" for="input-address">Village</label>
+                <label class="form-control-label" for="input-address">Kelurahan</label>
                 <select id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select" onchange="searchVillage()">
-                  <option value="" disabled selected>--Select Village--</option>
+                  <option value="" disabled selected>--Pilih Kelurahan--</option>
                 </select>
               </div>
             </div>
@@ -261,7 +261,7 @@
         <div class="card bg-secondary border-0 mb-0">
           <div class="card-body px-lg-5 py-lg-5">
               <div class="text-center text-muted mb-4">
-                  <small>Change Password</small>
+                  <small>Ubah Password</small>
               </div>
               <form role="form" action="{{ route('admin.reset.password', $user->id) }}" method="POST">
                   {{ csrf_field() }}
@@ -269,12 +269,12 @@
                   <input type="hidden" name="statStages" value="user" readonly>
                   <div class="form-group">
                     <div class="input-group input-group-merge input-group-alternative">
-                        <input class="form-control" placeholder="Old Password" type="password" name="oldpassword">
+                        <input class="form-control" placeholder="Password Lama" type="password" name="oldpassword">
                     </div>
                   </div>
                   <div class="form-group">
                       <div class="input-group input-group-merge input-group-alternative">
-                          <input class="form-control" placeholder="New Password" type="password" name="password">
+                          <input class="form-control" placeholder="Password Baru" type="password" name="password">
                       </div>
                   </div>
                   <div class="form-group">
@@ -282,7 +282,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
                         </div>
-                        <input class="form-control" placeholder="Confirmation Password" type="password" name="password_confirmation">
+                        <input class="form-control" placeholder="Konfirmasi Password" type="password" name="password_confirmation">
                     </div>
                 </div>
                   <div class="text-center">
@@ -306,7 +306,7 @@
   "use strict"
   $(document).ready(function() {
     $('#role').select2({
-        'placeholder': 'Select Role',
+        'placeholder': 'Pilih Role',
     });
     $("#provinces, #regencies, #districts, #villages").select2({width: "100%"});
     $('#regencies, #districts, #villages, .btn-add-address').prop('disabled', true);
@@ -356,7 +356,7 @@
     let preview_button = $(input).closest('.images-content').find('.remove_preview');
     let preview_form = $(input).closest('.images-content').find('.imgs');
 
-    $('.custom-file-label').html('Choose File');
+    $('.custom-file-label').html('Pilih Avatar');
     $(preview_image).attr('src', '');
     $(preview_button).prop('disabled', true);
     $(preview_form).val('');
@@ -365,7 +365,7 @@
   $("#btn-reset").click(function(e){
     e.preventDefault();
     $('#adminCreate')[0].reset();
-    $('#btn-address').empty().append('Set Address');
+    $('#btn-address').empty().append('Atur Alamat Pengguna');
     resetPreview();
   });
 
@@ -384,8 +384,8 @@
 
   function searchProvince() {
     $('#regencies, #districts, #villages').empty();
-    $('#regencies').append('<option value="" disabled selected>--Select Regency--</option>');
-    $('#districts').append('<option value="" disabled selected>--Select District--</option>');
+    $('#regencies').append('<option value="" disabled selected>--Pilih Kabupaten/Kota--</option>');
+    $('#districts').append('<option value="" disabled selected>--Pilih Kecamatan--</option>');
     $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
     $.ajax({
       headers: {
@@ -412,8 +412,8 @@
 
   function searchRegency() {
     $('#districts, #villages').empty();
-    $('#districts').append('<option value="" disabled selected>--Select District--</option>');
-    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
+    $('#districts').append('<option value="" disabled selected>--Pilih Kecamatan--</option>');
+    $('#villages').append('<option value="" disabled selected>--Pilih Kelurahan--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -437,7 +437,7 @@
 
   function searchDistrict() {
     $('#villages').empty();
-    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
+    $('#villages').append('<option value="" disabled selected>--Pilih Kelurahan--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

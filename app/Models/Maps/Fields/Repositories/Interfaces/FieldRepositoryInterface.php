@@ -9,9 +9,17 @@ use Illuminate\Support\Collection;
 
 interface FieldRepositoryInterface extends BaseRepositoryInterface
 {
-    public function listFields(string $order = 'id', string $sort = 'desc', $except = []) : Collection;
+    public function listFields(string $date_in = '', string $date_out = '') : Collection;
+
+    public function listFieldsPublic(string $date_in = ''): Collection;
 
     public function createField(array $params) : Field;
+
+    public function getDateAttribute($date,$time);
+    
+    public function convertDateAttribute($date);
+
+    public function convertTimeAttribute($time);
 
     public function findFieldById(int $id) : Field;
 

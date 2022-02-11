@@ -4,7 +4,7 @@
   'title' => 'Role',
   'first_title' => 'Role',
   'first_link' => route('admin.role.index'),
-  'second_title' => 'Create'
+  'second_title' => 'Pembuatan'
 ])
 
 @section('content_alert')
@@ -30,7 +30,7 @@
         <div class="card">
           <!-- Card header -->
           <div class="card-header">
-            <h3 class="mb-0">Permission Level</h3>
+            <h3 class="mb-0">Tingkatan Permission</h3>
           </div>
           <div class="card-body">
             @foreach ($options as $key => $item)
@@ -63,8 +63,8 @@
                 <h3 class="mb-0">Roles Information</h3>
               </div>
               <div class="col-lg-4 col-md-6 d-flex justify-content-end">
-                <a class="btn btn-info" href="{{ route('admin.role.index') }}">Back</a>
-                <button type="button" class="btn btn-danger" id="btn-reset">Reset</button>
+                <a class="btn btn-info" href="{{ route('admin.role.index') }}">Kembali</a>
+                <button type="button" class="btn btn-danger" id="btn-reset">Atur Ulang</button>
                 <button type="submit" class="btn btn-primary">Submit</button>
               </div>
             </div>
@@ -88,7 +88,7 @@
                   </div>
                 </div>
                 <div class="alert alert-result alert-warning fade show mb-0" role="alert">
-                    <span><i class="material-icons">warning</i> To assign create, edit, and delete permission, list permission is needed!</span>
+                  <span>Untuk memilih permission create, edit dan delete. Tolong centang permission "list" terlebih dahulu.</span>
                 </div>
               </div>
             </div>

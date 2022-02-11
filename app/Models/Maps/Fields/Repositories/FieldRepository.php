@@ -2,6 +2,7 @@
 
 namespace App\Models\Maps\Fields\Repositories;
 
+use App\Models\Maps\FieldDetailLocations\FieldDetailLocation;
 use App\Models\Maps\FieldImages\FieldImage;
 use Jsdecena\Baserepo\BaseRepository;
 use App\Models\Maps\Fields\Field;
@@ -9,6 +10,7 @@ use App\Models\Maps\Fields\Exceptions\FieldNotFoundException;
 use App\Models\Maps\Fields\Repositories\Interfaces\FieldRepositoryInterface;
 use App\Models\Maps\Geometries\Geometry;
 use App\Models\Tools\UploadableTrait;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
@@ -32,14 +34,34 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
     /**
      * List all the fields
      *
-     * @param string $order
-     * @param string $sort
+     * @param string $date_in
+     * @param string $date_out
      *
      * @return Collection
      */
-    public function listFields(string $order = 'id', string $sort = 'desc', $except = []) : Collection
+    public function listFields(string $date_in = '', string $date_out = '') : Collection
     {
-        return $this->model->orderBy($order, $sort)->get()->except($except);
+        if($date_in === $date_out) {
+            $fields_today = $this->model->where('date_in', 'LIKE', '%'.$date_in.'%')->get();
+            $fields_doing = $this->model->where('date_out', null)->get();
+            return $fields_today->merge($fields_doing);
+        } else {
+            return $this->model->whereBetween('date_in', [$date_in, $date_out])->get();
+        }
+    }
+
+    /**
+     * List all the field for public
+     * 
+     * @param string $date_in
+     * 
+     * @return Collection
+     */
+    public function listFieldsPublic(string $date_in = ''): Collection
+    {
+        $fields_today = $this->model->where('date_in', 'LIKE', '%'.$date_in.'%')->where('status', 1)->get();
+        $fields_doing = $this->model->where('date_out', null)->where('status', 1)->get();
+        return $fields_today->merge($fields_doing);
     }
 
     /**
@@ -53,7 +75,7 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
     {
         try {
             $field = $this->model->create($data);
-            $this->createGeo($field->id,$data['coordinates']);
+            $this->createDetailLocation($field->id, $data['locations']);
             return $field;
         } catch (QueryException $e) {
             throw new FieldNotFoundException($e);
@@ -61,19 +83,53 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
     }
 
     /**
-     * Create the Geometries
-     *
-     * @param array $data
-     *
-     *
+     * Create detail location at field detail locations table
+     * 
+     * @param int $id
+     * @param array $collection
+     * 
+     * @return bool
      */
-    private function createGeo($id, $coordinates) {
+    private function createDetailLocation(int $id, array $collection) {
+        foreach($collection as $data) {
+            $detailLoc = new FieldDetailLocation([
+                'field_id'  => $id,
+                'district'  => $data[0],
+                'village'   => $data[1]
+            ]);
+            $detailLoc->save();
+        }
+    }
 
-        $geometry = new Geometry();
-        $geometry->geo_type     = "Polygon";
-        $geometry->coordinates  = $coordinates;
-        $geometry->field_id     = $id;
-        $geometry->save();
+    /**
+     * Combine date and time to one line
+     * 
+     * @param string $date
+     * @param string $time 
+     */
+    public function getDateAttribute($date, $time)
+    {
+        return Carbon::parse($date.' '.$time)->format('Y-m-d H:i:s');
+    }
+
+    /**
+     * Get Date on format
+     * 
+     * @param string $date
+     */
+    public function convertDateAttribute($date)
+    {
+        return Carbon::parse($date)->format('d-m-Y');
+    }
+
+    /**
+     * Get Time on format
+     * 
+     * @param string $time
+     */
+    public function convertTimeAttribute($time)
+    {
+        return Carbon::parse($time)->format('H:i');
     }
 
     /**
@@ -101,7 +157,7 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
      */
     public function findFieldByAddress(string $address)
     {
-        return $this->model->where('name', 'LIKE', "%{$address}%")->get();
+        return FieldDetailLocation::where('district', 'LIKE', "%{$address}%")->distinct()->get(['field_id']);
     }
 
     /**
@@ -113,9 +169,11 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
      */
     public function updateField(array $params): bool
     {
-        return $this->model->update($params);
+        $field = $this->model->update($params);
+        $this->model->detailLocations()->delete();
+        $this->createDetailLocation($this->model->id, $params['locations']);
+        return $field;
     }
-
     /**
      * @return bool
      * @throws \Exception
@@ -174,23 +232,42 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
      */
     public function listFieldsAndGeo(): string
     {
-      $fields = $this->listFields()->sortBy('name')->where('status', 1);
+      $fields_today = $this->model->where('date_in', 'LIKE', '%'.Carbon::now()->toDateString().'%')->where('status', 1)->get();
+      $fields_doing = $this->model->where('date_out', null)->where('status', 1)->get();
+      $fields = $fields_today->merge($fields_doing);
       if(count($fields) > 0) {
-        $message = "--MENU BANJIR TERKINI--\nBerikut daftar banjir terkini di Kabupaten Klaten: \n";
+        $message = "--MENU BANJIR Hari Ini--\nBerikut daftar banjir terkini di Kabupaten Klaten: \n";
         $coundColumn = 1;
         foreach($fields as $item) {
-          $detailFields = route('maps.show', $item['id']);
-          $message .= "\n{$coundColumn}. Daerah Kecamatan {$item['name']}";
-          $message .= "\n  -Waktu & Tgl Kejadian : {$item['time']}, {$item['date']}";
-          $message .= "\n  -Detail Lokasi : {$item['locations']}";
-          $message .= "\n  -Deskripsi : {$item['description']}";
-          $message .= "\n  -Detail informasi peta dan gambar : {$detailFields}\n";
-          $coundColumn += 1;
+            $message .= $this->combineFieldDoingToday($item, $coundColumn);
+
+            $coundColumn += 1;
         }
       } else {
         $message = "Sementara belum ada berita banjir di Kabupaten Klaten.";
       }
       
       return $message;
+    }
+
+    private function combineFieldDoingToday($item, $indexItem)
+    {
+        $message = '';
+        $totalVictims = $item->deaths + $item->injured + $item->losts;
+        $detailFields = route('maps.show', $item->id);
+        $date_in = $this->convertDateAttribute($item->date_in);
+        $date_in_time = $this->convertTimeAttribute($item->date_in);
+        $date_out_time = ($item->date_out !== null ? $this->convertTimeAttribute($item->date_out) : false);
+        $date_out = $item->date_out !== null ? $date_out_time.' WIB, '.$this->convertDateAttribute($item->date_out) : 'Sedang Berlangsung';
+        $locationCount = $item->detailLocations->count();
+        
+        $message .= "\nArea banjir {$indexItem}";
+        $message .= "\n  -Jumlah Korban : {$totalVictims}";
+        $message .= "\n  -Tanggal Awal Kejadian : {$date_in_time} WIB, {$date_in}";
+        $message .= "\n  -Tanggal Akhir Kejadian : {$date_out}";
+        $message .= "\n  -Jumlah Kelurahan yang terdampak: {$locationCount} Kelurahan";
+        $message .= "\n  -Berita banjir lebih rinci: {$detailFields}";
+
+        return $message;
     }
 }

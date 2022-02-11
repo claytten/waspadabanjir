@@ -1,11 +1,11 @@
 @extends('layouts.admin.app',[
   'headers' => 'active',
   'menu' => 'maps',
-  'title' => 'Maps',
-  'first_title' => 'Maps',
-  'first_link' => route('admin.map.view'),
-  'second_title' => 'Show',
-  'second_link' => route('admin.maps.show', $map->id),
+  'title' => 'Peta',
+  'first_title' => 'Peta',
+  'first_link' => route('admin.map.view', [$date_in, $date_out]),
+  'second_title' => 'Rincian',
+  'second_link' => route('admin.maps.show', [$map->id, $date_in, $date_out]),
   'third_title'  => ucwords($map->name)
 ])
 
@@ -34,11 +34,11 @@
         <div class="card-header">
           <div class="row align-items-center">
             <div class="col-lg-8 col-md-6">
-              <h3 class="mb-0" id="form-map-title">Show {{ ucwords($map->name) }} Map</h3>
+              <h3 class="mb-0" id="form-map-title">Rincian Data Peta</h3>
             </div>
             <div class="col-lg-4 col-md-6 d-flex justify-content-end">
-              <a class="btn btn-info" href="{{ route('admin.map.view') }}">Back</a>
-              <a href="{{ route('admin.maps.edit', $map->id)}}">
+              <a class="btn btn-info" href="{{ route('admin.map.view', [$date_in, $date_out]) }}">Kembali</a>
+              <a href="{{ route('admin.maps.edit', [$map->id, $date_in, $date_out])}}">
                 <button type="button" class="btn btn-warning">Edit</button>
               </a>
             </div>
@@ -53,86 +53,82 @@
               <div class="row">
                 <div class="col-md-12">
                   <div class="form-group row">
-                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">District Name</label>
+                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Jumlah korban yang meninggal</label>
                     <div class="col-md-10">
-                      <input class="form-control" name="name" type="text" value="{{ $map->name }}" id="name" disabled>
+                      <span class="form-control">{{ $map->deaths }} Orang</span>
                     </div>
                   </div>
                 </div>
                 <div class="col-md-12">
                   <div class="form-group row">
-                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Total Deaths</label>
+                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Jumlah korban yang mengalami luka kecil/berat</label>
                     <div class="col-md-10">
-                      <input class="form-control" name="deaths" type="text" value="{{ $map->deaths }}" id="deaths" disabled>
+                      <span class="form-control">{{ $map->injured }} Orang</span>
                     </div>
                   </div>
                 </div>
                 <div class="col-md-12">
                   <div class="form-group row">
-                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Total Injures</label>
+                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Jumlah korban yang hilang</label>
                     <div class="col-md-10">
-                      <input class="form-control" name="injured" type="text" value="{{ $map->injured }}" id="injured" disabled>
+                      <span class="form-control">{{ $map->losts }} Orang</span>
                     </div>
                   </div>
                 </div>
                 <div class="col-md-12">
                   <div class="form-group row">
-                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Total Losts</label>
+                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Lokasi yang terdampak</label>
                     <div class="col-md-10">
-                      <input class="form-control" name="losts" type="text" value="{{ $map->losts }}" id="losts" disabled>
+                      <span>
+                        @foreach($map->detailLocations->sortBy('district') as $indexLoc => $dataLoc)
+                          {{$indexLoc+1}}. Kelurahan {{ $dataLoc->village}} - Kecamatan {{ $dataLoc->district }} <br>
+                        @endforeach
+                      </span>
                     </div>
                   </div>
                 </div>
                 <div class="col-md-12">
                   <div class="form-group row">
-                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Detail Location</label>
+                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Tanggal Awal Kejadian</label>
                     <div class="col-md-10">
-                      <input class="form-control" name="locations" type="text" value="{{ $map->locations }}" id="elocations" disabled>
+                      <span class="form-control">{{ date('H:i', strtotime($map->date_in)) }} WIB, {{ date('d-m-Y', strtotime($map->date_in)) }}</span>
                     </div>
                   </div>
                 </div>
                 <div class="col-md-12">
                   <div class="form-group row">
-                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Date</label>
+                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Tanggal Akhir Kejadian</label>
                     <div class="col-md-10">
-                      <input class="form-control" name="date" type="text" value="{{ $map->date }}" id="date" disabled>
+                      <span class="form-control">{{ $map->date_out !== null ? date('H:i', strtotime($map->date_in)).' WIB, '.date('d-m-Y', strtotime($map->date_in)) : 'Sedang Berlangsung' }}</span>
                     </div>
                   </div>
                 </div>
                 <div class="col-md-12">
                   <div class="form-group row">
-                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Time</label>
+                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Kronologi</label>
                     <div class="col-md-10">
-                      <input class="form-control" name="time" type="text" value="{{ date('h:i A', strtotime($map->time)) }}" id="time" disabled>
+                      <span class="form-control">{{ $map->description }}</span>
                     </div>
                   </div>
                 </div>
                 <div class="col-md-12">
                   <div class="form-group row">
-                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Description</label>
+                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Status Diterbitkan</label>
                     <div class="col-md-10">
-                      <input class="form-control" name="description" type="text" value="{{ $map->description }}" id="description" disabled>
+                      <span class="form-control">{{ ($map->status) ? 'Terbit' : 'Draft' }}</span>
                     </div>
                   </div>
                 </div>
                 <div class="col-md-12">
                   <div class="form-group row">
-                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Status Publish</label>
-                    <div class="col-md-10">
-                      <input class="form-control" name="status" type="text" value="{{ ($map->status) ? 'Published' : 'Draft' }}" id="status" disabled>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-12">
-                  <div class="form-group row">
-                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Images</label>
+                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Kumpulan Gambar Kejadian</label>
                     <div class="col-md-10">
                       @forelse ($map->images as $item)
                         <a href="{{ url('/storage'.'/'.$item->src) }}" data-rel="lightcase:myCollection" >
                           <img class="img-fluid rounded" src="{{ url('/storage'.'/'.$item->src) }}" alt="{{ $map->name }}" width="150px;">
                         </a>
                       @empty
-                        <input class="form-control" name="images" type="text" value="No Images" id="images" disabled>
+                        <span class="form-control">Tidak ada gambar</span>
                       @endforelse
                     </div>
                   </div>
@@ -172,8 +168,6 @@
   });
 
   let polygon = undefined;
-  let link = '{{ route('admin.maps.edit', ':id') }}';
-  link = link.replace(':id', "{{ $map->id }}");
 
   let maps = L.map(
     'mapid', 
@@ -197,7 +191,7 @@
       headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       },
-      url: link,
+      url: "{{ route('admin.maps.edit', [$map->id, $date_in, $date_out]) }}",
       type: 'GET',
       async: false,
       cache: false,
@@ -211,20 +205,6 @@
     });
 
     return data;
-  }
-  const getPopupContent = (field) => {
-    return `
-      <table>
-        <tr>
-          <th>Name Area</th>
-          <td>${field.name}</td>
-        </tr>
-        <tr>
-          <th>Locations</th>
-          <td>${field.locations}</td>
-        </tr>
-      </table>
-    `
   }
 
   const onEachFeatureCallback = (feature, layer) => {

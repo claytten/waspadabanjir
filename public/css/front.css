@@ -169,6 +169,49 @@ textarea.materialize-textarea {
   padding-left: 90px !important;
 }
 
+.leaflet-popup-content-wrapper {
+  background: #012B39;
+  width:400px;
+}
+.leaflet-container a.leaflet-popup-close-button {
+  font-size: 2.1em !important;
+  right:10px !important;
+  top:5px !important;
+}
+.leaflet-container a {
+  color: #66cbf4 !important;
+}
+.pop-table {
+  background: #012B39;
+  border-radius: 0.25em;
+  border-collapse: collapse;
+  width:350px;
+  height:250px;
+  margin-right:0;
+}
+.pop-table th {
+  border-bottom: 1px solid #364043;
+  color: #E2B842;
+  font-size: 0.85em;
+  font-weight: 600;
+  padding: 0.5em 1em;
+  text-align: left;
+}
+.pop-table td {
+  color: #fff;
+  font-weight: 400;
+  padding: 0.65em 1em;
+}
+.pop-table .disabled td {
+  color: #4F5F64;
+}
+.pop-table tbody tr {
+  transition: background 0.25s ease;
+}
+.pop-table tbody tr:hover {
+  background: #014055;
+}
+
 /* Media Queries */
 @media only screen and (max-width: 601px) {
   .header-modal {

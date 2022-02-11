@@ -63,7 +63,7 @@
           <!-- Title -->
           <div class="row align-items-center">
             <div class="col-8">
-              <h5 class="h3 mb-0">Update Photo Profile</h5>
+              <h5 class="h3 mb-0">Ubah Foto Pengguna</h5>
             </div>
             <div class="col-4 text-right">
               <button type="submit" class="btn btn-primary">Submit</button>
@@ -77,7 +77,7 @@
             <div class="fallback">
               <div class="custom-file">
                 <input type="file" accept=".jpg, .jpeg, .png" name="image" class="form-control imgs" onchange="previewImage(this)"id="projectCoverUploads">
-                <label class="custom-file-label" for="projectCoverUploads">Choose file</label>
+                <label class="custom-file-label" for="projectCoverUploads">Pilih Berkas</label>
               </div>
             </div>
           </div>
@@ -105,25 +105,25 @@
         <div class="card-header">
           <div class="row align-items-center">
             <div class="col-6">
-              <h3 class="mb-0">Edit profile </h3>
+              <h3 class="mb-0">Atur Informasi Pengguna </h3>
             </div>
             <div class="col-6 text-right">
               <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-change-password">
                 <i class="ni ni-lock-circle-open"></i>
-                Change Password
+                Ubah Password
               </button>
               <button type="submit" class="btn btn-primary">Submit</button>
             </div>
           </div>
         </div>
         <div class="card-body">
-          <h6 class="heading-small text-muted mb-4">Profile information</h6>
+          <h6 class="heading-small text-muted mb-4">Informasi Pengguna</h6>
           <div class="pl-lg-4">
             <div class="row">
               <div class="col-lg-6">
                 <div class="form-group">
-                  <label class="form-control-label" for="input-name">Name</label>
-                  <input type="text" id="input-name" class="form-control @error('name') is-invalid @enderror" placeholder="Name" value="{{ $user->name }}" name="name">
+                  <label class="form-control-label" for="input-name">Nama</label>
+                  <input type="text" id="input-name" class="form-control @error('name') is-invalid @enderror" placeholder="Nama Lengkap" value="{{ $user->name }}" name="name">
                   @error('name')
                       <div class="invalid-feedback">
                           {{ $message }}
@@ -133,8 +133,8 @@
               </div>
               <div class="col-lg-6">
                 <div class="form-group">
-                  <label class="form-control-label" for="input-email">Email address</label>
-                  <input type="email" id="input-email" class="form-control @error('email') is-invalid @enderror" placeholder="Email" name="email" value="{{ $user->email }}">
+                  <label class="form-control-label" for="input-email">Alamat Email</label>
+                  <input type="email" id="input-email" class="form-control @error('email') is-invalid @enderror" placeholder="Alamat Email" name="email" value="{{ $user->email }}">
                   @error('email')
                       <div class="invalid-feedback">
                           {{ $message }}
@@ -146,7 +146,7 @@
             <div class="row">
               <div class="col-lg-6">
                 <div class="form-group">
-                  <label class="form-control-label" for="input-address">Address</label>
+                  <label class="form-control-label" for="input-address">Alamat Rumah</label>
                   <button type="button" class="form-control" id="btn-address" data-toggle="modal" data-target="#modal-change-address">
                     {{$user->village->name}},
                     {{$user->village->district->name}},
@@ -157,12 +157,12 @@
               </div>
               <div class="col-lg-6">
                 <div class="form-group">
-                  <label class="form-control-label" for="input-phone">Phone</label>
+                  <label class="form-control-label" for="input-phone">Nomor HP</label>
                   <div class="input-group input-group-merge">
                     <div class="input-group-prepend">
                       <span class="input-group-text">+62</span>
                     </div>
-                    <input type="number" step="1" min="0" id="input-phone" class="form-control @error('phone') is-invalid @enderror" placeholder="Phone Number" value="{{ $user->phone }}" name="phone">
+                    <input type="number" step="1" min="0" id="input-phone" class="form-control @error('phone') is-invalid @enderror" placeholder="Nomor HP" value="{{ $user->phone }}" name="phone">
                     @error('phone')
                         <div class="invalid-feedback">
                             {{ $message }}
@@ -188,40 +188,40 @@
         <div class="card bg-secondary border-0 mb-0">
           <div class="card-body px-lg-5 py-lg-5">
             <div class="text-center text-muted mb-4">
-                <small>Change Address</small>
+                <small>Ubah Alamat Rumah</small>
             </div>
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
-                <label class="form-control-label" for="input-address">Province</label>
+                <label class="form-control-label" for="input-address">Provinsi</label>
                 <select onchange="searchProvince()" id="provinces" class="form-control" data-toggle="select">
-                  <option value="" disabled selected>--Select Province--</option>
+                  <option value="" disabled selected>--Pilih Provinsi--</option>
                 </select>
               </div>
             </div>
 
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
-                <label class="form-control-label" for="input-address">Regency</label>
+                <label class="form-control-label" for="input-address">Kabupaten/Kota</label>
                 <select onchange="searchRegency()" id="regencies" class="form-control" data-toggle="select">
-                  <option value="" disabled selected>--Select Regency--</option>
+                  <option value="" disabled selected>--Pilih Kabupaten/Kota--</option>
                 </select>
               </div>
             </div>
 
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
-                <label class="form-control-label" for="input-address">District</label>
+                <label class="form-control-label" for="input-address">Kecamatan</label>
                 <select onchange="searchDistrict()" id="districts" class="form-control" data-toggle="select">
-                  <option value="" disabled selected>--Select District--</option>
+                  <option value="" disabled selected>--Pilih Kecamatan--</option>
                 </select>
               </div>
             </div>
 
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
-                <label class="form-control-label" for="input-address">Village</label>
+                <label class="form-control-label" for="input-address">Kelurahan</label>
                 <select id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select" onchange="searchVillage()">
-                  <option value="" disabled selected>--Select Village--</option>
+                  <option value="" disabled selected>--Pilih Kelurahan--</option>
                 </select>
               </div>
             </div>
@@ -244,7 +244,7 @@
         <div class="card bg-secondary border-0 mb-0">
           <div class="card-body px-lg-5 py-lg-5">
               <div class="text-center text-muted mb-4">
-                  <small>Change Password</small>
+                  <small>Ubah Password</small>
               </div>
               <form role="form" action="{{ route('admin.reset.password', auth()->user()->id) }}" method="POST">
                   {{ csrf_field() }}
@@ -252,12 +252,12 @@
                   <input type="hidden" name="statStages" value="user" readonly>
                   <div class="form-group">
                     <div class="input-group input-group-merge input-group-alternative">
-                        <input class="form-control" placeholder="Old Password" type="password" name="oldpassword">
+                        <input class="form-control" placeholder="Password Lama" type="password" name="oldpassword">
                     </div>
                   </div>
                   <div class="form-group">
                       <div class="input-group input-group-merge input-group-alternative">
-                          <input class="form-control" placeholder="New Password" type="password" name="password">
+                          <input class="form-control" placeholder="Password Baru" type="password" name="password">
                       </div>
                   </div>
                   <div class="form-group">
@@ -265,7 +265,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
                         </div>
-                        <input class="form-control" placeholder="Confirmation Password" type="password" name="password_confirmation">
+                        <input class="form-control" placeholder="Konfirmasi Password Baru" type="password" name="password_confirmation">
                     </div>
                 </div>
                   <div class="text-center">

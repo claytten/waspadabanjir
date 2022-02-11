@@ -1,9 +1,9 @@
 @extends('layouts.admin.app',[
   'headers' => 'active',
   'menu' => 'maps',
-  'title' => 'Maps',
-  'first_title' => 'Maps',
-  'first_link' => route('admin.map.view')
+  'title' => 'Peta',
+  'first_title' => 'Peta',
+  'first_link' => route('admin.map.view', [$date_in, $date_out])
 ])
 
 @section('plugins_css')
@@ -21,7 +21,8 @@
 @section('inline_css')
 <style>
 #mapid {
-    height:750px
+  height:750px;
+  z-index: 9;
 }
 .leaflet-popup-content table tr {
   height: 30px;
@@ -31,7 +32,9 @@
 
 @section('header-right')
 <div class="col-lg-6 col-5 text-right">
-  <button type="button" class="btn btn-sm btn-neutral" onclick="mapsTables()">Table of data Maps</button>
+  <input class="btn btn-sm btn-neutral" placeholder="Sortir Tanggal Awal" type="text" name="start_date" id="start_date" onchange="onChangeStartDate()">
+  <input class="btn btn-sm btn-neutral" placeholder="Sortir Tanggal Akhir" type="text" name="end_date" id="end_date" onchange="onChangeEndDate()">
+  <button type="button" class="btn btn-sm btn-neutral" onclick="mapsTables()">Data peta secara tabel</button>
 </div>
 @endsection
 
@@ -41,7 +44,7 @@
         <div class="card">
             <!-- Card header -->
             <div class="card-header">
-                <h3 class="mb-0">Maps Management</h3>
+                <h3 class="mb-0">Manajemen Data Peta Tanggal Kejadian {{ ($date_in === $date_out) ? $date_in : $date_in.' Sampai '.$date_out }}</h3>
             </div>
             <div class="card">
                 <div id="formtable">
@@ -50,21 +53,21 @@
                       <thead class="thead-light">
                         <tr>
                           <th>No</th>
-                          <th>Name</th>
-                          <th>Locations</th>
-                          <th>Datetime</th>
+                          <th>Tanggal Awal Kejadian</th>
+                          <th>Tanggal Akhir Kejadian</th>
+                          <th>Jumlah Korban</th>
                           <th>Status</th>
-                          <th>Action</th>
+                          <th>Aksi</th>
                         </tr>
                       </thead>
                       <tfoot>
                         <tr>
                           <th>No</th>
-                          <th>Name</th>
-                          <th>Locations</th>
-                          <th>Datetime</th>
+                          <th>Tanggal Awal Kejadian</th>
+                          <th>Tanggal Akhir Kejadian</th>
+                          <th>Jumlah Korban</th>
                           <th>Status</th>
-                          <th>Action</th>
+                          <th>Aksi</th>
                         </tr>
                       </tfoot>
                       <tbody></tbody>
@@ -78,34 +81,6 @@
     </div>
 </div>
 
-{{-- modal set district name  --}}
-<div class="modal fade" id="modal-add-district" tabindex="-1" role="dialog" aria-labelledby="modal-add-district" aria-hidden="true">
-  <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">>
-    <div class="modal-content">
-      <div class="modal-body p-0">
-        <div class="card bg-secondary border-0 mb-0">
-          <div class="card-body px-lg-5 py-lg-5">
-              <div class="text-center text-muted mb-4">
-                  <small>Add Address</small>
-              </div>
-              <div class="form-group">
-                <div class="input-group input-group-merge input-group-alternative">
-                  <label class="form-control-label" for="input-address">District</label>
-                  <select onchange="searchDistrict()" id="districts" class="form-control" data-toggle="select">
-                    <option value="" disabled selected>--Select District--</option>
-                  </select>
-                </div>
-              </div>
-              <div class="text-center">
-                <button type="button" onclick="editAction('district')" class="btn btn-primary my-4">Submit</button>
-              </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 {{-- Modal set Address --}}
 <div class="modal fade" id="modal-add-address" tabindex="-1" role="dialog" aria-labelledby="modal-add-address" aria-hidden="true">
   <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">>
@@ -114,14 +89,21 @@
         <div class="card bg-secondary border-0 mb-0">
           <div class="card-body px-lg-5 py-lg-5">
               <div class="text-center text-muted mb-4">
-                  <small>Add Address</small>
+                  <small>Tambahkan Alamat</small>
               </div>
-
               <div class="form-group">
                 <div class="input-group input-group-merge input-group-alternative">
-                  <label class="form-control-label" for="input-address">Village</label>
+                  <label class="form-control-label" for="input-address">Kecamatan</label>
+                  <select onchange="searchDistrict()" id="districts" class="form-control" data-toggle="select">
+                    <option value="" disabled selected>--Pilih Kecamatan--</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="input-group input-group-merge input-group-alternative">
+                  <label class="form-control-label" for="input-address">Kelurahan</label>
                   <select name="village_id" id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select" onchange="searchVillage()">
-                    <option value="" disabled selected>--Select Village--</option>
+                    <option value="" disabled selected>--Pilih Kelurahan--</option>
                   </select>
                 </div>
               </div>
@@ -163,23 +145,29 @@
     $('#mapsLayout').hide();
 
     $('#districts').empty();
+    $('#districts').append('<option value="" disabled selected>--Pilih Kecamatan--</option>');
     $.ajax({
       headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       },
       url: "{{ route('admin.districts.index') }}?regencies=" + '3310',
       type : "GET",
       dataType : "json",
       success:function(result) {
-          if(result) {
-          $.each(result.data, (key, value) => {
-              $('#districts').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
-          });
-          } else {
-              console.log("data trouble");
-          }
+        if(result) {
+        $.each(result.data, (key, value) => {
+          $('#districts').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
+        });
+        } else {
+          console.log("Terjadi Kesalahan");
+        }
       }
     });
+    $('#start_date').datepicker({
+      disableTouchKeyboard: true,
+      autoclose: false
+    });
+    $('#end_date').prop('disabled', true);
   });
 
   const mapTable = $("#mapsTable").DataTable({
@@ -201,6 +189,8 @@
   // this singleton variable use in main.gis.js at formable action
   const urlPOST = "{{ route('admin.maps.store') }}";
   let buttonAction = '';
+  let setStartDateIn = new Date();
+  let countingLoc = 1;
 
   const getGeoJSONData = () => {
     let data;
@@ -209,7 +199,7 @@
       headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       },
-      url: `${url}admin/maps`,
+      url: "{{ route('admin.maps.index', [$date_in, $date_out]) }}",
       type: 'GET',
       async: false,
       cache: false,
@@ -226,25 +216,29 @@
 
   const getPopupContent = (field) => {
     return `
-      <table>
+      <table class="pop-table">
         <tr>
-          <th>District Name</th>
-          <td>: ${field.name}</td>
+          <th>Jumlah Korban</th>
+          <td>: ${field.total_victims} orang</td>
         </tr>
         <tr>
-          <th>Datetime</th>
-          <td>: ${field.date}, ${field.time}</td>
+          <th>Tanggal Awal Kejadian</th>
+          <td>: ${field.date_in_time} WIB, ${field.date_in}</td>
         </tr>
         <tr>
-          <th>Detail Location</th>
-          <td>: ${field.locations}</td>
+          <th>Tanggal Akhir Kejadian</th>
+          <td>: ${(field.date_out === false ? 'Sedang Berlangsung' : field.date_out_time + ' WIB, '+ field.date_out)}</td>
+        </tr>
+        <tr>
+          <th>Jumlah Kelurahan yang terdampak</th>
+          <td>: ${field.total_village} Kelurahan</td>
         </tr>
         <tr>
           <th>Status</th>
-          <td>: ${(field.status) ? 'Published' : 'Draft'}</td>
+          <td>: ${(field.status) ? 'Terbit' : 'Draft'}</td>
         </tr>
         <tr>
-          <th>Actions</th>
+          <th>Aksi</th>
           <td>: ${buttonAction}</td>
         </tr>
       </table>
@@ -253,19 +247,15 @@
 
   const onEachFeatureCallback = (feature, layer) => {
     if (feature.properties && feature.properties.popupContent) {
-      let { id, name,locations,date,time, status } = feature.properties.popupContent;
-      time = new Date('1970-01-01T' + time + 'Z')
-      .toLocaleTimeString({},
-        {timeZone:'UTC',hour12:true,hour:'numeric',minute:'numeric'}
-      );
-      let content = {id, name, locations, date, time, status};
+      let { id, total_victims, total_village,date_in, date_in_time, date_out, date_out_time, status } = feature.properties.popupContent;
+      let content = {id, total_victims, total_village, date_in, date_in_time, date_out, date_out_time, status};
 
       if({{ auth()->user()->can('maps-edit') }}) {
-        buttonAction += '<a href="{{ route('admin.maps.edit', ':id' )}}" class="show btn btn-warning btn-sm" style="color: white" >Edit</a>';
+        buttonAction += '<a href="{{ route('admin.maps.edit', [':id',$date_in, $date_out]) }}" class="show btn btn-warning btn-sm" style="color: white" ><i class="fas fa-edit"></i></a>';
       }
-      buttonAction += '<a href="{{ route('admin.maps.show', ':id' )}}" class="show btn btn-info btn-sm" style="color: white">Detail</a>';
+      buttonAction += '<a href="{{ route('admin.maps.show', [':id',$date_in, $date_out]) }}"class="show btn btn-info btn-sm" style="color: white"><i class="fas fa-eye"></i></a>';
       if({{ auth()->user()->can('maps-delete') }}) {
-        buttonAction += `<button type="button" onclick="deleteArea(${id})" class="show btn btn-danger btn-sm" style="color: white">Delete</button>`;
+        buttonAction += `<button type="button" onclick="deleteArea(${id})" class="show btn btn-danger btn-sm" style="color: white"><i class="fas fa-trash-alt"></i></button>`;
       }
       buttonAction = buttonAction.replaceAll(':id', id);
 
@@ -276,7 +266,7 @@
 
   function searchDistrict() {
     $('#villages').empty();
-    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
+    $('#villages').append('<option value="" disabled selected>--Pilih Kelurahan--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -287,12 +277,12 @@
       success:function(result) {
           if(result) {
           $.each(result.data, (key, value) => {
-              $('#villages').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
+            $('#villages').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
           });
           $('#villages').prop('disabled', false);
           $('.btn-submit-action').prop('disabled', true);
           } else {
-          console.log("data trouble");
+          console.log("Terjadi Kesalahan");
           }
       }
     })
@@ -303,19 +293,69 @@
   }
 
   function editAction(input) {
-    if(input === 'district') {
-      $('#area_name').val('').val($('#districts option:selected').text());
-    } else {
-      const address = `Kelurahan ${$('#villages option:selected').text()}`
-      let result = '';
-      if($('#locations').val()) {
-          result = $('#locations').val() + ', ' + address;
-      } else {
-          result += address;
-      }
+    if(input === 'village') {
+      if($(`#add-locations-${countingLoc-1}`).length) {
+        $(`#add-locations-${countingLoc-1}`).after(`
+          <div class="col-md-12" id="add-locations-${countingLoc}">
+            <div class="row">
+              <div class="col-md-7">
+                <div class="form-group">
+                  <div class="input-group input-group-merge">
+                    <input type="text" id="district" class="form-control" name="locations[${countingLoc-1}][]" placeholder="Lokasi Kecamatan" value="${$('#districts option:selected').text()}" readonly>
+                  </div>
+                </div>
+              </div>
 
-      $('#locations').val(result);
+              <div class="col-md-4">
+                <div class="form-group">
+                  <div class="input-group input-group-merge">
+                    <input type="text" id="village" class="form-control" name="locations[${countingLoc-1}][]" placeholder="Lokasi Kelurahan" value="${$('#villages option:selected').text()}" readonly>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-1">
+                <div class="form-group">
+                  <button type="button" class="btn btn-danger" onclick="btnCLoseLocations('add-locations-${countingLoc}')"><i class="fas fa-window-close"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `);
+      } else {
+        $( ".btn-detail-locations" ).after(`
+          <div class="col-md-12" id="add-locations-${countingLoc}">
+            <div class="row">
+              <div class="col-md-7">
+                <div class="form-group">
+                  <div class="input-group input-group-merge">
+                    <input type="text" id="district" class="form-control" name="locations[${countingLoc-1}][]" placeholder="Lokasi Kecamatan" value="${$('#districts option:selected').text()}" readonly>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="form-group">
+                  <div class="input-group input-group-merge">
+                    <input type="text" id="village" class="form-control" name="locations[${countingLoc-1}][]" placeholder="Lokasi Kelurahan" value="${$('#villages option:selected').text()}" readonly>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-1">
+                <div class="form-group">
+                  <button type="button" class="btn btn-danger" onclick="btnCLoseLocations('add-locations-${countingLoc}')"><i class="fas fa-window-close"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `);
+      }
+      
+      countingLoc += 1;
     }
+  }
+
+  function btnCLoseLocations(value){
+    $(`#${value}`).remove();
   }
 
   function resetForm() {
@@ -326,7 +366,7 @@
   }
 
   function deleteArea(id) {
-    let links = '{{ route('admin.maps.destroy', ':id')}}';
+    let links = '{{ route('admin.maps.destroy', [':id', $date_in, $date_out])}}';
     $.ajax({
       headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -339,7 +379,7 @@
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          text: 'Something went wrong!'
+          text: 'Terjadi Kesalahan!'
         });
       },
       success: function(response){
@@ -347,7 +387,7 @@
           Swal.fire({
             position: 'middle',
             icon: 'success',
-            title: 'Your work has been saved',
+            title: 'Data berhasil disimpan!',
             showConfirmButton: false,
             timer: 1500
           }).then(() => window.location.href = response.redirect_url);
@@ -389,7 +429,7 @@
           headers: {
               'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
           },
-          url: "{{ route('admin.map.view')}}",
+          url: "{{ route('admin.map.view', [$date_in, $date_out]) }}",
           type : "GET",
           dataType : "json",
           success:function(result) {
@@ -397,25 +437,20 @@
               mapTable.clear().draw();
               let counting = 0;
               $.each(result.data, (key, value) => {
-                let datetime = '';
+                let time = '';
                 let status = '';
-                const timeString12hr = new Date('1970-01-01T' + value['time'] + 'Z')
-                .toLocaleTimeString({},
-                  {timeZone:'UTC',hour12:true,hour:'numeric',minute:'numeric'}
-                );
-                datetime += value['date'] + ', ' + timeString12hr;
-                status = (value['status'] === 1) ? 'Published' : 'Draft', 
+                status = (value['status'] === 1) ? 'Terbit' : 'Draft';
                 mapTable.row.add([
                   counting += 1,
-                  value['name'],
-                  value['locations'],
-                  datetime,
+                  convertDateTime(value['date_in']),
+                  (value['date_out'] !== null) ? convertDateTime(value['date_out']) : 'Sedang Berlangsung',
+                  value['deaths'] + value['injured'] + value['losts'] + ' Orang',
                   status,
                   addActionOption(value['id'])
                 ]).draw().node().id="rows_"+value['id'];
               });
             } else {
-              console.log("data trouble");
+              console.log("Terjadi Kesalahan");
             }
           }
         });
@@ -425,10 +460,17 @@
     });
   }
 
+  function convertDateTime(value) {
+    const tmstr_date = value.split(' ');
+    const d_date = tmstr_date[0].split('-');
+    const t_date = tmstr_date[1].split(':');
+    return `${t_date[0]}:${t_date[1]} WIB, ${d_date[2]}-${d_date[1]}-${d_date[0]}`;
+  }
+
   function addActionOption(id) {
     let result = '';
     @if(auth()->user()->can('maps-edit')) {
-      result += '<a href="{{ route('admin.maps.edit', ':id' )}}" class="show btn btn-warning btn-sm" style="color: white" >Edit</a>';
+      result += '<a href="{{ route('admin.maps.edit', [':id',$date_in, $date_out]) }}" class="show btn btn-warning btn-sm" style="color: white" >Edit</a>';
     }
     @endif
 
@@ -437,11 +479,79 @@
     }
     @endif
 
-    result += '<a href="{{ route('admin.maps.show', ':id' )}}" class="show btn btn-info btn-sm" style="color: white">Detail</a>';
+    result += '<a href="{{ route('admin.maps.show', [':id',$date_in, $date_out]) }}" class="show btn btn-info btn-sm" style="color: white">Detail</a>';
 
     result = result.replaceAll(':id', id);
 
     return result;
+  }
+
+  function setDateOutField() {
+    if($('#add-date-out-field').length) {
+      $('#add-date-out-field').remove();
+    } else {
+      $('.btn-date-out-field').after(`
+        <div class="col-md-12" id="add-date-out-field">
+          <div class="row">
+            <div class="col-md-8">
+              <div class="form-group">
+                <div class="input-group input-group-merge">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                  </div>
+                  <input class="form-control date_out" placeholder="Pilih tanggal kejadian berakhir" type="text" name="date_out" id="date_out">
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="form-group">
+                <div class="input-group input-group-merge">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fa fa-clock-o" aria-hidden="true"></i></span>
+                  </div>
+                  <input class="form-control" type="time" value="00:00:00" id="example-time-input" name="date_out_time">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `);
+
+      $('#date_out').datepicker({
+        disableTouchKeyboard: true,
+        autoclose: false,
+        startDate: setStartDateIn
+      });
+    }
+  }
+
+  function setDateOut() {
+    setStartDateIn = $('#date_in').val();
+    $('#btn-set-date-out').prop('disabled', false);
+    if($('#add-date-out-field').length) {
+      $('#add-date-out-field').remove();
+      setDateOutField();
+    }
+  }
+
+  function onChangeStartDate() {
+    $('#end_date').prop('disabled', false);
+    if($('#end_date').length) {
+      $('#end_date').remove();
+      $('#start_date').after('<input class="btn btn-sm btn-neutral" placeholder="Sortir Tanggal Akhir" type="text" name="end_date" id="end_date" onchange="onChangeEndDate()">');
+      $('#end_date').datepicker({
+        disableTouchKeyboard: true,
+        autoclose: false,
+        startDate: $('#start_date').val()
+      });
+    }
+  }
+
+  function onChangeEndDate() {
+    const start_date = $('#start_date').val().replaceAll('/', '-');
+    const end_date = $('#end_date').val().replaceAll('/', '-');
+    window.location.href = "{{URL::to('admin/maps/view')}}" + "/" + start_date + "/" + end_date;
   }
 </script>
     

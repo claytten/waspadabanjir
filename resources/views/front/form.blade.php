@@ -56,7 +56,7 @@ body {
 @endsection
 
 @section('content_body')
-<div class="container form-box valign-wrapper">
+<div class="container form-box valign-wrapper" style="justify-content: center">
   <div class="section valign">    
     <div id="contact-page" class="card hoverable">
         <div class="card-content">
@@ -109,11 +109,12 @@ body {
               <div class="col s12 m6">
                 <ul class="collapsible collapsible-accordion" data-collapsible="accordion">
                   <li class="active">
-                    <div class="collapsible-header active"><i class="material-icons right">live_help</i> FAQ</div>
+                    <div class="collapsible-header active"><i class="material-icons right">live_help</i> Petunjuk</div>
                     <div class="collapsible-body" style="">
-                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                      <p>Berikut beberapa cara untuk bertanya/melaporkan situasi banjir di daerah Kabupaten Klaten.</p>
+                      <p>- Melalui form laporan di halaman ini.</p>
+                      <p>- Melalui email (<strong>waspadabanjirklaten@gmail.com</strong>).</p>
+                      <p>- Melalui langganan pada media informasi WhatsApp (<a href="http://wa.me/+14155238886?text=join%20plain-fifteen" target="_blank">Klik Disini</a>)</p>
                     </div>
                   </li>
                 </ul>

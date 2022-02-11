@@ -1,8 +1,8 @@
 @extends('layouts.admin.app',[
   'headers' => 'active',
   'menu' => 'reports',
-  'title' => 'Reports',
-  'first_title' => 'Reports',
+  'title' => 'Laporan',
+  'first_title' => 'Laporan',
   'first_link' => route('admin.reports.index')
 ])
 
@@ -15,7 +15,7 @@
 @section('header-right')
 @if(auth()->user()->can('reports-create'))
   <div class="col-lg-6 col-5 text-right">
-    <a href="{{ route('admin.reports.create') }}" class="btn btn-sm btn-neutral">New</a>
+    <a href="{{ route('admin.reports.create') }}" class="btn btn-sm btn-neutral">Buat Laporan</a>
   </div>
 @endif
 @endsection
@@ -26,26 +26,26 @@
         <div class="card">
           <!-- Card header -->
           <div class="card-header">
-            <h3 class="mb-0">Reports Management</h3>
+            <h3 class="mb-0">Manajemen Laporan</h3>
           </div>
           <div class="table-responsive py-4">
             <table class="table table-flush" id="reportsTable">
               <thead class="thead-light">
                 <tr>
                   <th>No</th>
-                  <th>Name</th>
-                  <th>Report Type</th>
+                  <th>Nama</th>
+                  <th>Tipe Laporan</th>
                   <th>Status</th>
-                  <th>Action</th>
+                  <th>Aksi</th>
                 </tr>
               </thead>
               <tfoot>
                 <tr>
                   <th>No</th>
-                  <th>Name</th>
-                  <th>Report Type</th>
+                  <th>Nama</th>
+                  <th>Tipe Laporan</th>
                   <th>Status</th>
-                  <th>Action</th>
+                  <th>Aksi</th>
                 </tr>
               </tfoot>
               <tbody>
@@ -61,17 +61,17 @@
                         <td>Pertanyaan</td>
                       @endif
                       @if ($item->status)
-                        <td><button type="button" class="btn btn-success btn-sm" onclick="changeStatus('{{$item->id}}', '{{$index}}')">Verified</button></td>
+                        <td><button type="button" class="btn btn-success btn-sm" onclick="changeStatus('{{$item->id}}', '{{$index}}')">Terverifikasi</button></td>
                       @else
-                        <td><button type="button" class="btn btn-danger btn-sm" onclick="changeStatus('{{$item->id}}', '{{$index}}')" >Non-Verified</button></td>
+                        <td><button type="button" class="btn btn-danger btn-sm" onclick="changeStatus('{{$item->id}}', '{{$index}}')" >Belum terverifikasi</button></td>
                       @endif
                       <td>
                         @if(auth()->user()->can('reports-edit'))
-                          <a href="{{ route('admin.reports.edit', $item->id) }}" class="btn btn-success btn-sm">Edit</a>
+                          <a href="{{ route('admin.reports.edit', $item->id) }}" class="btn btn-success btn-sm">Ubah</a>
                         @endif
-                          <a href="{{ route('admin.reports.show', $item->id)}}" class="btn btn-info btn-sm">Show</a>
+                          <a href="{{ route('admin.reports.show', $item->id)}}" class="btn btn-info btn-sm">Tampilkan</a>
                         @if(auth()->user()->can('reports-delete'))
-                          <button onclick="deleteReport('{{ $item->id }}')"  type="button" class="btn btn-danger btn-sm">Delete</button>
+                          <button onclick="deleteReport('{{ $item->id }}')"  type="button" class="btn btn-danger btn-sm">Hapus</button>
                         @endif
                       </td>
                     </tr>
@@ -98,7 +98,7 @@
   const reportsTable = $("#reportsTable").DataTable({
       lengthMenu: [ 5, 10, 25, 50, 75, 100 ],
       language: {
-        "emptyTable": "Please select sort or search data"
+        "emptyTable": "Urutan atau mencari data"
       },
       pageLength: 5,
       columnDefs: [
@@ -113,11 +113,11 @@
 
   function deleteReport(id){
     Swal.fire({
-        title: 'Are you sure?',
-        text: "This user status will be set to Destroy, and this user delete anymore!",
+        title: 'Apakah Kamu Yakin?',
+        text: "Laporan ini akan dihapus!",
         type: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!'
+        confirmButtonText: 'Ya, Hapus!'
     }).then((result) => {
         if(result.value){
           $.post("{{ route('admin.reports.index') }}/"+id, {'_token': "{{ csrf_token() }}", '_method': 'DELETE'}, function(result){
@@ -132,7 +132,7 @@
             Swal.fire({
               icon: 'error',
               title: 'Oops... ' + textStatus,
-              text: 'Please Try Again or Refresh Page!'
+              text: 'Tolong Coba Lagi dan Muat Ulang Halaman ini!'
             });
           });
         }
@@ -141,12 +141,12 @@
 
   function changeStatus(id, no) {
     Swal.fire({
-      title: 'Do you want to change status?',
+      title: 'Ingin mengubah status laporan?',
       showDenyButton: true,
       showCancelButton: true,
-      confirmButtonText: `Verified`,
+      confirmButtonText: `Verifikasi`,
       confirmButtonColor: '#2dce89',
-      denyButtonText: `Non-Verified`,
+      denyButtonText: `Jangan Verifikasi`,
       denyButtonColor: '#f5365c',
     }).then((result) => {
       if (result.isConfirmed) {
@@ -169,7 +169,7 @@
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          text: 'Something went wrong!'
+          text: 'Terdapat Kesalahan!'
         });
       },
       success:function(result) {
@@ -177,7 +177,7 @@
           Swal.fire({
             position: 'middle',
             icon: 'success',
-            title: 'Status Has been Changed To '+ (status === 1 ? 'Verified' : 'Non-Verified') +'',
+            title: 'Status Laporan telah di ubah ke '+ (status === 1 ? 'Terverifikasi' : 'Belum terverifikasi') +'',
             showConfirmButton: false,
             timer: 1500
           }).then(() => {
@@ -193,7 +193,7 @@
               no,
               result.data['name'],
               reportResult,
-              '<button type="button" class="btn btn-'+ (status === 1 ? 'success' : 'danger')+' btn-sm" onclick="changeStatus('+id+', '+no+')">'+ (status === 1 ? 'Verified' : 'Non-Verified') +'</button>',
+              '<button type="button" class="btn btn-'+ (status === 1 ? 'success' : 'danger')+' btn-sm" onclick="changeStatus('+id+', '+no+')">'+ (status === 1 ? 'Terverifikasi' : 'Belum terverifikasi') +'</button>',
               addActionOption(id),
             ];
             reportsTable.row($("#rows_"+id)).data(updateData);
@@ -208,14 +208,14 @@
   function addActionOption(id) {
     let result = '';
     @if(auth()->user()->can('reports-edit')) {
-      result += '<a href="{{ route('admin.reports.edit', ':id') }}" class="btn btn-success btn-sm">Edit</a>';
+      result += '<a href="{{ route('admin.reports.edit', ':id') }}" class="btn btn-success btn-sm">Ubah</a>';
     }
     @endif
 
-    result += '<a href="{{ route('admin.reports.show', ':id')}}" class="btn btn-info btn-sm">Show</a>';
+    result += '<a href="{{ route('admin.reports.show', ':id')}}" class="btn btn-info btn-sm">Tampilkan</a>';
 
     @if(auth()->user()->can('reports-delete')) {
-      result += '<button onclick="deleteReport('+id+')"  type="button" class="btn btn-danger btn-sm">Delete</button>';
+      result += '<button onclick="deleteReport('+id+')"  type="button" class="btn btn-danger btn-sm">Hapus</button>';
     }
     @endif
 

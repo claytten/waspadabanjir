@@ -263,8 +263,8 @@ const drawArea = () => {
                 <h3 class="mb-0" id="form-map-title">Create Detail Map</h3>
               </div>
               <div class="col-lg-4 col-md-6 d-flex justify-content-end">
-                <button type="button" class="btn btn-danger" onclick="cancelArea()">Cancel</button>
-                <button type="button" class="btn btn-warning" onclick="resetForm()" >Reset</button>
+                <button type="button" class="btn btn-danger" onclick="cancelArea()">Batalkan</button>
+                <button type="button" class="btn btn-warning" onclick="resetForm()" >Atur Ulang</button>
                 <button type="submit" class="btn btn-primary" id="btn-submit" >Submit</button>
               </div>
             </div>
@@ -280,22 +280,9 @@ const drawArea = () => {
                     <div class="form-group">
                       <div class="input-group input-group-merge">
                         <div class="input-group-prepend">
-                          <span class="input-group-text" disabled><i class="fas fa-chart-area"></i></span>
-                        </div>
-                        <input class="form-control" placeholder="District Name" type="text" name="name" id="area_name" readonly="readonly">
-                        <div class="input-group-append">
-                          <span class="input-group-text" data-toggle="modal" data-target="#modal-add-district"><i class="fas fa-plus"></i></span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-12">
-                    <div class="form-group">
-                      <div class="input-group input-group-merge">
-                        <div class="input-group-prepend">
                           <span class="input-group-text"><i class="fas fa-book-dead"></i></span>
                         </div>
-                        <input type="number" id="deaths" class="form-control" name="deaths" placeholder="Total People has Dead" step="1" min="0">
+                        <input type="number" id="deaths" class="form-control" name="deaths" placeholder="Jumlah korban yang meninggal" step="1" min="0">
                       </div>
                     </div>
                   </div>
@@ -305,7 +292,7 @@ const drawArea = () => {
                         <div class="input-group-prepend">
                           <span class="input-group-text"><i class="fas fa-user-injured"></i></span>
                         </div>
-                        <input type="number" id="injured" class="form-control" name="injured" placeholder="Total People has Injured" step="1" min="0">
+                        <input type="number" id="injured" class="form-control" name="injured" placeholder="Jumlah korban yang mengalami luka kecil/berat" step="1" min="0">
                       </div>
                     </div>
                   </div>
@@ -315,24 +302,11 @@ const drawArea = () => {
                         <div class="input-group-prepend">
                           <span class="input-group-text"><i class="fas fa-user-slash"></i></span>
                         </div>
-                        <input type="number" id="losts" class="form-control" name="losts" placeholder="Total People has Lost" step="1" min="0">
+                        <input type="number" id="losts" class="form-control" name="losts" placeholder="Jumlah korban yang hilang" step="1" min="0">
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-12">
-                    <div class="form-group">
-                      <div class="input-group input-group-merge">
-                        <div class="input-group-prepend">
-                          <span class="input-group-text"><i class="fas fa-map-marker"></i></span>
-                        </div>
-                        <input type="text" id="locations" class="form-control" name="locations" placeholder="Locations">
-                        <div class="input-group-append">
-                          <span class="input-group-text" data-toggle="modal" data-target="#modal-add-address"><i class="fas fa-plus"></i></span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-12">
+                  <div class="col-md-12 btn-date-out-field">
                     <div class="row">
                       <div class="col-md-8">
                         <div class="form-group">
@@ -340,7 +314,7 @@ const drawArea = () => {
                             <div class="input-group-prepend">
                               <span class="input-group-text"><i class="fa fa-calendar" aria-hidden="true"></i></span>
                             </div>
-                            <input class="form-control datepicker" placeholder="Select date" type="text" name="date" id="date">
+                            <input class="form-control" placeholder="Pilih tanggal awal kejadian" type="text" name="date_in" id="date_in" onchange="setDateOut()">
                           </div>
                         </div>
                       </div>
@@ -351,9 +325,21 @@ const drawArea = () => {
                             <div class="input-group-prepend">
                               <span class="input-group-text"><i class="fa fa-clock-o" aria-hidden="true"></i></span>
                             </div>
-                            <input class="form-control" type="time" value="00:00:00" id="example-time-input" name="time">
+                            <input class="form-control" type="time" value="00:00:00" id="example-time-input" name="date_in_time">
                           </div>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <button type="button" class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Button ini berfungsi mengaktifkan tanggal berakhir banjir atau tidak" onclick="setDateOutField()" id="btn-set-date-out">Atur tanggal berakhirnya banjir</button>
+                    </div>
+                  </div>
+                  <div class="col-md-12 btn-detail-locations">
+                    <div class="form-group">
+                      <div class="input-group input-group-merge">
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-add-address">Tambahkan Rincian Lokasi</button>
                       </div>
                     </div>
                   </div>
@@ -363,7 +349,7 @@ const drawArea = () => {
                         <div class="input-group-prepend">
                           <span class="input-group-text"><i class="fas fa-info"></i></span>
                         </div>
-                        <textarea class="form-control" placeholder="Description" name="description" id="description"></textarea>
+                        <textarea class="form-control" placeholder="Kronologi" name="description" id="description"></textarea>
                       </div>
                     </div>
                   </div>
@@ -376,11 +362,11 @@ const drawArea = () => {
                 <div class="row">
                   <div class="col-md-12" id="status-form">
                     <div class="form-group row">
-                      <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Status Publish</label>
+                      <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Status Penerbitan</label>
                       <div class="col-md-10">
                         <select name="status" id="status" class="form-control" data-toggle="select" onchange="statusAction()">
                           <option value=""></option>
-                          <option value="1">Publish</option>
+                          <option value="1">Terbitkan</option>
                           <option value="0">Draft</option>
                         </select>
                       </div>
@@ -435,12 +421,16 @@ const drawArea = () => {
   </div>
   </form>
   `).appendTo($("#formtable")).slideDown("slow", "swing");
-  $('#mapsForm').append(`<input type="text" class="form-control" id="coordinates" name="coordinates" style="display:none">`);
+  $('#btn-set-date-out').prop('disabled', true).tooltip();
+  $('#mapsForm').append(`<input type="text" class="form-control" id="area" name="area" style="display:none">`);
   $('#mapsForm').append('<input type="text" class="form-control" id="color" name="color" style="display:none" value="'+ randCol +'">');
   $('#status').select2({
     'placeholder': 'Select Status',
   });
-  $('#coordinates').val(JSON.stringify(polygonGeoJSON.geometry.coordinates));
+  $('#date_out').select2({
+    'placeholder': 'Select Date Out'
+  });
+  $('#area').val(JSON.stringify(polygonGeoJSON.geometry.coordinates));
 
   (function() {
     const $dropzone = $('[data-toggle="dropzone"]');
@@ -503,7 +493,7 @@ const drawArea = () => {
   })();
 
   (function() {
-    const $datepicker = $('.datepicker');
+    const $datepicker = $('#date_in');
 
     function init($this) {
       const options = {
@@ -553,6 +543,9 @@ const drawHelpArea = () => {
 // Event KeyDown
 const onKeyDownEnter = () => {
   drawArea();
+  finishButton.disable();
+  undoButton.disable();
+  startDrawingButton.disable();
 }
 const onKeyDownEscape = () => {
   cancelPolyline();

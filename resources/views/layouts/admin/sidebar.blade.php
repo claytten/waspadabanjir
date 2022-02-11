@@ -30,9 +30,9 @@
 
           @can('maps-list')
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('admin.map.view') }}">
+              <a class="nav-link" href="{{ route('admin.map.view', [date('m-d-Y'), date('m-d-Y')]) }}">
                 <i class="ni ni-map-big text-primary"></i>
-                <span class="nav-link-text">Maps</span>
+                <span class="nav-link-text">Peta</span>
               </a>
             </li>
           @endcan
@@ -41,7 +41,7 @@
             <li class="nav-item">
               <a class="nav-link" href="{{ route('admin.reports.index')}}">
                 <i class="ni ni-chat-round text-orange"></i>
-                <span class="nav-link-text">Reports</span>
+                <span class="nav-link-text">Laporan</span>
               </a>
             </li>
           @endcan
@@ -59,13 +59,13 @@
             <li class="nav-item">
               <a class="nav-link {{ !empty($menu) ? ($menu == "accounts" ? 'active' : '') : '' }}" href="#navbar-accounts" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="navbar-accounts">
                 <i class="ni ni-circle-08 text-primary"></i>
-                <span class="nav-link-text">Accounts</span>
+                <span class="nav-link-text">Akun</span>
               </a>
               <div class="collapse {{ !empty($menu) ? ($menu == "accounts" ? 'show' : '') : '' }}" id="navbar-accounts">
                 <ul class="nav nav-sm flex-column">
                   @if(auth()->user()->can('admin-list'))
                     <li class="nav-item {{ !empty($submenu) ? ($submenu == 'admins' ? 'show' : '') : '' }}">
-                      <a href="{{ route('admin.admin.index') }}" class="nav-link">Users</a>
+                      <a href="{{ route('admin.admin.index') }}" class="nav-link">Pengguna</a>
                     </li>
                   @endif
                   
@@ -83,31 +83,31 @@
             <li class="nav-item">
               <a class="nav-link {{ !empty($menu) ? ($menu == "address" ? 'active' : '') : '' }}" href="#navbar-address" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="navbar-address">
                 <i class="ni ni-book-bookmark text-success"></i>
-                <span class="nav-link-text">Address</span>
+                <span class="nav-link-text">Alamat</span>
               </a>
               <div class="collapse {{ !empty($menu) ? ($menu == "address" ? 'show' : '') : '' }}" id="navbar-address">
                 <ul class="nav nav-sm flex-column">
                   @if(auth()->user()->can('provinces-list'))
                     <li class="nav-item {{ !empty($submenu) ? ($submenu == 'provinces' ? 'show' : '') : '' }}">
-                      <a href="{{ route('admin.provinces.index')}}" class="nav-link">Provinces</a>
+                      <a href="{{ route('admin.provinces.index')}}" class="nav-link">Provinsi</a>
                     </li>
                   @endif
 
                   @if(auth()->user()->can('regencies-list'))
                     <li class="nav-item {{ !empty($submenu) ? ($submenu == 'regencies' ? 'show' : '') : '' }}">
-                      <a href="{{ route('admin.regencies.index') }}" class="nav-link">Regencies</a>
+                      <a href="{{ route('admin.regencies.index') }}" class="nav-link">Kabupaten/Kota</a>
                     </li>
                   @endif
 
                   @if(auth()->user()->can('districts-list'))
                     <li class="nav-item {{ !empty($submenu) ? ($submenu == 'districts' ? 'show' : '') : '' }}">
-                      <a href="{{ route('admin.districts.index')}}" class="nav-link">Districts</a>
+                      <a href="{{ route('admin.districts.index')}}" class="nav-link">Kecamatan</a>
                     </li>
                   @endif
 
                   @if(auth()->user()->can('villages-list'))
                     <li class="nav-item {{ !empty($submenu) ? ($submenu == 'villages' ? 'show' : '') : '' }}">
-                      <a href="{{ route('admin.villages.index') }}" class="nav-link">Villages</a>
+                      <a href="{{ route('admin.villages.index') }}" class="nav-link">Kelurahan</a>
                     </li>
                   @endif
                 </ul>

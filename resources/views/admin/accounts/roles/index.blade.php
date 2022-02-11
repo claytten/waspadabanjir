@@ -26,26 +26,26 @@
         <div class="card">
           <!-- Card header -->
           <div class="card-header">
-            <h3 class="mb-0">Roles Management</h3>
+            <h3 class="mb-0">Manajeman Role</h3>
           </div>
           <div class="table-responsive py-4">
             <table class="table table-flush" id="rolesTable">
               <thead class="thead-light">
                 <tr>
                   <th>No</th>
-                  <th>Name</th>
-                  <th>Users Assigned</th>
-                  <th>Permission Count</th>
-                  <th>Action</th>
+                  <th>Nama</th>
+                  <th>Jumlah Pengguna</th>
+                  <th>Jumlah Permission</th>
+                  <th>Aksi</th>
                 </tr>
               </thead>
               <tfoot>
                 <tr>
                   <th>No</th>
-                  <th>Name</th>
-                  <th>Users Assigned</th>
-                  <th>Permission Count</th>
-                  <th>Action</th>
+                  <th>Nama</th>
+                  <th>Jumlah Pengguna</th>
+                  <th>Jumlah Permission</th>
+                  <th>Aksi</th>
                 </tr>
               </tfoot>
               <tbody>
@@ -62,10 +62,10 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                           @if(auth()->user()->can('roles-edit'))
-                              <a href="{{ route('admin.role.edit', $item->id) }}" class="dropdown-item text-warning">Edit</a>
+                              <a href="{{ route('admin.role.edit', $item->id) }}" class="dropdown-item text-warning">Ubah</a>
                           @endif
                           @if(auth()->user()->can('roles-delete'))
-                              <button onclick="deleteRole('{{ $item->id }}')" class="dropdown-item text-danger" id="block_{{ $item->id }}">Delete</button>
+                              <button onclick="deleteRole('{{ $item->id }}')" class="dropdown-item text-danger" id="block_{{ $item->id }}">Hapus</button>
                           @endif
                         </div>
                       </div>
@@ -94,7 +94,7 @@
   const rolesTable = $("#rolesTable").DataTable({
       lengthMenu: [ 5, 10, 25, 50, 75, 100 ],
       language: {
-        "emptyTable": "Please select sort or search data"
+        "emptyTable": "Urutkan atau cari Data"
       },
       pageLength: 5,
       columnDefs: [
@@ -112,11 +112,11 @@
           $(this).remove();
       });
       Swal.fire({
-          title: 'Are you sure?',
-          text: "This user status will be set to Destroy, and this role delete anymore!",
+          title: 'Apakah Kamu Yakin?',
+          text: "Data Role ini akan dihapus!",
           type: 'warning',
           showCancelButton: true,
-          confirmButtonText: 'Yes, delete it!'
+          confirmButtonText: 'Ya, Hapus!'
       }).then((result) => {
           if(result.value){
             $.post("{{ route('admin.role.index') }}/"+id, {'_token': "{{ csrf_token() }}", '_method': 'DELETE'}, function(result){
@@ -131,7 +131,7 @@
               Swal.fire({
                 icon: 'error',
                 title: 'Oops... ' + textStatus,
-                text: 'Please Try Again or Refresh Page!'
+                text: 'Tolong Coba Lagi atau Muat Ulang Halaman!'
               });
             });
           }

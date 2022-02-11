@@ -1,8 +1,8 @@
 @extends('layouts.admin.app',[
   'headers' => 'active',
   'menu' => 'accounts',
-  'title' => 'Users',
-  'first_title' => 'Users',
+  'title' => 'Pengguna',
+  'first_title' => 'Pengguna',
   'first_link' => route('admin.admin.index')
 ])
 
@@ -17,11 +17,11 @@
 @if(auth()->user()->can('admin-create'))
   <div class="col-lg-6 col-5 text-right">
     @if(auth()->user()->getRoleNames()[0] === 'Super Admin')
-      <a href="javascript:void(0)" class="btn btn-sm btn-neutral" data-toggle="modal" data-target="#modal-change-admin">Select Admin Whatsapp</a>
+      <a href="javascript:void(0)" class="btn btn-sm btn-neutral" data-toggle="modal" data-target="#modal-change-admin">Pilih Admin Whatsapp</a>
     @else
       {{ !empty($statusWA['name']) ? $statusWA['name']  : ''}}
     @endif
-    <a href="{{ route('admin.admin.create') }}" class="btn btn-sm btn-neutral">New</a>
+    <a href="{{ route('admin.admin.create') }}" class="btn btn-sm btn-neutral">Buat Pengguna</a>
   </div>
 @endif
 @endsection
@@ -32,28 +32,28 @@
     <div class="card">
       <!-- Card header -->
       <div class="card-header">
-        <h3 class="mb-0">Users Management</h3>
+        <h3 class="mb-0">Manajemen Pengguna</h3>
       </div>
       <div class="table-responsive py-4">
         <table class="table table-flush" id="usersTable">
           <thead class="thead-light">
             <tr>
               <th>No</th>
-              <th>Name</th>
+              <th>Nama</th>
               <th>Email</th>
               <th>Role</th>
               <th>Status</th>
-              <th>Action</th>
+              <th>Aksi</th>
             </tr>
           </thead>
           <tfoot>
             <tr>
               <th>No</th>
-              <th>Name</th>
+              <th>Nama</th>
               <th>Email</th>
               <th>Role</th>
               <th>Status</th>
-              <th>Action</th>
+              <th>Aksi</th>
             </tr>
           </tfoot>
           <tbody>
@@ -63,7 +63,7 @@
                   <td>{{ ucwords($item->name) }}</td>
                   <td>{{ $item->email }}</td>
                   <td>{{ $item->role }}</td>
-                  <td>{{ $item->status ?  'Active' : 'Inactive' }}</td>
+                  <td>{{ $item->status ?  'Aktif' : 'Nonaktif' }}</td>
                   <td>
                     <div class="dropdown">
                       <a class="btn btn-md btn-icon-only text-primary" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -71,12 +71,12 @@
                       </a>
                       <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                         @if(auth()->user()->can('admin-edit'))
-                            <a href="{{ route('admin.admin.edit', $item->id) }}" class="dropdown-item text-warning">Edit</a>
+                            <a href="{{ route('admin.admin.edit', $item->id) }}" class="dropdown-item text-warning">Ubah</a>
                         @endif
                         @if(auth()->user()->can('admin-delete'))
-                          <button onclick="blockUser('{{ $item->id }}')" class="dropdown-item text-danger" id="block_{{ $item->id }}" {{ $item->status ? '' : 'style=display:none' }}>Block</button>
-                          <button onclick="restoreUser('{{ $item->id }}')" class="dropdown-item text-success" id="restore_{{ $item->id }}" {{ $item->status ? 'style=display:none' : '' }}>Restore</button>
-                          <button onclick="deleteUser('{{ $item->id }}')" class="dropdown-item text-danger" id="block_{{ $item->id }}">Delete</button>
+                          <button onclick="blockUser('{{ $item->id }}')" class="dropdown-item text-danger" id="block_{{ $item->id }}" {{ $item->status ? '' : 'style=display:none' }}>Hapus Sementara</button>
+                          <button onclick="restoreUser('{{ $item->id }}')" class="dropdown-item text-success" id="restore_{{ $item->id }}" {{ $item->status ? 'style=display:none' : '' }}>Kembalikan</button>
+                          <button onclick="deleteUser('{{ $item->id }}')" class="dropdown-item text-danger" id="block_{{ $item->id }}">Hapus Selamanya</button>
                         @endif
                       </div>
                     </div>
@@ -96,11 +96,11 @@
         <div class="card bg-secondary border-0 mb-0">
           <div class="card-body px-lg-5 py-lg-5">
             <div class="text-center text-muted mb-4">
-                <small id="form_title">Add Subscribers</small>
+                <small id="form_title">Pilih Admin WhatsApp</small>
             </div>
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
-                <label class="form-control-label" for="statusWA">Select Admin</label>
+                <label class="form-control-label" for="statusWA">Pilih Admin</label>
                 <select id="statusWA" class="form-control @error('statusWA') is-invalid @enderror" data-toggle="select" onchange="changeStatusWA(this)">
                   <option value=""></option>
                   @foreach($users as $index => $item)
@@ -131,13 +131,13 @@
   "use strict"
   $(document).ready(function() {
     $('#statusWA').select2({
-        'placeholder': 'Select Admin Whatsapp',
+        'placeholder': 'Pilih Admin Whatsapp',
     });
   });
   const usersTable = $("#usersTable").DataTable({
       lengthMenu: [ 5, 10, 25, 50, 75, 100 ],
       language: {
-        "emptyTable": "Please select sort or search data"
+        "emptyTable": "Pilih urutkan atau cari data"
       },
       pageLength: 5,
       columnDefs: [
@@ -155,11 +155,11 @@
           $(this).remove();
       });
       Swal.fire({
-          title: 'Are you sure?',
-          text: "This user status will be set to Destroy, and this user delete anymore!",
+          title: 'Apakah Kamu Yakin?',
+          text: "Data pengguna akan dihapus!",
           type: 'warning',
           showCancelButton: true,
-          confirmButtonText: 'Yes, delete it!'
+          confirmButtonText: 'Ya, Hapus!'
       }).then((result) => {
           if(result.value){
             $.post("{{ route('admin.admin.index') }}/"+id, {'_token': "{{ csrf_token() }}", '_method': 'DELETE', 'user_action': 'delete'}, function(result){
@@ -174,7 +174,7 @@
               Swal.fire({
                 icon: 'error',
                 title: 'Oops... ' + textStatus,
-                text: 'Please Try Again or Refresh Page!'
+                text: 'Tolong Coba Lagi atau Muat Ulang Halaman!'
               });
             });
           }
@@ -187,11 +187,11 @@
       });
       
       Swal.fire({
-          title: 'Are you sure?',
-          text: "This user status will be set to Non-Active, and this user cannot login anymore!",
+          title: 'Apakah Kamu Yakin?',
+          text: "Status Pengguna ini akan diubah ke Nonaktif dan tidak bisa login!",
           type: 'warning',
           showCancelButton: true,
-          confirmButtonText: 'Yes, block it!'
+          confirmButtonText: 'Ya, Nonaktif!'
       }).then((result) => {
           if(result.value){
             $.post("{{ route('admin.admin.index') }}/"+id, {'_token': "{{ csrf_token() }}", '_method': 'DELETE', 'user_action': 'block'}, function(result){
@@ -201,11 +201,11 @@
               if(result.user_status){
                   $("#block_"+id).show();
                   $("#restore_"+id).hide();
-                  usersTable.cell({row: row_id, column: 5}).data('Active').draw();
+                  usersTable.cell({row: row_id, column: 4}).data('Aktif').draw();
               } else {
                   $("#block_"+id).hide();
                   $("#restore_"+id).show();
-                  usersTable.cell({row: row_id, column: 5}).data('Inactive').draw();
+                  usersTable.cell({row: row_id, column: 4}).data('Nonaktif').draw();
               }
               Swal.fire(
                 result.status,
@@ -216,7 +216,7 @@
               Swal.fire({
                 icon: 'error',
                 title: 'Oops... ' + textStatus,
-                text: 'Please Try Again or Refresh Page!'
+                text: 'Tolong Coba Lagi atau Muat Ulang Halaman!'
               });
             });
           }
@@ -230,11 +230,11 @@
   
       
       Swal.fire({
-          title: 'Are you sure?',
-          text: "This user status will be set to Actived, and this user can login!",
+          title: 'Apakah Kamu Yakin?',
+          text: "Status Pengguna ini akan diubah ke Aktif dan bisa login kembali!",
           type: 'warning',
           showCancelButton: true,
-          confirmButtonText: 'Yes, Actived it!'
+          confirmButtonText: 'Ya, Aktifkan!'
       }).then((result) => {
           $('#loading').show();
           if(result.value){
@@ -245,11 +245,11 @@
               if(result.user_status){
                 $("#block_"+id).show();
                 $("#restore_"+id).hide();
-                usersTable.cell({row: row_id, column: 5}).data('Active').draw();
+                usersTable.cell({row: row_id, column: 4}).data('Aktif').draw();
               } else {
                 $("#block_"+id).hide();
                 $("#restore_"+id).show();
-                usersTable.cell({row: row_id, column: 5}).data('Inactive').draw();
+                usersTable.cell({row: row_id, column: 4}).data('Nonaktif').draw();
               }
               Swal.fire(
                 result.status,
@@ -279,7 +279,7 @@
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          text: 'Something went wrong!'
+          text: 'Terjadi Kesalahan!'
         });
       },
       success:function(result) {
@@ -287,14 +287,14 @@
           Swal.fire({
             position: 'middle',
             icon: 'success',
-            title: 'Change Admin to Control Whatsapp has changed to ' + result.data['name'],
+            title: 'Ubah Admin WhatsApp ke ' + result.data['name'],
             showConfirmButton: false,
             timer: 1500
           }).then(() => {
             $('#statusWA').val(result.data['id']);
           });
         } else {
-          console.log("data trouble");
+          console.log("Terdapat Kesalahan");
         }
       }
     });

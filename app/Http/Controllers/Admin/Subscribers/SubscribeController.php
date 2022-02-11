@@ -323,11 +323,26 @@ class SubscribeController extends Controller
                   $message = strval($this->subscribeRepo->OptionReportMenu('2', $from, $body, $findNumber, $this->reportRepo));
                 } elseif (strtolower($body) === '3' || (isset($answerID[1]) ? $answerID[1] : null) === '3') {
                   $message = strval($this->subscribeRepo->OptionReportMenu('3', $from, $body, $findNumber, $this->reportRepo));
-                } elseif (strtolower($body) === 'menu') {
+                } elseif (strtolower($body) === 'menu' || strtolower($body) === 'kembali') {
                   Cache::forget($from);
-                  $message = $this->subscribeRepo->defaultMenu('');
+                  $message = $this->subscribeRepo->defaultMenu($findNumber['name']);
                 } else {
                   $message = "Maaf kata kunci yang kamu gunakan tidak ada. Silahkan ulangi lagi sesuai daftar yang ada pada pelaporan.";
+                }
+                break;
+              case 'd':
+                if(strtolower($body) === '1' || (isset($answerID[1]) ? $answerID[1] : null) === '1') {
+                  $message = strval($this->subscribeRepo->optionChangeInformation('1', $from, $body, $findNumber, $this->regencyRepo));
+                  //$message = strval($this->subscribeRepo->OptionReportMenu('1', $from, $body, $findNumber, $this->reportRepo));
+                } elseif (strtolower($body) === '2' || (isset($answerID[1]) ? $answerID[1] : null) === '2') {
+                  $message = strval($this->subscribeRepo->optionChangeInformation('2', $from, $body, $findNumber, $this->regencyRepo));
+                } elseif(strtolower($body) === '3' || (isset($answerID[1]) ? $answerID[1] : null) === '3') {
+                  $message = 'kembali';
+                } elseif (strtolower($body) === 'menu') {
+                  Cache::forget($from);
+                  $message = $this->subscribeRepo->defaultMenu($findNumber['name']);
+                } else {
+                  $message = "Maaf kata kunci yang kamu gunakan tidak ada. Silahkan ulangi lagi sesuai daftar yang ada pada pengaturan pengguna.";
                 }
                 break;
               default:

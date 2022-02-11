@@ -38,6 +38,7 @@ Route::namespace('Admin')->group(function () {
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth'], 'as' => 'admin.' ], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/chart-field/{year}', [DashboardController::class, 'countMapEachMonth'])->name('dashboard.countMapEachMonth');
 
     // Account Routing
     Route::resource('/account/admin', UserController::class, ['except' => ['update']]);
@@ -61,9 +62,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth'], 'as' => 'admin.' ],
     Route::resource('/address/villages', VillageController::class, ['only' => ['index', 'store', 'update', 'destroy', 'show']]);
 
     // Maps
-    Route::get('/maps/view', [MapController::class, 'indexView'])->name('map.view');
+    Route::get('/maps/view/{date_in}/{date_out}', [MapController::class, 'indexView'])->name('map.view');
     Route::delete('/maps/image/{id}/destroy', [MapController::class, 'destroyImage'])->name('maps.image.destroy');
-    Route::resource('/maps', MapController::class, ['except' => ['create']]);
+    Route::get('/maps/{date_in}/{date_out}', [MapController::class, 'index'])->name('maps.index');
+    Route::get('/maps/{id}/{date_in}/{date_out}', [MapController::class, 'show'])->name('maps.show');
+    Route::get('/maps/{id}/edit/{date_in}/{date_out}', [MapController::class, 'edit'])->name('maps.edit');
+    Route::delete('/maps/{id}/{date_in}/{date_out}', [MapController::class, 'destroy'])->name('maps.destroy');
+    Route::resource('/maps', MapController::class, ['except' => ['index', 'create','show', 'edit', 'destroy']]);
 
     //Subscribers
     Route::resource('/subscribers', SubscribeController::class, ['except' => ['show', 'create']]);

@@ -70,37 +70,37 @@ const getGeoJSONData = () => {
 
 const getPopupContent = (field) => {
   return `
-      <table>
+    <table class="pop-table">
       <tr>
-          <th>Nama Daerah (Kecamatan)</th>
-          <td>: ${field.name}</td>
+        <th>Jumlah Korban</th>
+        <td>: ${field.total_victims} orang</td>
       </tr>
       <tr>
-          <th>Tanggal</th>
-          <td>: ${field.date}, ${field.time}</td>
+        <th>Tanggal Awal Kejadian</th>
+        <td>: ${field.date_in_time} WIB, ${field.date_in}</td>
       </tr>
       <tr>
-          <th>Detail Lokasi</th>
-          <td>: ${field.locations}</td>
+        <th>Tanggal Akhir Kejadian</th>
+        <td>: ${(field.date_out === false ? 'Sedang Berlangsung' : field.date_out_time + ' WIB, '+ field.date_out)}</td>
       </tr>
       <tr>
-          <th>Detail</th>
-          <td>: <a href="${url}maps/${field.id}/show">Klik Disini</a></td>
+        <th>Jumlah Kelurahan yang terdampak</th>
+        <td>: ${field.total_village} Kelurahan</td>
       </tr>
-      </table>
+      <tr>
+        <th>Untuk lebih jelas</th>
+        <td>: <a href="${url}maps/${field.id}/show">Klik Disini</a></td>
+      </tr>
+    </table>
   `
 }
 
 const onEachFeatureCallback = (feature, layer) => {
   if (feature.properties && feature.properties.popupContent) {
-      let { id, name,locations,date,time, status } = feature.properties.popupContent;
-      time = new Date('1970-01-01T' + time + 'Z')
-      .toLocaleTimeString({},
-      {timeZone:'UTC',hour12:true,hour:'numeric',minute:'numeric'}
-      );
-      let content = {id, name, locations, date, time, status};
+    let { id, total_victims, total_village,date_in, date_in_time, date_out, date_out_time } = feature.properties.popupContent;
+    let content = {id, total_victims, total_village, date_in, date_in_time, date_out, date_out_time};
 
-      layer.bindPopup(getPopupContent(content));
+    layer.bindPopup(getPopupContent(content));
   }
 }
 

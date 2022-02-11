@@ -17,7 +17,8 @@ class CreateFieldsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('color');
-            $table->string('locations');
+            $table->string('detail_location');
+            $table->text('area');
             $table->string('description')->nullable();
             $table->integer('deaths');
             $table->integer('losts');

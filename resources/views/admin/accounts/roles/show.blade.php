@@ -4,7 +4,7 @@
   'title' => 'Role',
   'first_title' => 'Role',
   'first_link' => route('admin.role.index'),
-  'second_title' => 'Show',
+  'second_title' => 'Rincian',
   'second_link' => route('admin.role.show', $role->id),
   'third_title' => $role->name
 ])
@@ -30,7 +30,7 @@
       <div class="card">
         <!-- Card header -->
         <div class="card-header">
-          <h3 class="mb-0">Role {{ $role->name }} || Permission Level</h3>
+          <h3 class="mb-0">Role {{ $role->name }} || Tingkatan Permission</h3>
         </div>
         <div class="card-body">
           @foreach ($role->permissions as $item)

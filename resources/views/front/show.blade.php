@@ -69,15 +69,23 @@ body {
                 </div>
                 <div class="row">
                   <div class="input-field col s6">
-                    <h6>Nama Daerah (Kecamatan)</h6>
+                    <h6>Tanggal Awal Kejadian</h6>
                   </div>
                   <div class="input-field col s6">
-                    <h6>: {{ $map->name }}</h6>
+                    <h6>: {{ date('H:i', strtotime($map->date_in)) }} WIB, {{ date('d-m-Y', strtotime($map->date_in)) }}</h6>
                   </div>
                 </div>
                 <div class="row">
                   <div class="input-field col s6">
-                    <h6>Total Kematian</h6>
+                    <h6>Tanggal Akhir Kejadian</h6>
+                  </div>
+                  <div class="input-field col s6">
+                    <h6>: {{ $map->date_out !== null ? date('H:i', strtotime($map->date_in)).' WIB, '.date('d-m-Y', strtotime($map->date_in)) : 'Sedang Berlangsung' }}</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="input-field col s6">
+                    <h6>Jumlah korban yang meninggal</h6>
                   </div>
                   <div class="input-field col s6">
                     <h6>: {{ $map->deaths }}</h6>
@@ -85,7 +93,7 @@ body {
                 </div>
                 <div class="row">
                   <div class="input-field col s6">
-                    <h6>Total Luka ringan/berat</h6>
+                    <h6>Jumlah korban yang mengalami luka kecil/berat</h6>
                   </div>
                   <div class="input-field col s6">
                     <h6>: {{ $map->injured }}</h6>
@@ -93,7 +101,7 @@ body {
                 </div>
                 <div class="row">
                   <div class="input-field col s6">
-                    <h6>Total Orang Yang Hilang</h6>
+                    <h6>Jumlah korban yang hilang</h6>
                   </div>
                   <div class="input-field col s6">
                     <h6>: {{ $map->losts }}</h6>
@@ -101,23 +109,15 @@ body {
                 </div>
                 <div class="row">
                   <div class="input-field col s6">
-                    <h6>Detail Lokasi Banjir</h6>
+                    <h6>Lokasi Kelurahan yang terdampak banjir</h6>
                   </div>
                   <div class="input-field col s6">
-                    <h6>: {{ $map->locations }}</h6>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="input-field col s6">
-                    <h6>Waktu dan Tanggal Kejadian</h6>
-                  </div>
-                  <div class="input-field col s6">
-                    <h6>: {{ date('h:i A', strtotime($map->time)) }}, {{ $map->date }}</h6>
+                    <h6>: hehehe</h6>
                   </div>
                 </div>
                 <div class="row">
                   <div class="input-field col s6">
-                    <h6>Keterangan Kejadian</h6>
+                    <h6>Kronologi Kejadian</h6>
                   </div>
                   <div class="input-field col s6">
                     <h6>: {{ $map->description }}</h6>
@@ -126,11 +126,11 @@ body {
                 <div class="row">
                   @if(count($map->images) > 0)
                     <div class="input-field col s12 center">
-                      <h6>Gambar Terkini</h6>
+                      <h6>Kumpulan Gambar Kejadian<</h6>
                     </div>
                   @else
                     <div class="input-field col s6">
-                      <h6>Gambar Terkini</h6>
+                      <h6>Kumpulan Gambar Kejadian<</h6>
                     </div>
                     <div class="input-field col s6">
                       <h6>: Tidak ada gambar</h6>
@@ -220,30 +220,16 @@ body {
 
     return data;
   }
-  const getPopupContent = (field) => {
-    return `
-      <table>
-        <tr>
-          <th>Name Area</th>
-          <td>${field.name}</td>
-        </tr>
-        <tr>
-          <th>Locations</th>
-          <td>${field.locations}</td>
-        </tr>
-      </table>
-    `
-  }
 
   const onEachFeatureCallback = (feature, layer) => {
     if (feature.properties && feature.properties.popupContent) {
-        polygon = L.polygon([feature.geometry.coordinates], {
-            color: feature.properties.color,
-            fillOpacity: 0.4
-        });
-        
-        const setCenter = polygon.getBounds().getCenter();
-        maps.panTo(new L.LatLng(setCenter.lng, setCenter.lat));
+      polygon = L.polygon([feature.geometry.coordinates], {
+        color: feature.properties.color,
+        fillOpacity: 0.4
+      });
+      
+      const setCenter = polygon.getBounds().getCenter();
+      maps.panTo(new L.LatLng(setCenter.lng, setCenter.lat));
     }
   }
 

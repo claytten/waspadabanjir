@@ -190,7 +190,10 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
           "body" => "C.Lapor (Kejadian banjir / kritik & saran / tanya)",
         ],
         [
-          "body" => "D.Berhenti langganan"
+          "body" => "D.Ubah informasi pengguna",
+        ],
+        [
+          "body" => "E.Berhenti langganan"
         ]
       ]);
       $nameTeam = config('app.name');
@@ -237,6 +240,11 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
           $message = "--MENU PILIHAN LAPORAN--\n\nBerikut merupakan pilihan dalam opsi laporan. Jenis laporan apa yang kamu inginkan?\n1. Kritik & Saran\n2. Laporan Kejadian Banjir\n3. Pertanyaan\n\nBalas *SATU ANGKA* saja yaa.";
           break;
         case 'd':
+          Cache::forget($from);
+          Cache::put($from, array('d'), 600);
+          $message = "--Pengaturan Pengguna--\n\nBerikut merupakan pilihan dalam opsi pengaturan. Data apa yang kamu inginkan ubah?\n1. Nama\n2. Alamat\n\n\nBalas *SATU ANGKA* saja yaa.";
+          break;
+        case 'e':
           $subRepo = new SubscribeRepository($findNumber);
           $subRepo->updateSubscribe([ 'status' => 0 ]);
           Cache::forget($from);
@@ -326,7 +334,7 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
       );
       Cache::put($from, array('mulai', 'name'), 600);
       Cache::put("store_{$from}", $data, 600);
-      $message = "Dimana kota yang kamu tinggali sekarang?.\n\nContohnya : Klaten";
+      $message = "Dimana kota yang kamu tinggal sekarang?.\n\nContohnya : Klaten";
       $message .= "\n\nKetik *kembali* jika ingin kembali ke pengisian sebelumnya.";
       return $message;
     }
@@ -441,24 +449,35 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
       $address = $districtRepo->createListDistrictMenu();
       $verifyInput = array_search($body, array_column($address, 'id'));
       if( $verifyInput !== false) {
-        $fields = $fieldRepo->findFieldByAddress(strtolower($address[$verifyInput]['name']))->where('status', 1);
+        $fields = $fieldRepo->findFieldByAddress(strtolower($address[$verifyInput]['name']));
         if(count($fields) > 0) {
-          $countFields = count($fields);
-          $message = "Terdapat {$countFields} yang ada pada {$address[$verifyInput]['name']}:";
+          $message = "Terdapat beberapa area di kecamatan {$address[$verifyInput]['name']}:";
           $coundColumn = 1;
           foreach($fields as $item) {
-            $detailFields = route('maps.show', $item['id']);
-            $message .= "\n{$coundColumn}. Daerah Kecamatan {$item['name']}";
-            $message .= "\n  -Waktu & Tgl Kejadian : {$item['time']}, {$item['date']}";
-            $message .= "\n  -Detail Lokasi : {$item['locations']}";
-            $message .= "\n  -Deskripsi : {$item['description']}";
-            $message .= "\n  -Detail informasi peta dan gambar : {$detailFields}\n";
-            $coundColumn += 1;
+            if($item->field->status === 1) {
+              $totalVictims = $item->field->deaths + $item->field->injured + $item->field->losts;
+              $detailFields = route('maps.show', $item->field_id);
+              $date_in = $fieldRepo->convertDateAttribute($item->field->date_in);
+              $date_in_time = $fieldRepo->convertTimeAttribute($item->field->date_in);
+              $date_out_time = ($item->field->date_out !== null ? $fieldRepo->convertTimeAttribute($item->field->date_out) : false);
+              $date_out = $item->field->date_out !== null ? $date_out_time.' WIB, '.$fieldRepo->convertDateAttribute($item->field->date_out) : 'Sedang Berlangsung';
+              $locationCount = $item->field->detailLocations->count();
+              
+              $message .= "\nArea banjir {$coundColumn}";
+              $message .= "\n  -Jumlah Korban : {$totalVictims}";
+              $message .= "\n  -Tanggal Awal Kejadian : {$date_in_time} WIB, {$date_in}";
+              $message .= "\n  -Tanggal Akhir Kejadian : {$date_out}";
+              $message .= "\n  -Jumlah Kelurahan yang terdampak: {$locationCount}";
+              $message .= "\n  -Berita banjir lebih rinci: {$detailFields}";
+
+              $coundColumn += 1;
+            }
           }
         } else {
           $message = "Di Kecamatan {$address[$verifyInput]['name']} tidak ada banjir.";
         }
         $message .= "\n\nSilahkan ketik *menu* jika ingin menampilkan daftar layanan portal banjir. ";
+        Cache::forget($from);
         return $message;
       } else {
         return "Mohon maaf, pilihanmu tidak ada dalam daftar diatas. silahkan pilih sesuai petunjuk.";
@@ -480,7 +499,7 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
     {
       if(strtolower($body) === 'menu') {
         Cache::forget($from);
-        return $message = $this->defaultMenu('');
+        return $message = $this->defaultMenu($findNumber['name']);
       }
 
       if(isset(Cache::get($from)[1])) {
@@ -516,5 +535,114 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
       }
 
       return $reportRepo->storeReportWhatsapp($data[0]);
+    }
+
+    /**
+     * Option Change Information User From WhatsApp
+     * 
+     * @param string $from
+     * @param string $body
+     * @param object $userRepo
+     * 
+     * @return string
+     */
+    public function optionChangeInformation(string $answerID, string $from, string $body, object $findNumber, object $regencyRepo): string
+    {
+      if(strtolower($body) === 'menu' || strtolower($body) === 'kembali') {
+        Cache::forget($from);
+        return $message = $this->defaultMenu($findNumber['name']);
+      }
+
+      if(isset(Cache::get($from)[1])) {
+        return $this->responChangeInformation(Cache::get($from), $from, $body, $findNumber, $regencyRepo);
+      }
+
+      //findSubscriberByPhone
+      Cache::forget($from);
+      Cache::put($from, array('d', $answerID), 600);
+      if($answerID === '1') {
+        $message = "Silakan ketik nama yang baru.\n";
+        $message .= "Contoh: *Samsudi Yahya*";
+      } else if($answerID === '2') {
+        $message = "Silakan ketik alamat yang baru.\n";
+        $message .= "Contoh: *Klaten*";
+      } else {
+        $message = "Mohon maaf, pilihanmu tidak ada dalam daftar diatas.";
+      }
+      $message .= "\n\nSilahkan ketik *menu* atau *kembali* jika ingin menampilkan daftar layanan portal banjir. ";
+      return $message;
+    }
+
+    /**
+     * Respon While Change Information User from WhatsApp
+     * 
+     * 
+     */
+    private function responChangeInformation(array $answerID, string $from, string $body, object $findNumber, object $regencyRepo)
+    {
+      $message = '';
+      if($answerID[1] === '1') {
+        $findNumber->name = $body;
+        $findNumber->save();
+        $message .= "Hore. Nama kamu telah diperbaharui menjadi {$findNumber->name}.\n\nketik *menu* atau *kembali* untuk melihat daftar layanan portal banjir.";
+      } elseif($answerID[1] === '2') {
+        if(!empty($answerID[2]) ? $answerID[2] : null === 'address') {
+          $message .= $this->changeAddressOption($from, $body, $findNumber);
+        }
+
+        $setRegency = $regencyRepo->findRegencyByName(strtolower($body));
+        if(count($setRegency) > 0) {
+          if(count($setRegency) > 1) {
+            Cache::forget($from);
+            Cache::put($from, array('d', '2', 'address'));
+            $data = array();
+            $countRegency = count($setRegency);
+            $count = 1;
+            $message = "Dalam proses pencarian nama kota kamu. Telah ditemukan {$countRegency} kemiripan: ";
+            foreach($setRegency as $item) {
+              array_push($data, array(
+                "id"    => $item['id'],
+                "name"  => $item['name'],
+                "choose"=> $count,
+              ));
+              $message .= "\n[{$count}] {$item['name']}";
+              $count += 1;
+            }
+            $message .= "\n\n Pilih salah satu diantara pilihan diatas dengan balas *SATU ANGKA* saja";
+            $message .= "\n\n ketik *kembali* jika ingin kembali ke pencarian kota.";
+            Cache::put("address_{$from}", $data);
+            return $message;
+          }
+          $setRegency = $setRegency->first();
+          $findNumber->address = $setRegency['id'];
+          $findNumber->save();
+          Cache::forget($from);
+          Cache::forget("address_{$from}");
+          $message .= "Hore. Alamat kamu telah diperbaharui menjadi {$setRegency['name']}.\n\nketik *menu* atau *kembali* untuk melihat daftar layanan portal banjir.";
+        } else {
+          $message .= "Kota yang dicari tidak ditemukan. silahkan ketik ulang kota kamu.";
+        }
+      }
+      return $message;
+    }
+
+    private function changeAddressOption(string $from, string $body, object $findNumber)  {
+      if(strtolower($body) === 'kembali') {
+        Cache::forget($from);
+        Cache::put($from, array('d', '2'));
+        $message = "Silakan ketik alamat yang baru.\n";
+        $message .= "Contoh: *Klaten*";
+        return $message;
+      }
+      $regencies = Cache::get("address_{$from}");
+      if($body > count($regencies) || $body < 0) {
+        return "Mohon maaf, pilihanmu tidak ada dalam daftar diatas. silahkan pilih sesuai petunjuk.";
+      }
+
+      $findNumber->address = $regencies[$body - 1]['id'];
+      $findNumber->save();
+      Cache::forget($from);
+      Cache::forget("address_{$from}");
+      return "Hore. Alamat kamu telah diperbaharui menjadi {$regencies[$body -1]['name']}.\n\nketik *menu* atau *kembali* untuk melihat daftar layanan portal banjir.";
     }
 }

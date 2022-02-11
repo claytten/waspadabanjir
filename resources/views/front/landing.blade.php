@@ -29,9 +29,9 @@
     <i class="large material-icons">message</i>
   </a>
   <ul>
-    <li><a href="{{ route('form.report')}}" class="btn-floating red tooltipped" data-position="left" data-tooltip="Laporan"><i class="material-icons">report</i></a></li>
+    <li><a href="{{ route('form.report')}}" class="btn-floating red tooltipped" data-position="left" data-tooltip="Laporkan Banjir"><i class="material-icons">report</i></a></li>
     <li>
-      <a class="btn-floating green modal-trigger tooltipped" href="#subscriptionForm" data-position="left" data-tooltip="Whatsapp Subscriptions">
+      <a class="btn-floating green modal-trigger tooltipped" href="#subscriptionForm" data-position="left" data-tooltip="Langganan Berita Banjir di WhatsApp">
         <i class="material-icons">subscriptions</i>
       </a>
     </li>
@@ -65,7 +65,7 @@
               <div class="collapsible-header"><i class="material-icons">arrow_drop_down</i>1. Silahkan join ke portal informasi banjir terlebih dahulu</div>
               <div class="collapsible-body">
                 <p>Terdapat 2 Pilihan yang bisa kamu gunakan</p>
-                <p>- Tambahkan &nbsp;"<strong>plain-fifteen</strong>"&nbsp; pada kolom pesan WhatsApp. Kemudian kirim pesan tersebut ke "+14155238886"</p>
+                <p>- Tambahkan &nbsp;"<strong>join plain-fifteen</strong>"&nbsp; pada kolom pesan WhatsApp. Kemudian kirim pesan tersebut ke "+14155238886"</p>
                 <p>- Scan Barcode di bawah ini atau <a href="http://wa.me/+14155238886?text=join%20plain-fifteen" target="_blank">Klik Disini</a>.
                   Maka kolom pesan WhatsApp akan terisi otomatis dengan kalimat &nbsp;"<strong>join slowly-happen</strong>"&nbsp;. Kemudian kirim pesan tersebut
                 </p>

@@ -1,8 +1,8 @@
 @extends('layouts.admin.app',[
   'headers' => 'active',
   'menu' => 'address',
-  'title' => 'Regency',
-  'first_title' => 'Regency',
+  'title' => 'Kabupaten/Kota',
+  'first_title' => 'Kabupaten/Kota',
   'first_link' => route('admin.regencies.index')
 ])
 
@@ -28,10 +28,10 @@
           <div class="card-header">
             <div class="row align-items-center">
               <div class="col-lg-8 col-md-6">
-                <h3 class="mb-0" id="form_title">Create Regency Information</h3>
+                <h3 class="mb-0" id="form_title">Form Buat Data Kabupaten</h3>
               </div>
               <div class="col-lg-4 col-md-6 d-flex justify-content-end">
-                <button type="button" onclick="resetForm()" class="btn btn-danger" id="btn-reset">Reset</button>
+                <button type="button" onclick="resetForm()" class="btn btn-danger" id="btn-reset">Atur Ulang</button>
                 @if (auth()->user()->can('regencies-create'))
                   <button type="submit" class="btn btn-primary" id="btn-submit">Submit</button>
                 @endif
@@ -62,7 +62,7 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-map-marker"></i></span>
                     </div>
-                    <input class="form-control @error('name') is-invalid @enderror" placeholder="Name Regency" type="text" name="name" value="{{ old('name')}}" id="name">
+                    <input class="form-control @error('name') is-invalid @enderror" placeholder="Nama Kabuapten/Kota" type="text" name="name" value="{{ old('name')}}" id="name">
                     @error('name')
                         <div class="invalid-feedback">
                             {{ $message }}
@@ -82,7 +82,7 @@
         <div class="card">
           <!-- Card header -->
           <div class="card-header">
-            <h3 class="mb-0">List Regencies have been registered</h3>
+            <h3 class="mb-0">Daftar Kabupaten yang telah terdaftar</h3>
           </div>
           <!-- Card body -->
           <div class="card-body">
@@ -90,9 +90,9 @@
               <thead class="thead-light">
                 <tr>
                   <th>No</th>
-                  <th>Name</th>
-                  <th>Total Districts</th>
-                  <th>Action</th>
+                  <th>Nama</th>
+                  <th>Jumlah Kecamatan</th>
+                  <th>Aksi</th>
                 </tr>
               </thead>
               <tbody>
@@ -100,9 +100,9 @@
               <tfoot>
                 <tr>
                   <th>No</th>
-                  <th>Name</th>
-                  <th>Total Districts</th>
-                  <th>Action</th>
+                  <th>Nama</th>
+                  <th>Jumlah Kecamatan</th>
+                  <th>Aksi</th>
                 </tr>
               </tfoot>
             </table>
@@ -128,13 +128,13 @@
   "use strict"
   $(document).ready(function() {
     $('#provinces').select2({
-      'placeholder': 'Sort By Provinces',
+      'placeholder': 'Urutkan Berdasarkan Provinsi',
     });
   });
   let tableRegencies = $("#regenciesTable").DataTable({
     lengthMenu: [ 5, 10, 25, 50, 75, 100 ],
     language: {
-      "emptyTable": "Please select sort or search data"
+      "emptyTable": "Urutkan atau cari Data"
     },
     pageLength: 5,
       columnDefs: [
@@ -198,7 +198,7 @@
         Swal.fire({
           icon: 'error',
           title: 'Oops... ' + textStatus,
-          text: 'Please Try Again or Refresh Page'
+          text: 'Tolong Coba lagi atau Muat Ulang Halaman!'
         });
     });
   });
@@ -224,7 +224,7 @@
             ]).draw().node().id="rows_"+value['id'];
           });
         } else {
-          console.log("data trouble");
+          console.log("Terjadi Kesalahan");
         }
       }
     })
@@ -234,16 +234,16 @@
     let setName = "'"+name+"'";
     let editOption = '', deleteOption = '', showOption = '';
     @if(auth()->user()->can('regencies-edit')) {
-      editOption = '<button type="button" onclick="editAction('+id+', '+setName+', '+idEdit+')" class="edit btn btn-success btn-sm">Edit</button>';
+      editOption = '<button type="button" onclick="editAction('+id+', '+setName+', '+idEdit+')" class="edit btn btn-success btn-sm">Ubah</button>';
     }
     @endif
 
     @if(auth()->user()->can('regencies-delete')) {
-      deleteOption = '<button type="button" onclick="deleteAction('+id+')" class="edit btn btn-danger btn-sm">Delete</button>';
+      deleteOption = '<button type="button" onclick="deleteAction('+id+')" class="edit btn btn-danger btn-sm">Hapus</button>';
     }
     @endif
 
-    showOption = '<a href="#" class="show btn btn-info btn-sm">Show</a>';
+    showOption = '<a href="#" class="show btn btn-info btn-sm">Rincian</a>';
 
     return editOption+deleteOption+showOption;
   }
@@ -254,7 +254,7 @@
     $("#_method").val('PUT');
     $("#name").val(name);
 
-    $("#form_title").text('Update Regency Information');
+    $("#form_title").text('Form Ubah Data Kabupaten');
     $("#btn-submit").text("Update");
   }
 
@@ -281,7 +281,7 @@
               Swal.fire({
                 icon: 'error',
                 title: 'Oops... ' + textStatus,
-                text: 'Please Try Again or Refresh Page'
+                text: 'Tolong Coba lagi atau Muat Ulang Halaman!'
               });
             });
         }
@@ -294,7 +294,7 @@
     $("#_method").val('POST');
     $("#name").val('');
 
-    $("#form_title").text('Create Regency Information');
+    $("#form_title").text('Form Buat Data Kabupaten');
     $("#btn-submit").text("Submit");
   }
 </script>

@@ -1,8 +1,8 @@
 @extends('layouts.admin.app',[
   'headers' => 'active',
   'menu' => 'address',
-  'title' => 'Village',
-  'first_title' => 'Village',
+  'title' => 'Kelurahan',
+  'first_title' => 'Kelurahan',
   'first_link' => route('admin.villages.index')
 ])
 
@@ -28,10 +28,10 @@
           <div class="card-header">
             <div class="row align-items-center">
               <div class="col-lg-8 col-md-6">
-                <h3 class="mb-0" id="form_title">Create Village Information</h3>
+                <h3 class="mb-0" id="form_title">Form Buat Data Kelurahan</h3>
               </div>
               <div class="col-lg-4 col-md-6 d-flex justify-content-end">
-                <button type="button" onclick="resetForm()" class="btn btn-danger" id="btn-reset">Reset</button>
+                <button type="button" onclick="resetForm()" class="btn btn-danger" id="btn-reset">Atur Ulang</button>
                 @if (auth()->user()->can('villages-create'))
                   <button type="submit" class="btn btn-primary" id="btn-submit">Submit</button>
                 @endif
@@ -84,7 +84,7 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-map-marker"></i></span>
                     </div>
-                    <input class="form-control @error('name') is-invalid @enderror" placeholder="Name Village" type="text" name="name" value="{{ old('name')}}" id="name">
+                    <input class="form-control @error('name') is-invalid @enderror" placeholder="Nama Kelurahan" type="text" name="name" value="{{ old('name')}}" id="name">
                     @error('name')
                         <div class="invalid-feedback">
                             {{ $message }}
@@ -104,7 +104,7 @@
         <div class="card">
           <!-- Card header -->
           <div class="card-header">
-            <h3 class="mb-0">List Villages have been registered</h3>
+            <h3 class="mb-0">Daftar Kelurahan yang telah terdaftar</h3>
           </div>
           <!-- Card body -->
           <div class="card-body">
@@ -112,8 +112,8 @@
               <thead class="thead-light">
                 <tr>
                   <th>No</th>
-                  <th>Name</th>
-                  <th>Action</th>
+                  <th>Nama</th>
+                  <th>Aksi</th>
                 </tr>
               </thead>
               <tbody>
@@ -121,8 +121,8 @@
               <tfoot>
                 <tr>
                   <th>No</th>
-                  <th>Name</th>
-                  <th>Action</th>
+                  <th>Nama</th>
+                  <th>AKsi</th>
                 </tr>
               </tfoot>
             </table>
@@ -148,22 +148,22 @@
   "use strict"
   $(document).ready(function() {
     $('#provinces').select2({
-      'placeholder': 'Sort By Provinces',
+      'placeholder': 'Urutkan Berdasarkan Provinsi',
     });
 
     $('#regencies').select2({
-      'placeholder': 'Sort By Regencies',
+      'placeholder': 'Urutkan Berdasarkan Kabupaten/Kota',
     }).attr('disabled', true);
 
     $('#districts').select2({
-      'placeholder': 'Sort By Districts',
+      'placeholder': 'Urutkan Berdasarkan Kecamatan',
     }).attr('disabled', true);
   });
 
   let tableVillages = $("#villagesTable").DataTable({
     lengthMenu: [ 5, 10, 25, 50, 75, 100 ],
     language: {
-      "emptyTable": "Please select sort or search data"
+      "emptyTable": "Urutkan atau cari Data"
     },
     pageLength: 5,
       columnDefs: [
@@ -228,7 +228,7 @@
         Swal.fire({
           icon: 'error',
           title: 'Oops... ' + textStatus,
-          text: 'Please Try Again or Refresh Page'
+          text: 'Tolong Coba Lagi atau Muat Ulang Halaman!'
         });
     });
   });
@@ -249,7 +249,7 @@
           });
           $('#regencies').attr('disabled', false);
         } else {
-          console.log("data trouble");
+          console.log("Terjadi Kesalahan");
         }
       }
     })
@@ -271,7 +271,7 @@
           });
           $('#districts').attr('disabled', false);
         } else {
-          console.log("data trouble");
+          console.log("Terjadi Kesalahan");
         }
       }
     })
@@ -298,7 +298,7 @@
             ]).draw().node().id="rows_"+value['id'];
           });
         } else {
-          console.log("data trouble");
+          console.log("Terjadi KEsalahan");
         }
       }
     })
@@ -308,16 +308,16 @@
     let setName = "'"+name+"'";
     let editOption = '', deleteOption = '', showOption = '';
     @if(auth()->user()->can('districts-edit')) {
-      editOption = '<button type="button" onclick="editAction('+id+', '+setName+', '+idEdit+')" class="edit btn btn-success btn-sm">Edit</button>';
+      editOption = '<button type="button" onclick="editAction('+id+', '+setName+', '+idEdit+')" class="edit btn btn-success btn-sm">Ubah</button>';
     }
     @endif
 
     @if(auth()->user()->can('districts-delete')) {
-      deleteOption = '<button type="button" onclick="deleteAction('+id+')" class="edit btn btn-danger btn-sm">Delete</button>';
+      deleteOption = '<button type="button" onclick="deleteAction('+id+')" class="edit btn btn-danger btn-sm">Hapus</button>';
     }
     @endif
 
-    showOption = '<a href="#" class="show btn btn-info btn-sm">Show</a>';
+    showOption = '<a href="#" class="show btn btn-info btn-sm">Rincian</a>';
 
     return editOption+deleteOption+showOption;
   }
@@ -328,7 +328,7 @@
     $("#_method").val('PUT');
     $("#name").val(name);
 
-    $("#form_title").text('Update Village Information');
+    $("#form_title").text('Form Ubah Data Kelurahan');
     $("#btn-submit").text("Update");
   }
 
@@ -355,7 +355,7 @@
               Swal.fire({
                 icon: 'error',
                 title: 'Oops... ' + textStatus,
-                text: 'Please Try Again or Refresh Page'
+                text: 'Tolong Coba Lagi atau Muat Ulang Halaman!'
               });
             });
         }
@@ -368,7 +368,7 @@
     $("#_method").val('POST');
     $("#name").val('');
 
-    $("#form_title").text('Create Village Information');
+    $("#form_title").text('Form Buat Data Kelurahan');
     $("#btn-submit").text("Submit");
   }
 </script>

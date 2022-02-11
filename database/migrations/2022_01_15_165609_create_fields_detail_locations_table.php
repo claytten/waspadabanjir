@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateGeometriesTable extends Migration
+class CreateFieldsDetailLocationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CreateGeometriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('geometries', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('geo_type');
-            $table->text('coordinates');
+        Schema::create('fields_detail_locations', function (Blueprint $table) {
+            $table->id();
             $table->bigInteger('field_id')->unsigned();
-            $table->timestamps();
+            $table->string('district');
+            $table->string('village');
 
             $table->foreign('field_id')
                 ->references('id')
@@ -35,6 +34,6 @@ class CreateGeometriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('geometries');
+        Schema::dropIfExists('fields_detail_locations');
     }
 }

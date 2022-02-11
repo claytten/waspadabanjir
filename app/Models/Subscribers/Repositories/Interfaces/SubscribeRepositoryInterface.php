@@ -39,4 +39,6 @@ interface SubscribeRepositoryInterface extends BaseRepositoryInterface
     public function listDistrictMenu(string $from, string $body, object $districtRepo, object $fieldRepo) :string;
 
     public function OptionReportMenu(string $answerID, string $from, string $body, object $findNumber, object $reportRepo): string;
+
+    public function optionChangeInformation(string $answerID, string $from, string $body, object $findNumber, object $regencyRepo): string;
 }

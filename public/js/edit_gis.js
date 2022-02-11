@@ -361,7 +361,7 @@ const updateGeoJSONData = (color) => {
     cache: false,
     data: {
       color,
-      coordinates : JSON.stringify(polygonGeoJSON.geometry.coordinates)
+      area : JSON.stringify(polygonGeoJSON.geometry.coordinates)
     },
     error: function (xhr, status, error) {
       console.log(xhr.responseText);

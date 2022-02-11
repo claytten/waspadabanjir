@@ -2,6 +2,7 @@
 
 namespace App\Models\Maps\Fields;
 
+use App\Models\Maps\FieldDetailLocations\FieldDetailLocation;
 use App\Models\Maps\FieldImages\FieldImage;
 use App\Models\Maps\Geometries\Geometry;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,13 +22,13 @@ class Field extends Model
     protected $fillable = [
         'name',
         'color',
-        'locations',
+        'area',
         'description',
         'deaths',
         'losts',
         'injured',
-        'date',
-        'time',
+        'date_in',
+        'date_out',
         'status'
     ];
 
@@ -46,6 +47,16 @@ class Field extends Model
     public function images()
     {
         return $this->hasMany(FieldImage::class);
+    }
+
+    /**
+     * Get all of the detail location for the Field
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function detailLocations()
+    {
+        return $this->hasMany(FieldDetailLocation::class);
     }
 
     /**

@@ -24,15 +24,11 @@ class CreateFieldRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'      => ['required', 'string'],
             'color'     => ['required', 'string'],
-            'locations' => ['required', 'string'],
             'description'=>['required', 'string'],
             'deaths'    => ['required', 'numeric', 'min:0'],
             'losts'     => ['required', 'numeric', 'min:0'],
             'injured'   => ['required', 'numeric', 'min:0'],
-            'date'      => ['required', 'string'],
-            'time'      => ['required', 'string'],
             'status'    => ['required']
         ];
     }

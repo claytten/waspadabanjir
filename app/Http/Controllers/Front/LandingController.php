@@ -7,6 +7,8 @@ use App\Models\Subscribers\Repositories\Interfaces\SubscribeRepositoryInterface;
 use App\Models\Reports\Repositories\Interfaces\ReportRepositoryInterface;
 use App\Models\Subscribers\Requests\CreateSubscribeRequest;
 use App\Http\Controllers\Controller;
+use App\Models\Maps\Fields\Field;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class LandingController extends Controller
@@ -52,9 +54,11 @@ class LandingController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-    {
+    {        
         if ($request->ajax()) {
-            $fields = $this->fieldRepo->listFields()->sortBy('name')->where('status', 1);
+            $date_in = Carbon::now()->toDateString();
+            $date_out = Carbon::now()->toDateString();
+            $fields = $this->fieldRepo->listFieldsPublic($date_in, $date_out);
 
             $field_response = array(
                 "type" => "FeatureCollection",
@@ -62,24 +66,26 @@ class LandingController extends Controller
             );
             foreach($fields as $item){
                 $temp = array(
-                    "type" => "Feature",
-                    "properties" => array(
-                        "color" => $item->color,
-                        "popupContent" => array(
-                            "id"          => $item->id,
-                            "name"        => $item->name,
-                            "locations"   => $item->locations,
-                            "date"        => $item->date,
-                            "time"        => $item->time,
-                            "status"      => $item->status
-                        )
-                    ),
-                    "geometry" => array(
-                    "type" => $item->geometries->geo_type,
-                    "coordinates" => json_decode($item->geometries->coordinates)
+                  "type" => "Feature",
+                  "properties" => array(
+                    "color" => $item->color,
+                    "popupContent" => array(
+                      "id"          => $item->id,
+                      "total_victims"=> ($item->deaths + $item->injured + $item->losts),
+                      "total_village"=> $item->detailLocations()->count(),
+                      "date_in"     => $this->fieldRepo->convertDateAttribute($item->date_in),
+                      "date_in_time"=> $this->fieldRepo->convertTimeAttribute($item->date_in),
+                      "date_out"    => ($item->date_out !== null ? $this->fieldRepo->convertDateAttribute($item->date_out) : false),
+                      "date_out_time"=> ($item->date_out !== null ? $this->fieldRepo->convertTimeAttribute($item->date_out) : false),
+                      "status"      => $item->status
                     )
+                  ),
+                  "geometry" => array(
+                  "type" => 'Polygon',
+                  "coordinates" => json_decode($item->area)
+                  )
                 );
-    
+      
                 $field_response["features"][] = $temp;
             }
             
@@ -162,8 +168,8 @@ class LandingController extends Controller
                     "color" => $field->color,
                 ),
                 "geometry" => array(
-                    "type" => $field->geometries->geo_type,
-                    "coordinates" => json_decode($field->geometries->coordinates)
+                    "type" => 'Polygon',
+                    "coordinates" => json_decode($field->area)
                 )
             );
 
