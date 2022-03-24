@@ -79,7 +79,7 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-user"></i></span>
                     </div>
-                    <input class="form-control @error('name') is-invalid @enderror" placeholder="Role Name" type="text" name="name" value="{{ old('name') }}" id="name">
+                    <input class="form-control @error('name') is-invalid @enderror" placeholder="Nama Role" type="text" name="name" value="{{ old('name') }}" id="name">
                     @error('name')
                         <div class="invalid-feedback">
                             {{ $message }}

@@ -44,10 +44,6 @@
               <i class="ni ni-single-02"></i>
               <span>My profile</span>
             </a>
-            <a href="{{ route('admin.setting.index')}}" class="dropdown-item">
-              <i class="ni ni-settings-gear-65"></i>
-              <span>Settings</span>
-            </a>
             <div class="dropdown-divider"></div>
             <a href="{{ route('admin.logout')}}" class="dropdown-item">
               <i class="ni ni-user-run"></i>

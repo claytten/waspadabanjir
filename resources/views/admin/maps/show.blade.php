@@ -53,25 +53,9 @@
               <div class="row">
                 <div class="col-md-12">
                   <div class="form-group row">
-                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Jumlah korban yang meninggal</label>
+                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Jumlah korban meninggal/luka/hilang</label>
                     <div class="col-md-10">
-                      <span class="form-control">{{ $map->deaths }} Orang</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-12">
-                  <div class="form-group row">
-                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Jumlah korban yang mengalami luka kecil/berat</label>
-                    <div class="col-md-10">
-                      <span class="form-control">{{ $map->injured }} Orang</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-12">
-                  <div class="form-group row">
-                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Jumlah korban yang hilang</label>
-                    <div class="col-md-10">
-                      <span class="form-control">{{ $map->losts }} Orang</span>
+                      <span class="form-control">{{ $map->deaths }}/{{ $map->injured }}/{{ $map->losts }} orang</span>
                     </div>
                   </div>
                 </div>

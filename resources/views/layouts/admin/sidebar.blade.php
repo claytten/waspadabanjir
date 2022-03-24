@@ -65,7 +65,7 @@
                 <ul class="nav nav-sm flex-column">
                   @if(auth()->user()->can('admin-list'))
                     <li class="nav-item {{ !empty($submenu) ? ($submenu == 'admins' ? 'show' : '') : '' }}">
-                      <a href="{{ route('admin.admin.index') }}" class="nav-link">Pengguna</a>
+                      <a href="{{ route('admin.admin.index') }}" class="nav-link">Admin</a>
                     </li>
                   @endif
                   

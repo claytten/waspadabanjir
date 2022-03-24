@@ -15,7 +15,7 @@
 @section('header-right')
 @if(auth()->user()->can('roles-create'))
   <div class="col-lg-6 col-5 text-right">
-    <a href="{{ route('admin.role.create') }}" class="btn btn-sm btn-neutral">New</a>
+    <a href="{{ route('admin.role.create') }}" class="btn btn-sm btn-neutral">Buat Role</a>
   </div>
 @endif
 @endsection

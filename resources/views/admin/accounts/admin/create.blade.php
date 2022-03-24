@@ -1,8 +1,8 @@
 @extends('layouts.admin.app',[
   'headers' => 'active',
   'menu' => 'accounts',
-  'title' => 'Pengguna',
-  'first_title' => 'Pengguna',
+  'title' => 'Admin',
+  'first_title' => 'Admin',
   'first_link' => route('admin.admin.index'),
   'second_title' => 'Pembuatan'
 ])

@@ -48,7 +48,7 @@
                 <h3 class="mb-0" id="form-map-title">Perbaharui Data Peta</h3>
               </div>
               <div class="col-lg-6 col-md-8 d-flex justify-content-end">
-                <a class="btn btn-info" href="{{ route('admin.map.view', [$date_in, $date_out]) }}">Back</a>
+                <a class="btn btn-info" href="{{ route('admin.map.view', [$date_in, $date_out]) }}">Kembali</a>
                 <button type="button" class="btn btn-danger" onclick="deleteArea('{{ $map->id }}')">Hapus</button>
                 <button type="button" class="btn btn-warning" onclick="resetForm()" >Atur Ulang</button>
                 <button type="submit" class="btn btn-primary" id="btn-submit" >Submit</button>
@@ -284,11 +284,11 @@
                 <div class="row">
                   <div class="col-md-12" id="status-form">
                     <div class="form-group row">
-                      <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Status Publish</label>
+                      <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Status Penerbitan</label>
                       <div class="col-md-10">
                         <select name="status" id="status" class="form-control" data-toggle="select" onchange="statusAction()">
                           <option value=""></option>
-                          <option value="1" {{ ($map->status == 1) ? 'selected' : '' }}>Publish</option>
+                          <option value="1" {{ ($map->status == 1) ? 'selected' : '' }}>Terbitkan</option>
                           <option value="0" {{ ($map->status == 0) ? 'selected' : '' }}>Draft</option>
                         </select>
                       </div>
@@ -297,12 +297,12 @@
                   @if ($map->status)
                     <div class="col-md-12" id="broadcast-form">
                       <div class="form-group row">
-                        <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Broadcast ?</label>
+                        <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Siaran</label>
                         <div class="col-md-10">
                           <select name="broadcast" id="broadcast" class="form-control" data-toggle="select">
                             <option value=""></option>
-                            <option value="1">Yes</option>
-                            <option value="0">No</option>
+                            <option value="1">Ya</option>
+                            <option value="0">Tidak</option>
                           </select>
                         </div>
                       </div>
@@ -589,12 +589,12 @@
       $(`
         <div class="col-md-12" id="broadcast-form">
           <div class="form-group row">
-            <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Broadcast ?</label>
+            <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Siaran</label>
             <div class="col-md-10">
               <select name="broadcast" id="broadcast" class="form-control" data-toggle="select">
                 <option value=""></option>
-                <option value="1">Yes</option>
-                <option value="0">No</option>
+                <option value="1">Ya</option>
+                <option value="0">Tidak</option>
               </select>
             </div>
           </div>

@@ -403,12 +403,12 @@
       $(`
         <div class="col-md-12" id="broadcast-form">
           <div class="form-group row">
-            <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Broadcast ?</label>
+            <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Siaran</label>
             <div class="col-md-10">
               <select name="broadcast" id="broadcast" class="form-control" data-toggle="select">
                 <option value=""></option>
-                <option value="1">Yes</option>
-                <option value="0">No</option>
+                <option value="1">Ya</option>
+                <option value="0">Tidak</option>
               </select>
             </div>
           </div>

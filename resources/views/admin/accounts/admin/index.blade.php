@@ -1,8 +1,8 @@
 @extends('layouts.admin.app',[
   'headers' => 'active',
   'menu' => 'accounts',
-  'title' => 'Pengguna',
-  'first_title' => 'Pengguna',
+  'title' => 'Admin',
+  'first_title' => 'Admin',
   'first_link' => route('admin.admin.index')
 ])
 
@@ -21,7 +21,7 @@
     @else
       {{ !empty($statusWA['name']) ? $statusWA['name']  : ''}}
     @endif
-    <a href="{{ route('admin.admin.create') }}" class="btn btn-sm btn-neutral">Buat Pengguna</a>
+    <a href="{{ route('admin.admin.create') }}" class="btn btn-sm btn-neutral">Buat Admin</a>
   </div>
 @endif
 @endsection
@@ -32,7 +32,7 @@
     <div class="card">
       <!-- Card header -->
       <div class="card-header">
-        <h3 class="mb-0">Manajemen Pengguna</h3>
+        <h3 class="mb-0">Admin Manajemen</h3>
       </div>
       <div class="table-responsive py-4">
         <table class="table table-flush" id="usersTable">
