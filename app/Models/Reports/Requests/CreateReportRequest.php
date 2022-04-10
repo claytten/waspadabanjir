@@ -29,4 +29,19 @@ class CreateReportRequest extends FormRequest
             'phone'     => ['required']
         ];
     }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     * 
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'name.required'     => 'Nama harus diisi',
+            'name.string'       => 'Nama harus berupa string',
+            'address.required'  => 'Alamat harus diisi',
+            'phone.required'    => 'Nomor telepon harus diisi'
+        ];
+    }
 }

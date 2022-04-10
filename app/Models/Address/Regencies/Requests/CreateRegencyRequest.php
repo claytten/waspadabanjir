@@ -27,4 +27,19 @@ class CreateRegencyRequest extends FormRequest
             'name' => ['required', 'string', 'max:191', 'unique:regencies,name']
         ];
     }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     * 
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'name.required' => 'Nama harus diisi',
+            'name.string' => 'Nama harus berupa string',
+            'name.max' => 'Nama maksimal 191 karakter',
+            'name.unique' => 'Nama sudah ada'
+        ];
+    }
 }

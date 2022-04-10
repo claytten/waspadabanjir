@@ -14,6 +14,8 @@ class Field extends Model
 
     protected $table = 'fields';
 
+    public $timestamps = false;
+
     /**
      * The attributes that are mass assignable.
      *

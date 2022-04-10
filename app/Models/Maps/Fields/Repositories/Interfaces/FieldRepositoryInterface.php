@@ -36,4 +36,6 @@ interface FieldRepositoryInterface extends BaseRepositoryInterface
     public function deleteFile(string $get_data);
 
     public function listFieldsAndGeo(): string;
+
+    public function broadcastField(object $item, string $location): string;
 }

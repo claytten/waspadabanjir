@@ -348,9 +348,9 @@
 
   function searchProvince() {
     $('#regencies, #districts, #villages').empty();
-    $('#regencies').append('<option value="" disabled selected>--Select Regency--</option>');
-    $('#districts').append('<option value="" disabled selected>--Select District--</option>');
-    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
+    $('#regencies').append('<option value="" disabled selected>--Pilih Kabupaten/Kota--</option>');
+    $('#districts').append('<option value="" disabled selected>--Pilih Kecamatan--</option>');
+    $('#villages').append('<option value="" disabled selected>--Pilih Kelurahan--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -376,8 +376,8 @@
 
   function searchRegency() {
     $('#districts, #villages').empty();
-    $('#districts').append('<option value="" disabled selected>--Select District--</option>');
-    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
+    $('#districts').append('<option value="" disabled selected>--Pilih Kecamatan--</option>');
+    $('#villages').append('<option value="" disabled selected>--Pilih Kelurahan--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -401,7 +401,7 @@
 
   function searchDistrict() {
     $('#villages').empty();
-    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
+    $('#villages').append('<option value="" disabled selected>--Pilih Kelurahan--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

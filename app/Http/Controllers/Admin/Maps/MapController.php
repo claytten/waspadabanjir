@@ -56,9 +56,9 @@ class MapController extends Controller
     public function indexView($date_in, $date_out, Request $request)
     {
       if ($request->ajax()) {
-        $date_in = Carbon::createFromFormat('m-d-Y', $date_in)->format('Y-m-d');
-        $date_out = Carbon::createFromFormat('m-d-Y', $date_out)->format('Y-m-d');
-        $fields = $this->fieldRepo->listFields($date_in, $date_out);
+        $date_ins = Carbon::createFromFormat('m-d-Y', $date_in)->format('Y-m-d');
+        $date_outs = Carbon::createFromFormat('m-d-Y', $date_out)->format('Y-m-d');
+        $fields = $this->fieldRepo->listFields($date_ins, $date_outs);
         return response()->json([
           'code'      => 200,
           'status'    => 'success',
@@ -67,9 +67,7 @@ class MapController extends Controller
       }
       return view('admin.maps.index', [
         'date_in'   => $date_in,
-        'date_out'  => $date_out,
-        'title_date_in' => Carbon::createFromFormat('m-d-Y', $date_in)->format('d-m-Y'),
-        'title_date_out' => Carbon::createFromFormat('m-d-Y', $date_out)->format('d-m-Y'),
+        'date_out'  => $date_out
       ]);
     }
 
@@ -133,6 +131,7 @@ class MapController extends Controller
         if(!empty($data['date_out'])) {
             $data['date_out'] = $this->fieldRepo->getDateAttribute($data['date_out'],$data['date_out_time']);
         }
+        // dd($data['locations'][0][0], gettype($data['locations'][0][0]));
         $field = $this->fieldRepo->createField($data);
 
         $fieldRepo = new FieldRepository($field);
@@ -143,14 +142,7 @@ class MapController extends Controller
 
         if ($request->has('broadcast') && $data['broadcast'] === "1") {
           // Broadcast Message
-          $detailLink = route('maps.show', $field['id']);
-          $detailLink = str_replace('http','https',$detailLink);
-          $message = "--Update Data Terbaru--\nTelah terjadi banjir di daerah Kecamatan {$field->name}:";
-          $message .= "\n  -Waktu & Tgl Kejadian : {$field->time}, {$field->date}";
-          $message .= "\n  -Detail Lokasi : {$field->locations}";
-          $message .= "\n  -Deskripsi : {$field->description}";
-          $message .= "\n  -Detail informasi peta dan gambar: {$detailLink} ";
-
+          $message = strval($this->fieldRepo->broadcastField($field, $data['locations'][0][0]));
           $subscribers = $this->subscribeRepo->listSubscribes()->sortBy('name');
           foreach($subscribers->where('status', 1) as $item) {
             $item->body = strval($message);
@@ -159,8 +151,8 @@ class MapController extends Controller
         }
 
         return redirect()->route('admin.map.view', [
-            str_replace("/","-", $request->date_in),
-            (!empty($request->date_out) ? str_replace("/","-", $request->date_out) : str_replace("/","-", $request->date_in))
+            str_replace("/","-", $request['date_in']),
+            (!empty($request['date_out']) ? str_replace("/","-", $request['date_out']) : str_replace("/","-", $request['date_in']))
         ])->with([
             'status'    => 'success',
             'message'   => 'Create Map successful!'

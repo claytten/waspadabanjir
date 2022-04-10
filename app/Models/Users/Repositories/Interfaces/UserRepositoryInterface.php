@@ -25,8 +25,6 @@ interface UserRepositoryInterface extends BaseRepositoryInterface
 
     public function hasRole(string $roleName) : bool;
 
-    public function isAuthUser(User $employee): bool;
-
     public function deleteUser() : bool;
 
     public function saveCoverImage(UploadedFile $file) : string;

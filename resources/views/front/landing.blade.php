@@ -11,8 +11,13 @@
 
 @section('inline_css')
 <style>
-
-</style>
+  #aboutModal.open{
+    width: 100%;
+    max-height: 100%;
+    height: 100%;
+    top: 0 !important;
+  }
+  </style>
 @endsection
 
 @section('content_body')
@@ -29,7 +34,12 @@
     <i class="large material-icons">message</i>
   </a>
   <ul>
-    <li><a href="{{ route('form.report')}}" class="btn-floating red tooltipped" data-position="left" data-tooltip="Laporkan Banjir"><i class="material-icons">report</i></a></li>
+    <li>
+      <a class="btn-floating blue modal-trigger tooltipped" href="#aboutModal" data-position="left" data-tooltip="Tentang Situs Web">
+        <i class="material-icons">help</i>
+      </a>
+    </li>
+    <li><a href="{{ route('form.report')}}" class="btn-floating red tooltipped" data-position="left" data-tooltip="Laporkan Banjir"><i class="material-icons">flag</i></a></li>
     <li>
       <a class="btn-floating green modal-trigger tooltipped" href="#subscriptionForm" data-position="left" data-tooltip="Langganan Berita Banjir di WhatsApp">
         <i class="material-icons">subscriptions</i>
@@ -41,7 +51,7 @@
 {{-- Feature Discovery --}}
 <div class="tap-target blue" data-target="menu">
   <div class="tap-target-content white-text">
-    <h5>Selamat Datang Netizen</h5>
+    <h5>Selamat Datang</h5>
     <p>Kamu bisa melakukan langganan informasi dan pelaporan mengenai banjir seputar Kabupaten Klaten melalui Media Whatsapp disini. Happy Explore!</p>
   </div>
 </div>
@@ -93,6 +103,37 @@
     </div>
   </div>
 </div>
+
+{{-- aboutModal --}}
+<div id="aboutModal" class="modal">
+  <div class="modal-content z-depth-15">
+    <div class="row">
+      <div class="col s12 right">
+        <a href="javascript:void(0)" class="transparent right modal-close">
+          <i class="material-icons center" style="color:black">cancel</i>
+        </a>
+      </div>
+      <div class="col s12 center">
+        <img src="{{ asset('images/diponegoro.png') }}" alt="Logo Diponegoro" height="160px">
+        <h6>UNIVERSITAS DIPONEGORO</h6>
+        <h6>PENGEMBANGAN SISTEM INFORMASI GEOGRAFIS BANJIR DI KABUPATEN KLATEN DENGAN MEMANFAATKAN MEDIA INFORMASI WEBSITE DAN WHATSAPP</h6>
+        <br>
+        <h6>TUGAS AKHIR</h6>
+        <br>
+        <h6>Diajukan sebagai salah satu syarat untuk memperoleh gelar Sarjana Teknik</h6>
+        <br><br>
+        <h6>WAHYU AJI SULAIMAN</h6>
+        <h6>21120117140019</h6>
+        <br><br>
+        <h6>DEPARTEMEN TEKNIK KOMPUTER</h6>
+        <h6>FAKULTAS TEKNIK</h6>
+        <h6>UNIVERSITAS DIPONEGORO</h6>
+        <h6>SEMARANG</h6>
+        <h6>2022</h6>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 @section('plugins_js')
@@ -111,6 +152,7 @@
     $('#loading').hide();
     $('.fixed-action-btn').floatingActionButton();
     $('.modal').modal();
+    $('#aboutModal').modal('open');
     $('.tooltipped').tooltip();
     $('.collapsible').collapsible();
     $('.materialboxed').materialbox();

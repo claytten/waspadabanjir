@@ -13,7 +13,9 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles;
 
-    protected $table = 'users';
+    protected $table = 'admin';
+
+    public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.
@@ -24,7 +26,7 @@ class User extends Authenticatable
         'email',
         'password',
         'name',
-        'address_id',
+        'address',
         'phone',
         'image',
         'role',
@@ -39,16 +41,6 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
     ];
-
-    /**
-     * Get the village that owns the Admin
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function village()
-    {
-        return $this->belongsTo(Village::class, 'address_id', 'id');
-    }
 
     /**
      * Get Phone Number

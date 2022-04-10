@@ -81,8 +81,9 @@ class LoginController extends Controller
      */
     protected function sendFailedLoginResponse(Request $request)
     {
-        throw ValidationException::withMessages([
-            $this->username() => [trans('auth.failed')],
+        return redirect()->route('admin.login.view')->with([
+            'status'    => 'danger',
+            'message'   => 'email atau kata sandi tidak ditemukan!'
         ]);
     }
 

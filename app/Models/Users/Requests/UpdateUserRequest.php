@@ -28,8 +28,27 @@ class UpdateUserRequest extends FormRequest
             'name'                  => ['required', 'string'],
             'email'                 => ['required', 'email'],
             'phone'                 => ['required'],
-            'address_id'            => ['required'],
+            'address'               => ['required', 'string'],
             'role'                  => ['required'],
+        ];
+    }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     * 
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'name.required'         => 'Nama harus diisi',
+            'name.string'           => 'Nama harus berupa string',
+            'email.required'        => 'Email harus diisi',
+            'email.email'           => 'Email harus berupa email',
+            'phone.required'        => 'Nomor telepon harus diisi',
+            'address.required'      => 'Alamat harus diisi',
+            'address.string'        => 'Alamat harus berupa string',
+            'role.required'         => 'Role harus diisi',
         ];
     }
 }

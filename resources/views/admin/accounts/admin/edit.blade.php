@@ -30,7 +30,7 @@
 @section('content_body')
 <form action="{{ route('admin.admin.update', $user->id) }}" method="POST" enctype="multipart/form-data">
   {{ csrf_field() }}
-  <input type="hidden" name="address_id" id="village_id" readonly value="{{ $user->address_id}}">
+  <input type="hidden" name="address" id="set_address" readonly value="{{ $user->address }}">
   <input type="hidden" name="_method" value="PUT" readonly>
   <div class="row">
     <div class="col-lg-6">
@@ -124,10 +124,7 @@
                         <span class="input-group-text"><i class="fas fa-map-marker"></i></span>
                       </div>
                       <button type="button" class="form-control text-left" id="btn-address" data-toggle="modal" data-target="#modal-change-address">
-                        {{$user->village->name}},
-                        {{$user->village->district->name}},
-                        {{$user->village->district->regency->name}},
-                        {{$user->village->district->regency->province->name}}
+                        {{ $user->address }}
                       </button>
                     </div>
                   </div>
@@ -263,7 +260,7 @@
               <div class="text-center text-muted mb-4">
                   <small>Ubah Password</small>
               </div>
-              <form role="form" action="{{ route('admin.reset.password', $user->id) }}" method="POST">
+              <form role="form" action="{{ route('admin.admin.passwordAdminReset', $user->id) }}" method="POST">
                   {{ csrf_field() }}
                   <input type="hidden" name="_method" value="PUT" readonly>
                   <input type="hidden" name="statStages" value="user" readonly>
@@ -277,14 +274,6 @@
                           <input class="form-control" placeholder="Password Baru" type="password" name="password">
                       </div>
                   </div>
-                  <div class="form-group">
-                    <div class="input-group input-group-merge input-group-alternative">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
-                        </div>
-                        <input class="form-control" placeholder="Konfirmasi Password" type="password" name="password_confirmation">
-                    </div>
-                </div>
                   <div class="text-center">
                       <button type="Submit" class="btn btn-primary my-4">Submit</button>
                   </div>
@@ -370,14 +359,14 @@
   });
 
   function addAddress() {
-    $('#village_id').val('');
-    $('#village_id').val( $('#villages').val() );
+    $('#set_address').val('');
     const result = `
       ${$('#villages option:selected').text()}, 
       ${$('#districts option:selected').text()}, 
       ${$('#regencies option:selected').text()}, 
       ${$('#provinces option:selected').text()}
     `;
+    $('#set_address').val(result);
 
     $('#btn-address').empty().append(result);
   }
@@ -386,7 +375,7 @@
     $('#regencies, #districts, #villages').empty();
     $('#regencies').append('<option value="" disabled selected>--Pilih Kabupaten/Kota--</option>');
     $('#districts').append('<option value="" disabled selected>--Pilih Kecamatan--</option>');
-    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
+    $('#villages').append('<option value="" disabled selected>--Pilih Kelurahan--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

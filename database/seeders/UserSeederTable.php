@@ -21,8 +21,8 @@ class UserSeederTable extends Seeder
                 'password'  => bcrypt('superadmin'),
                 'name'      => 'Superadmin',
                 'role'      => 'Super Admin',
-                'address_id'=> '34480',
-                'phone'     => '+62',
+                'address'   => 'JETISWETAN, PEDAN, KABUPATEN KLATEN, JAWA TENGAH',
+                'phone'     => "+6285702151766",
                 'image'     => null,
                 'status'    => true
             ],
@@ -31,8 +31,8 @@ class UserSeederTable extends Seeder
                 'password'  => bcrypt('employee'),
                 'name'      => 'Employee 1',
                 'role'      => 'Secretary',
-                'address_id'=> '49088',
-                'phone'     => '+62',
+                'address'   => 'JETISWETAN, PEDAN, KABUPATEN KLATEN, JAWA TENGAH',
+                'phone'     => "+6285702151766",
                 'image'     => null,
                 'status'    => true
             ]
@@ -45,7 +45,7 @@ class UserSeederTable extends Seeder
                     'email'     => $item['email'],
                     'password'  => $item['password'],
                     'name'      => $item['name'],
-                    'address_id'=> $item['address_id'],
+                    'address'   => $item['address'],
                     'phone'     => $item['phone'],
                     'image'     => $item['image'],
                     'role'      => $item['role'],

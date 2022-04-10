@@ -8,7 +8,6 @@ use Jsdecena\Baserepo\BaseRepository;
 use App\Models\Maps\Fields\Field;
 use App\Models\Maps\Fields\Exceptions\FieldNotFoundException;
 use App\Models\Maps\Fields\Repositories\Interfaces\FieldRepositoryInterface;
-use App\Models\Maps\Geometries\Geometry;
 use App\Models\Tools\UploadableTrait;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -191,7 +190,7 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
     public function saveMapImages(Collection $collection)
     {
         $collection->each(function (UploadedFile $file) {
-            $filename = $this->storeFile($file);
+            $filename = $this->uploadOne($file, 'maps');
             $fieldImage = new FieldImage([
                 'field_id'  => $this->model->id,
                 'src'       => $filename
@@ -252,22 +251,43 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
 
     private function combineFieldDoingToday($item, $indexItem)
     {
-        $message = '';
-        $totalVictims = $item->deaths + $item->injured + $item->losts;
-        $detailFields = route('maps.show', $item->id);
-        $date_in = $this->convertDateAttribute($item->date_in);
-        $date_in_time = $this->convertTimeAttribute($item->date_in);
-        $date_out_time = ($item->date_out !== null ? $this->convertTimeAttribute($item->date_out) : false);
-        $date_out = $item->date_out !== null ? $date_out_time.' WIB, '.$this->convertDateAttribute($item->date_out) : 'Sedang Berlangsung';
-        $locationCount = $item->detailLocations->count();
-        
-        $message .= "\nArea banjir {$indexItem}";
-        $message .= "\n  -Jumlah Korban : {$totalVictims}";
-        $message .= "\n  -Tanggal Awal Kejadian : {$date_in_time} WIB, {$date_in}";
-        $message .= "\n  -Tanggal Akhir Kejadian : {$date_out}";
-        $message .= "\n  -Jumlah Kelurahan yang terdampak: {$locationCount} Kelurahan";
-        $message .= "\n  -Berita banjir lebih rinci: {$detailFields}";
+      $message = '';
+      $totalVictims = $item->deaths + $item->injured + $item->losts;
+      $detailFields = route('maps.show', $item->id);
+      $date_in = $this->convertDateAttribute($item->date_in);
+      $date_in_time = $this->convertTimeAttribute($item->date_in);
+      $date_out_time = ($item->date_out !== null ? $this->convertTimeAttribute($item->date_out) : false);
+      $date_out = $item->date_out !== null ? $date_out_time.' WIB, '.$this->convertDateAttribute($item->date_out) : 'Sedang Berlangsung';
+      $locationCount = $item->detailLocations->count();
+      
+      $message .= "\nArea banjir {$indexItem}";
+      $message .= "\n  -Jumlah Korban : {$totalVictims}";
+      $message .= "\n  -Tanggal Awal Kejadian : {$date_in_time} WIB, {$date_in}";
+      $message .= "\n  -Tanggal Akhir Kejadian : {$date_out}";
+      $message .= "\n  -Jumlah Kelurahan yang terdampak: {$locationCount} Kelurahan";
+      $message .= "\n  -Berita banjir lebih rinci: {$detailFields}";
 
-        return $message;
+      return $message;
+    }
+
+    public function broadcastField(object $item, string $location): string
+    {
+      $message = '';
+      $name = strtolower($location);
+      $totalVictims = $item->deaths + $item->injured + $item->losts;
+      //$detailFields = route('maps.show', $item->id);
+      $date_in = $this->convertDateAttribute($item->date_in);
+      $date_in_time = $this->convertTimeAttribute($item->date_in);
+      $date_out_time = ($item->date_out !== null ? $this->convertTimeAttribute($item->date_out) : false);
+      $date_out = $item->date_out !== null ? $date_out_time.' WIB, '.$this->convertDateAttribute($item->date_out) : 'Sedang Berlangsung';
+      $locationCount = $item->detailLocations->count();
+      $message = "--Update Data Terbaru--\nTelah terjadi banjir di daerah Kecamatan {$name}:";
+      $message .= "\n  -Jumlah Korban : {$totalVictims}";
+      $message .= "\n  -Tanggal Awal Kejadian : {$date_in_time} WIB, {$date_in}";
+      $message .= "\n  -Tanggal Akhir Kejadian : {$date_out}";
+      $message .= "\n  -Jumlah Kelurahan yang terdampak: {$locationCount} Kelurahan";
+      //$message .= "\n  -Berita banjir lebih rinci: {$detailFields}";
+
+      return $message;
     }
 }

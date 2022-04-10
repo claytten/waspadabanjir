@@ -9,12 +9,12 @@ class FieldImage extends Model
 {
     protected $table = 'fields_has_images';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'field_id',
         'src'
     ];
-
-    public $timestamps = false;
 
     /**
      * Get the field that owns the FieldImage

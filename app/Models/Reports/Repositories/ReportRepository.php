@@ -11,11 +11,12 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
+use App\Models\Tools\PhoneFilterTrait;
 use Illuminate\Support\Facades\Log;
 
 class ReportRepository extends BaseRepository implements ReportRepositoryInterface
 {
-    use UploadableTrait;
+    use UploadableTrait, PhoneFilterTrait;
     /**
      * ReportRepository constructor.
      *
@@ -51,13 +52,7 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
     {
         try {
             if(isset($data['phone'])) {
-                if(substr($data['phone'],0,3) == '+62') {
-                    $data['phone'] = preg_replace("/^0/", "+62", $data['phone']);
-                } else if(substr($data['phone'],0,1) == '0') {
-                    $data['phone'] = preg_replace("/^0/", "+62", $data['phone']);
-                } else {
-                    $data['phone'] = "+62".$data['phone'];
-                }
+                $data['phone'] = $this->filterPhone($data['phone']);
             }
             return $this->model->create($data);
         } catch (QueryException $e) {
@@ -91,13 +86,7 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
     public function updateReport(array $params): bool
     {
         if(isset($params['phone'])) {
-            if(substr($params['phone'],0,3) == '+62') {
-                $params['phone'] = preg_replace("/^0/", "+62", $params['phone']);
-            } else if(substr($params['phone'],0,1) == '0') {
-                $params['phone'] = preg_replace("/^0/", "+62", $params['phone']);
-            } else {
-                $params['phone'] = "+62".$params['phone'];
-            }
+            $params['phone'] = $this->filterPhone($params['phone']);
         }
         return $this->model->update($params);
     }

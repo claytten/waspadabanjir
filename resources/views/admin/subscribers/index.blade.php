@@ -57,9 +57,14 @@
           <tbody>
             @foreach($subscribers as $index => $item)
                 <tr id="rows_{{ $item->id }}">
-                  <th>{{ $index +1 }}</th>
+                  <td>{{ $index +1 }}</td>
                   <td>{{ ucwords($item->name) }}</td>
-                  <td>{{ $item->phone }}</td>
+                  <td>
+                    <label id="phoneNumb{{$index}}" class="phoneNumb">{{ $item->phone }}</label>
+                    <button class="btn btn-info btn-sm" id="buttonPhoneNumb{{$index}}" onclick="phoneNumbAct({{$index}})">
+                      <i class="fa fa-eye" aria-hidden="true"></i>
+                    </button>
+                  </td>
                   <td>
                     {{$item->regency->name}},
                     {{$item->regency->province->name}}</td>
@@ -71,7 +76,7 @@
                   <td>
                     @if(auth()->user()->can('subscriber-edit'))
                       <button 
-                        onclick="editSubscribe('{{ $item['id']}}', '{{ $item['name'] }}', '{{ $item['phone'] }}', '{{ $item['status']}}', '{{ $index+1 }}')" 
+                        onclick="editSubscribe('{{ $item['id']}}', '{{ $item['name'] }}', '{{ $item->phone }}', '{{ $item['status']}}', '{{ $index+1 }}')" 
                         type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-add-subscribers">
                         Ubah
                       </button>
@@ -120,7 +125,7 @@
               </div>
               <div class="form-group">
                 <label class="form-control-label" for="phone">Nomor HP</label>
-                <input class="form-control @error('phone') is-invalid @enderror" name="phone" type="text" id="phone" placeholder="contoh (+62xx/08xx)" onblur="phoneNumber(this)" onfocus="phoneNumber(this)" onchange="phoneNumber(this)" onkeyup="phoneNumber(this)">
+                <input class="form-control @error('phone') is-invalid @enderror" name="phone" type="text" id="phone" placeholder="contoh (+62xx/08xx)" onchange="phoneNumber(this)" onkeyup="phoneNumber(this)">
                 @error('phone')
                   <span class="invalid-feedback" role="alert">
                       <strong>{{ $message }}</strong>
@@ -307,6 +312,7 @@
     $("#provinces, #regencies, #status").select2({width: "100%"});
     $('#multiple_phone, #multiple_phone_regency').select2();
     $('#regencies').prop('disabled', true);
+    $(`.phoneNumb`).toggle("fast");
 
     $.ajax({
       headers: {
@@ -485,7 +491,7 @@
     $('#status').val(status).change();
     $('#regencies').val("").change();
     $('#regencies').empty();
-    $('#regencies').append('<option value="" disabled selected>--Select Kabupaten/Kota--</option>');
+    $('#regencies').append('<option value="" disabled selected>--Pilih Kabupaten/Kota--</option>');
     $('#regencies, #districts, #villages').prop('disabled', true);
 
     $("#form_title").text('Ubah Subscriber');
@@ -584,7 +590,7 @@
     $(".invalid-feedback").remove();
     $('#status, #regencies').val("").change();
     $('#regencies').empty();
-    $('#regencies').append('<option value="" disabled selected>--Select Kabupaten/Kota--</option>');
+    $('#regencies').append('<option value="" disabled selected>--Pilih Kabupaten/Kota--</option>');
     $('#regencies').prop('disabled', true);
     $("#id").val('');
     $("#idEdit").val('');
@@ -597,7 +603,7 @@
 
   function searchProvince() {
     $('#regencies').empty();
-    $('#regencies').append('<option value="" disabled selected>--Select Kabupaten--</option>');
+    $('#regencies').append('<option value="" disabled selected>--Pilih Kabupaten--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -741,6 +747,17 @@
         text: 'Tolong cek kembali isi pesan!'
       });
     }
+  }
+
+  function phoneNumbAct(index) {
+    $(`#phoneNumb${index}`).toggle("fast", function() {
+      let stateToggle = $(this).is(":hidden");
+      if(stateToggle) {
+        $(`#buttonPhoneNumb${index}`).empty().append('<i class="fa fa-eye" aria-hidden="true"></i>');
+      } else {
+        $(`#buttonPhoneNumb${index}`).empty().append('<i class="fa fa-eye-slash" aria-hidden="true"></i>');
+      }
+    });
   }
 </script>
     

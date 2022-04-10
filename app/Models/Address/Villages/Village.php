@@ -13,6 +13,8 @@ class Village extends Model
     use HasFactory;
 
     protected $table = 'villages';
+    
+    public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.

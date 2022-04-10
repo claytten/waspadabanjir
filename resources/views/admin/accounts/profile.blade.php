@@ -148,10 +148,7 @@
                 <div class="form-group">
                   <label class="form-control-label" for="input-address">Alamat Rumah</label>
                   <button type="button" class="form-control" id="btn-address" data-toggle="modal" data-target="#modal-change-address">
-                    {{$user->village->name}},
-                    {{$user->village->district->name}},
-                    {{$user->village->district->regency->name}},
-                    {{$user->village->district->regency->province->name}}
+                    {{ $user->address }}
                   </button>
                 </div>
               </div>
@@ -343,7 +340,7 @@
   }
 
   function addAddress(userId) {
-    const village_id = $('#villages').val();
+    const address = `${$('#villages option:selected').text()},${$('#districts option:selected').text()},${$('#regencies option:selected').text()},${$('#provinces option:selected').text()}`;
     let link = '{{ route('admin.update.address.profile', ':id') }}';
     link = link.replace(':id', userId);
     $.ajax({
@@ -353,17 +350,12 @@
       url: link,
       type : "PUT",
       dataType : "json",
-      data: { address_id: village_id},
+      data: { address: address},
       success:function(result) {
         if(result) {
           const data = result.data;
-          console.log(data, data['address_name'])
-          $('#btn-address').empty().append(`${data['address_name']}, ${data['district_name']}, ${data['regency_name']}, ${data['province_name']}`);
-          $('#regencies, #districts, #villages').empty();
-          $('#regencies, #districts, #villages, .btn-add-address').prop('disabled', true);
-          $('#regencies').append(`<option value="${data['regency_id']}" selected>${data['regency_name']}</option>`);
-          $('#districts').append(`<option value="${data['district_id']}" selected>${data['district_name']}</option>`);
-          $('#villages').append(`<option value="${data['address_id']}" selected>${data['address_name']}</option>`);
+          $('#btn-address').empty().append(`${address}`);
+          resetSelect();
         } else {
           console.log("data trouble");
         }
@@ -373,9 +365,9 @@
 
   function searchProvince() {
     $('#regencies, #districts, #villages').empty();
-    $('#regencies').append('<option value="" disabled selected>--Select Regency--</option>');
-    $('#districts').append('<option value="" disabled selected>--Select District--</option>');
-    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
+    $('#regencies').append('<option value="" disabled selected>--Pilih Kabupaten/Kota--</option>');
+    $('#districts').append('<option value="" disabled selected>--Pilih Kecamatan--</option>');
+    $('#villages').append('<option value="" disabled selected>--Pilih Kelurahan--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -401,8 +393,8 @@
 
   function searchRegency() {
     $('#districts, #villages').empty();
-    $('#districts').append('<option value="" disabled selected>--Select District--</option>');
-    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
+    $('#districts').append('<option value="" disabled selected>--Pilih Kecamatan--</option>');
+    $('#villages').append('<option value="" disabled selected>--Pilih Kelurahan--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -426,7 +418,7 @@
 
   function searchDistrict() {
     $('#villages').empty();
-    $('#villages').append('<option value="" disabled selected>--Select Village--</option>');
+    $('#villages').append('<option value="" disabled selected>--Pilih Kelurahan--</option>');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -450,6 +442,15 @@
   
   function searchVillage() {
     $('.btn-add-address').prop('disabled', false);
+  }
+
+  function resetSelect() {
+    $('#regencies, #districts, #villages').empty();
+    $('#regencies, #districts, #villages, .btn-add-address').prop('disabled', true);
+    $('#provinces').append('<option value="" disabled selected>--Pilih Provinsi--</option>');
+    $('#regencies').append('<option value="" disabled selected>--Pilih Kabupaten/Kota--</option>');
+    $('#districts').append('<option value="" disabled selected>--Pilih Kecamatan--</option>');
+    $('#villages').append('<option value="" disabled selected>--Pilih Kelurahan--</option>');
   }
 </script>
     

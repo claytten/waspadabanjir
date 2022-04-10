@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Address\Regencies\Regency;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,16 +15,15 @@ class CreateDistrictsTable extends Migration
     public function up()
     {
         Schema::create('districts', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->bigInteger('regency_id')->unsigned();
-            $table->string('name');
-            $table->timestamps();
-
+            $table->integerIncrements('id');
+            $table->integer('regency_id')->unsigned();
             $table->foreign('regency_id')
                 ->references('id')
                 ->on('regencies')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+            $table->string('name', 50);
+            $table->timestamps();
         });
     }
 

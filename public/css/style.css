@@ -2460,7 +2460,8 @@ pre code
 
     transition: all .15s cubic-bezier(.68, -.55, .265, 1.55); 
 
-    color: #8898aa;
+    /* color: #8898aa; */
+    color: #202122;
     border: 1px solid #dee2e6;
     border-radius: .25rem;
     background-color: #fff;
@@ -2481,7 +2482,8 @@ pre code
 }
 .form-control:focus
 {
-    color: #8898aa;
+    /* color: #8898aa; */
+    color: #202122;
     border-color: #5e72e4;
     outline: 0;
     background-color: #fff;
@@ -2506,7 +2508,8 @@ pre code
 
 select.form-control:focus::-ms-value
 {
-    color: #8898aa;
+    /* color: #8898aa; */
+    color: #202122;
     background-color: #fff;
 }
 

@@ -14,19 +14,16 @@ class CreateFieldsTable extends Migration
     public function up()
     {
         Schema::create('fields', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('name');
-            $table->string('color');
-            $table->string('detail_location');
+            $table->integerIncrements('id');
+            $table->string('color', 7);
             $table->text('area');
-            $table->string('description')->nullable();
-            $table->integer('deaths');
-            $table->integer('losts');
-            $table->integer('injured');
-            $table->string('date');
-            $table->string('time');
+            $table->text('description')->nullable();
+            $table->smallInteger('deaths');
+            $table->smallInteger('losts');
+            $table->smallInteger('injured');
+            $table->string('date_in', 20);
+            $table->string('date_out', 20)->nullable();
             $table->boolean('status')->default(false);
-            $table->timestamps();
         });
     }
 

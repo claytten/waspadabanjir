@@ -7,6 +7,7 @@ use App\Models\Users\User;
 use App\Models\Users\Exceptions\UserNotFoundException;
 use App\Models\Users\Repositories\Interfaces\UserRepositoryInterface;
 use App\Models\Tools\UploadableTrait;
+use App\Models\Tools\PhoneFilterTrait;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\File;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
-    use UploadableTrait;
+    use UploadableTrait, PhoneFilterTrait;
     /**
      * UserRepository constructor.
      *
@@ -52,13 +53,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     {
         $data['password'] = Hash::make($data['password']);
         if(isset($data['phone'])) {
-            if(substr($data['phone'],0,3) == '+62') {
-                $data['phone'] = preg_replace("/^0/", "+62", $data['phone']);
-            } else if(substr($data['phone'],0,1) == '0') {
-                $data['phone'] = preg_replace("/^0/", "+62", $data['phone']);
-            } else {
-                $data['phone'] = "+62".$data['phone'];
-            }
+            $data['phone'] = $this->filterPhone($data['phone']);
         }
         $store = $this->create($data);
         $store->assignRole($data['role']);
@@ -110,13 +105,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             $params['password'] = Hash::make($params['password']);
         }
         if(isset($params['phone'])) {
-            if(substr($params['phone'],0,3) == '+62') {
-                $params['phone'] = preg_replace("/^0/", "+62", $params['phone']);
-            } else if(substr($params['phone'],0,1) == '0') {
-                $params['phone'] = preg_replace("/^0/", "+62", $params['phone']);
-            } else {
-                $params['phone'] = "+62".$params['phone'];
-            }
+            $params['phone'] = $this->filterPhone($params['phone']);
         }
 
         $filtered = collect($params)->all();
@@ -151,20 +140,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * @param User $user
-     *
-     * @return bool
-     */
-    public function isAuthUser(User $user): bool
-    {
-        $isAuthUser = false;
-        if (Auth::user()->id == $user->id) {
-            $isAuthUser = true;
-        }
-        return $isAuthUser;
-    }
-
-    /**
      * @return bool
      * @throws \Exception
      */
@@ -177,9 +152,9 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
      * @param UploadedFile $file
      * @return string
      */
-    public function saveCoverImage(UploadedFile $file) : string
+    public function saveCoverImage($file) : string
     {
-        return $file->store('users', ['disk' => 'public']);
+        return $this->uploadOne($file, 'users');
     }
 
     /**

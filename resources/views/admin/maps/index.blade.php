@@ -387,7 +387,7 @@
           Swal.fire({
             position: 'middle',
             icon: 'success',
-            title: 'Data berhasil disimpan!',
+            title: 'Data berhasil dihapus!',
             showConfirmButton: false,
             timer: 1500
           }).then(() => window.location.href = response.redirect_url);

@@ -29,7 +29,7 @@
 @section('content_body')
 <form action="{{ route('admin.admin.store') }}" method="POST" enctype="multipart/form-data" id="adminCreate">
   {{ csrf_field() }}
-  <input type="hidden" name="address_id" id="village_id" readonly>
+  <input type="hidden" name="address" id="set_address" readonly>
   <div class="row">
     <div class="col-lg-6">
       <div class="card-wrapper">
@@ -344,15 +344,15 @@
   });
 
   function addAddress() {
-    $('#village_id').val('');
-    $('#village_id').val( $('#villages').val() );
+    $('#set_address').val('');
     const result = `
       ${$('#villages option:selected').text()}, 
       ${$('#districts option:selected').text()}, 
       ${$('#regencies option:selected').text()}, 
       ${$('#provinces option:selected').text()}
     `;
-
+    $('#set_address').val(result);
+    
     $('#btn-address').empty().append(result);
   }
 

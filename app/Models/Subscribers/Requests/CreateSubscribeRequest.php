@@ -29,4 +29,20 @@ class CreateSubscribeRequest extends FormRequest
             'phone'     => ['required', 'unique:subscribers']
         ];
     }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     * 
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'name.required'     => 'Nama harus diisi',
+            'name.string'       => 'Nama harus berupa string',
+            'address.required'  => 'Alamat harus diisi',
+            'phone.required'    => 'Nomor telepon harus diisi',
+            'phone.unique'      => 'Nomor telepon sudah ada'
+        ];
+    }
 }

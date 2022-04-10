@@ -8,25 +8,14 @@ use App\Models\Users\Requests\ResetPasswordRequest;
 use App\Models\Users\Repositories\UserRepository;
 use App\Models\Users\Repositories\Interfaces\UserRepositoryInterface;
 
-use App\Models\Accounts\Admins\Admin;
-use App\Models\Accounts\Admins\Repositories\AdminRepository;
-use App\Models\Accounts\Admins\Repositories\Interfaces\AdminRepositoryInterface;
-
-use App\Models\Accounts\Employees\Employee;
-use App\Models\Accounts\Employees\Repositories\EmployeeRepository;
-use App\Models\Accounts\Employees\Repositories\Interfaces\EmployeeRepositoryInterface;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Tools\UploadableTrait;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
 
 class ProfileController extends Controller
 {
-    use UploadableTrait;
-
     /**
      * @var UserRepositoryInterface
      */
@@ -36,8 +25,6 @@ class ProfileController extends Controller
      * Profile Controller Constructor
      *
      * @param UserRepositoryInterface $UserRepository
-     * @param AdminRepositoryInterface $AdminRepository
-     * @param EmployeeRepositoryInterface $EmployeeRepsitory
      * @return void
      */
     public function __construct(
@@ -80,7 +67,7 @@ class ProfileController extends Controller
         $user = $this->userRepo->findUserById($userId);
         $request->validate([
             'name' => ['required', 'string', 'max:191'],
-            'email' => ['required', 'email', 'max:191', 'unique:users,email,'.$user->id],
+            'email' => ['required', 'email', 'max:191', 'unique:admin,email,'.$user->id],
             'phone' => ['required', 'string', 'max:191'],
         ]);
         $userRepo = new UserRepository($user);
@@ -185,31 +172,19 @@ class ProfileController extends Controller
      * @param  string   $role
      * @return \Illuminate\Http\Response
      */
-    public function updateProfileAddress(Request $request, $userId, $role)
+    public function updateProfileAddress(Request $request, $userId)
     {
         $request->validate([
-            'address_id' =>  ['required', 'string']
+            'address' =>  ['required', 'string']
         ]);
         $data = $request->except('_token', '_method');
         $user = $this->userRepo->findUserById($userId);
         $userRepo = new UserRepository($user);
-        $address = array();
         $userRepo->updateUser($data);
-        $address[] = array(
-            "address_id"    => $user->address_id,
-            "address_name"  => $user->village->name,
-            "district_id"   => $user->village->district->id,
-            "district_name" => $user->village->district->name,
-            "regency_id"    => $user->village->district->regency->id,
-            "regency_name"  => $user->village->district->regency->name,
-            "province_id"   => $user->village->district->regency->province->id,
-            "province_name" => $user->village->district->regency->province->name
-        );
 
         return response()->json([
             'status'    => 'success',
-            'message'   => 'Update Address Successfully!',
-            'data'      => $address[0]
+            'message'   => 'Update Address Successfully!'
         ]);
     }
 }

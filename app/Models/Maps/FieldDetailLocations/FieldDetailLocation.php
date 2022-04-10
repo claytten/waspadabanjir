@@ -9,13 +9,13 @@ class FieldDetailLocation extends Model
 {
     protected $table = 'fields_detail_locations';
 
+    public $timestamps = false;
+
     protected $fillable = [
       'field_id',
       'district',
       'village',
     ];
-
-    public $timestamps = false;
 
     /**
      * Get the field that owns the FieldImage

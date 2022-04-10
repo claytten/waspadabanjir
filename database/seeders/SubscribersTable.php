@@ -17,13 +17,13 @@ class SubscribersTable extends Seeder
         $subscribers = [
             [
                 "name" => "Wahyu Aji Sulaiman",
-                "address" => "3310", 
+                "address" => "KABUPATEN KLATEN,JAWA TENGAH", 
                 "phone" => "+6285702151766"   
             ],
             [
                 "name"  => "Arif Sony Wibowo",
-                "address" => "3310", 
-                "phone" => "+6285702151766"
+                "address" => "KABUPATEN KLATEN,JAWA TENGAH", 
+                "phone" => "+62851560223901"
             ]
         ];
 

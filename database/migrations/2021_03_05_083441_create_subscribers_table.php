@@ -14,12 +14,11 @@ class CreateSubscribersTable extends Migration
     public function up()
     {
         Schema::create('subscribers', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('name');
-            $table->string('address');
-            $table->string('phone')->unique();
+            $table->integerIncrements('id');
+            $table->string('name', 50);
+            $table->string('address', 50);
+            $table->string('phone', 14)->unique();
             $table->boolean('status')->default(true);
-            $table->timestamps();
         });
     }
 

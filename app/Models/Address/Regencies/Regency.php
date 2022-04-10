@@ -14,6 +14,8 @@ class Regency extends Model
 
     protected $table = 'regencies';
 
+    public $timestamps = false;
+
     /**
      * The attributes that are mass assignable.
      *

@@ -27,11 +27,11 @@
             </div>
             <div class="col-lg-4 col-md-6 d-flex justify-content-end">
               <a class="btn btn-info" href="{{ route('admin.reports.index') }}">Kembali</a>
-              @if (auth()->user()->can('reports-edit'))
+              {{-- @if (auth()->user()->can('reports-edit'))
                 <a href="{{ route('admin.reports.edit', $report->id)}}">
                   <button type="button" class="btn btn-warning">Ubah</button>
                 </a>
-              @endif
+              @endif --}}
             </div>
           </div>
         </div>

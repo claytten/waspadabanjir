@@ -12,6 +12,8 @@ class Province extends Model
 
     protected $table = 'provinces';
 
+    public $timestamps = false;
+
     /**
      * The attributes that are mass assignable.
      *

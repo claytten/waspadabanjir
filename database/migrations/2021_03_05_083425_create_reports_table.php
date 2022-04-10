@@ -14,10 +14,10 @@ class CreateReportsTable extends Migration
     public function up()
     {
         Schema::create('reports', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('name');
-            $table->string('report_type');
-            $table->string('phone')->nullable();
+            $table->integerIncrements('id');
+            $table->string('name', 50);
+            $table->string('report_type', 10);
+            $table->string('phone', 14)->nullable();
             $table->string('address')->nullable();
             $table->text('message');
             $table->boolean('status')->default(false);

@@ -63,9 +63,15 @@
                   <div class="form-group row">
                     <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Lokasi yang terdampak</label>
                     <div class="col-md-10">
-                      <span>
+                      <span class="form-control" style="height:auto">
+                        @php
+                          $counting = 1;
+                        @endphp
                         @foreach($map->detailLocations->sortBy('district') as $indexLoc => $dataLoc)
-                          {{$indexLoc+1}}. Kelurahan {{ $dataLoc->village}} - Kecamatan {{ $dataLoc->district }} <br>
+                          {{ $counting }}. Kelurahan {{ $dataLoc->village}} - Kecamatan {{ $dataLoc->district }} <br>
+                          @php
+                            $counting++;
+                          @endphp
                         @endforeach
                       </span>
                     </div>

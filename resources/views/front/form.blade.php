@@ -112,16 +112,16 @@ body {
                     <div class="collapsible-header active"><i class="material-icons right">live_help</i> Petunjuk</div>
                     <div class="collapsible-body" style="">
                       <p>Berikut beberapa cara untuk bertanya/melaporkan situasi banjir di daerah Kabupaten Klaten.</p>
-                      <p>- Melalui form laporan di halaman ini.</p>
+                      <p>- Melalui form laporan pada halaman ini.</p>
                       <p>- Melalui email (<strong>waspadabanjirklaten@gmail.com</strong>).</p>
-                      <p>- Melalui langganan pada media informasi WhatsApp (<a href="http://wa.me/+14155238886?text=join%20plain-fifteen" target="_blank">Klik Disini</a>)</p>
+                      <p>- Melalui berlangganan layanan WhatsApp (<a href="http://wa.me/+14155238886?text=join%20plain-fifteen" target="_blank">Klik Disini</a>)</p>
                     </div>
                   </li>
                 </ul>
               </div>
             </div>
             <footer style="text-align: center">
-              <span>Copyright © 2021 <a class="blue-text text-darken-2" href="{{ route('home') }}" target="_blank">{{ (!empty(config('app.name')) ? config('app.name') : 'Laravel') }}</a> All rights reserved.</span>
+              <span>Copyright © 2022 <a class="blue-text text-darken-2" href="{{ route('home') }}" target="_blank">{{ (!empty(config('app.name')) ? config('app.name') : 'Laravel') }}</a> All rights reserved.</span>
             </footer>
         </div>
     </div>            

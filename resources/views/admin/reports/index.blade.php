@@ -60,15 +60,19 @@
                       @else
                         <td>Pertanyaan</td>
                       @endif
-                      @if ($item->status)
-                        <td><button type="button" class="btn btn-success btn-sm" onclick="changeStatus('{{$item->id}}', '{{$index}}')">Terverifikasi</button></td>
+                      @if(auth()->user()->can('reports-edit'))
+                        @if ($item->status)
+                          <td><button type="button" class="btn btn-success btn-sm" onclick="changeStatus('{{$item->id}}', '{{$index}}')">Terverifikasi</button></td>
+                        @else
+                          <td><button type="button" class="btn btn-danger btn-sm" onclick="changeStatus('{{$item->id}}', '{{$index}}')" >Belum terverifikasi</button></td>
+                        @endif
                       @else
-                        <td><button type="button" class="btn btn-danger btn-sm" onclick="changeStatus('{{$item->id}}', '{{$index}}')" >Belum terverifikasi</button></td>
+                        {{ $item->status ? 'Terverifikasi' : 'Belum terverifikasi' }}
                       @endif
                       <td>
-                        @if(auth()->user()->can('reports-edit'))
+                        {{-- @if(auth()->user()->can('reports-edit'))
                           <a href="{{ route('admin.reports.edit', $item->id) }}" class="btn btn-success btn-sm">Ubah</a>
-                        @endif
+                        @endif --}}
                           <a href="{{ route('admin.reports.show', $item->id)}}" class="btn btn-info btn-sm">Tampilkan</a>
                         @if(auth()->user()->can('reports-delete'))
                           <button onclick="deleteReport('{{ $item->id }}')"  type="button" class="btn btn-danger btn-sm">Hapus</button>
@@ -207,10 +211,10 @@
 
   function addActionOption(id) {
     let result = '';
-    @if(auth()->user()->can('reports-edit')) {
-      result += '<a href="{{ route('admin.reports.edit', ':id') }}" class="btn btn-success btn-sm">Ubah</a>';
-    }
-    @endif
+    // @if(auth()->user()->can('reports-edit')) {
+    //   result += '<a href="{{ route('admin.reports.edit', ':id') }}" class="btn btn-success btn-sm">Ubah</a>';
+    // }
+    // @endif
 
     result += '<a href="{{ route('admin.reports.show', ':id')}}" class="btn btn-info btn-sm">Tampilkan</a>';
 

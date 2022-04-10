@@ -18,6 +18,7 @@ use App\Models\Tools\UploadableTrait;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -169,18 +170,11 @@ class UserController extends Controller
         $userRepo = new UserRepository($user);
 
         if ($request->ajax()) {
-            $chkOldPassword = Hash::check($request->oldpassword, $user->password);
-            if ($chkOldPassword) {
-                $user->password = Hash::make($request->password);
-                $user->save();
-                return response()->json([
-                    'status'    => 'success',
-                    'message'   => 'Password successfully changed!'
-                ]);
-            }
+            $user->password = Hash::make($request->password);
+            $user->save();
             return response()->json([
                 'status'    => 'success',
-                'message'   => 'Please check again old password / matching new password!'
+                'message'   => 'Password successfully changed!'
             ]);
         }
 
@@ -200,6 +194,8 @@ class UserController extends Controller
         }
 
         $userRepo->updateUser($data);
+        // Remove All Old ACL
+        DB::table('model_has_roles')->where('model_id', $id)->delete();
         $user->assignRole($data['role']);
 
         return redirect()->route('admin.admin.index')->with([
@@ -242,6 +238,18 @@ class UserController extends Controller
             'status'      => 'success',
             'message'     => $message,
             'user_status' => $users->status
+        ]);
+    }
+
+    public function passwordAdminReset(Request $request, $id)
+    {
+        $data = $request->except('_token','_method');
+        $user = $this->userRepo->findUserById($id);
+        $user->password = Hash::make($request->password);
+        $user->save();
+        return redirect()->route('admin.admin.index')->with([
+            'status'    => 'success',
+            'message'   => 'Password berhasil diubah!'
         ]);
     }
 }

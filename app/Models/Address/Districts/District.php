@@ -13,6 +13,8 @@ class District extends Model
 
     protected $table = 'districts';
 
+    public $timestamps = false;
+
     /**
      * The attributes that are mass assignable.
      *

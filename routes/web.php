@@ -44,6 +44,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth'], 'as' => 'admin.' ],
     Route::resource('/account/admin', UserController::class, ['except' => ['update']]);
     Route::put('/account/admin/{id}/edit', [UserController::class, 'update'])->name('admin.update');
     Route::resource('/account/role', RoleController::class);
+    Route::put('/account/admin/{id}/password', [UserController::class, 'passwordAdminReset'])->name('admin.passwordAdminReset');
 
     // Profile Routing
     Route::get('/profile/{userId}', [ProfileController::class, 'editProfile'])->name('edit.profile');

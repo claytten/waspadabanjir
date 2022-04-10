@@ -14,16 +14,15 @@ class CreateFieldsDetailLocationsTable extends Migration
     public function up()
     {
         Schema::create('fields_detail_locations', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('field_id')->unsigned();
-            $table->string('district');
-            $table->string('village');
-
+            $table->integerIncrements('id');
+            $table->integer('field_id')->unsigned();
             $table->foreign('field_id')
                 ->references('id')
                 ->on('fields')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+            $table->string('district', 50);
+            $table->string('village', 50);
         });
     }
 

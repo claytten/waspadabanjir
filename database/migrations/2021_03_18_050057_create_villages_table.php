@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Address\Districts\District;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,16 +15,14 @@ class CreateVillagesTable extends Migration
     public function up()
     {
         Schema::create('villages', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->bigInteger('district_id')->unsigned();
-            $table->string('name');
-            $table->timestamps();
-
+            $table->integerIncrements('id');
+            $table->integer('district_id')->unsigned();
             $table->foreign('district_id')
                 ->references('id')
                 ->on('districts')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+            $table->string('name', 50);
         });
     }
 
