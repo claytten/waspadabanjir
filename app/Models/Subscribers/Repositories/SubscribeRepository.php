@@ -521,6 +521,15 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
         $message .= "\n Isi pertanyaan: {$body}";
         $user->body = strval($message);
         onAskingReportToAdmin::dispatch($user);
+      } else if($data[0]['report_type'] === 'report') {
+        $user = Cache::get('adminWA');
+        $date = Carbon::now()->setTimezone('Asia/Jakarta')->format('H:i, d-m-Y');
+        $message = "Notifikasi Laporan Banjir\n";
+        $message .= "\n dari : {$findNumber['name']} ({$findNumber['phone']})";
+        $message .= "\n Waktu pelaporan : {$date}";
+        $message .= "\n Isi laporan: {$body}";
+        $user->body = strval($message);
+        onAskingReportToAdmin::dispatch($user);
       }
 
       return $reportRepo->storeReportWhatsapp($data[0]);

@@ -112,7 +112,20 @@ body {
                     <h6>Lokasi Kelurahan yang terdampak banjir</h6>
                   </div>
                   <div class="input-field col s6">
-                    <h6>: hehehe</h6>
+                    @php
+                      $counting = 1;
+                    @endphp
+                    @foreach($map->detailLocations->sortBy('district') as $indexLoc => $dataLoc)
+                      @if ($counting == 1)
+                        <h6>: {{ $counting }}. Kelurahan {{ $dataLoc->village}} - Kecamatan {{ $dataLoc->district }}</h6>
+                      @else
+                        <h6>{{ $counting }}. Kelurahan {{ $dataLoc->village}} - Kecamatan {{ $dataLoc->district }}</h6>
+                      @endif
+                    
+                      @php
+                        $counting++;
+                      @endphp
+                    @endforeach
                   </div>
                 </div>
                 <div class="row">

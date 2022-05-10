@@ -34,11 +34,11 @@
     <i class="large material-icons">message</i>
   </a>
   <ul>
-    <li>
+    {{-- <li>
       <a class="btn-floating blue modal-trigger tooltipped" href="#aboutModal" data-position="left" data-tooltip="Tentang Situs Web">
         <i class="material-icons">help</i>
       </a>
-    </li>
+    </li> --}}
     <li><a href="{{ route('form.report')}}" class="btn-floating red tooltipped" data-position="left" data-tooltip="Laporkan Banjir"><i class="material-icons">flag</i></a></li>
     <li>
       <a class="btn-floating green modal-trigger tooltipped" href="#subscriptionForm" data-position="left" data-tooltip="Langganan Berita Banjir di WhatsApp">
@@ -152,7 +152,7 @@
     $('#loading').hide();
     $('.fixed-action-btn').floatingActionButton();
     $('.modal').modal();
-    $('#aboutModal').modal('open');
+    // $('#aboutModal').modal('open');
     $('.tooltipped').tooltip();
     $('.collapsible').collapsible();
     $('.materialboxed').materialbox();
