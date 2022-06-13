@@ -12,6 +12,7 @@ L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
   maxZoom: 60,
   subdomains:['mt0','mt1','mt2','mt3']
 }).addTo(maps);
+let polygon = [];
 
 const refreshButton = L.easyButton({
   id: 'refresh-view-button',
@@ -31,7 +32,7 @@ const refreshButton = L.easyButton({
           return {color: feature.properties.color}
           },
           onEachFeature: onEachFeatureCallback
-      }).addTo(maps);
+      }).addTo(maps).openPopup();
       $('#loading').fadeOut();
       }
   }]
@@ -52,16 +53,15 @@ const getGeoJSONData = () => {
       headers: {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       },
-      url: getURL,
+      url: window.location.protocol + '//' + window.location.host,
       type: 'GET',
       async: false,
       cache: false,
       error: function (xhr, status, error) {
-      console.log(xhr.responseText);
+        console.log(xhr.responseText);
       },
       success: function(response){
-      data = response.data;
-      console.log(data);
+        data = response.data;
       }
   });
 
@@ -89,7 +89,7 @@ const getPopupContent = (field) => {
       </tr>
       <tr>
         <th>Untuk lebih jelas</th>
-        <td>: <a href="${url}maps/${field.id}/show">Klik Disini</a></td>
+        <td>: <a href="${field.url}">Klik Disini</a></td>
       </tr>
     </table>
   `
@@ -97,16 +97,61 @@ const getPopupContent = (field) => {
 
 const onEachFeatureCallback = (feature, layer) => {
   if (feature.properties && feature.properties.popupContent) {
-    let { id, total_victims, total_village,date_in, date_in_time, date_out, date_out_time } = feature.properties.popupContent;
-    let content = {id, total_victims, total_village, date_in, date_in_time, date_out, date_out_time};
+    let { id, total_victims, total_village,date_in, date_in_time, date_out, date_out_time, url } = feature.properties.popupContent;
+    let content = {id, total_victims, total_village, date_in, date_in_time, date_out, date_out_time, url};
 
-    layer.bindPopup(getPopupContent(content));
+    var helpPolygon = layer.bindPopup(getPopupContent(content));
+
+    polygon.push(helpPolygon);
   }
 }
 
-L.geoJSON(getGeoJSONData(), {
+var geoJsonLayer = L.geoJSON(getGeoJSONData(), {
   style: function(feature){
-      return {color: feature.properties.color}
+    return {
+      color: feature.properties.color
+    }
   },
   onEachFeature: onEachFeatureCallback
 }).addTo(maps);
+
+const showPath = (id) => {
+  for (var i in polygon){
+    var polygonID = polygon[i].feature.properties.popupContent.id;
+    if (polygonID == id){
+      maps.fitBounds(polygon[i].getBounds());
+      polygon[i].openPopup();
+    };
+  }
+}
+
+let counting = 0;
+geoJsonLayer.eachLayer(function(layer) {
+  console.log(layer);
+  let item = layer.feature.properties.popupContent;
+  counting += 1;
+  $('#tBodyField').append(`
+    <tr>
+      <td>
+        <b>${counting}</b>
+      </td>
+      <td>
+        <p>${item.address}</p>
+      </td>
+      <td>
+        <span class="text-muted">${item.date_in}, Pukul ${item.date_in_time}</span>
+      </td>
+      <td>
+        <span class="text-muted">${item.date_out}, Pukul ${item.date_out_time}</span>
+      </td>
+      <td class="table-actions">
+        <button type="button" class="waves-effect waves-light btn tooltipped modal-close" data-position="top" data-tooltip="Tunjuk Arah Pada Peta" onclick="showPath('${item.id}')">
+          <i class="material-icons">navigation</i>
+        </button>
+        <a href="${item.url}" class="waves-effect waves-light btn tooltipped" data-position="top" data-tooltip="Tampilkan Data Banjir Lebih Jelas">
+          <i class="material-icons">open_in_new</i>
+        </a>
+      </td>
+    </tr>
+  `);
+});

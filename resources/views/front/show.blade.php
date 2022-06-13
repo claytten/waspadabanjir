@@ -246,11 +246,13 @@ body {
     }
   }
 
-  L.geoJSON(getGeoJSONData(), {
+  var geoJsonLayer = L.geoJSON(getGeoJSONData(), {
     style: function(feature){
       return {color: feature.properties.color}
     },
     onEachFeature: onEachFeatureCallback
   }).addTo(maps);
+
+  maps.fitBounds(geoJsonLayer.getBounds());
 </script>
 @endsection

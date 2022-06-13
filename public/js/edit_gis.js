@@ -344,8 +344,8 @@ const onEachFeatureCallback = (feature, layer) => {
             fillOpacity: 0.4
         });
         
-        const setCenter = polygon.getBounds().getCenter();
-        maps.panTo(new L.LatLng(setCenter.lng, setCenter.lat));
+        // const setCenter = polygon.getBounds().getCenter();
+        // maps.panTo(new L.LatLng(setCenter.lng, setCenter.lat));
     }
 }
 
@@ -402,3 +402,5 @@ polylayer = L.geoJSON(getGeoJSONData(), {
   },
   onEachFeature: onEachFeatureCallback
 }).addTo(maps);
+
+maps.fitBounds(polylayer.getBounds());

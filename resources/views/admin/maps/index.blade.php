@@ -259,8 +259,10 @@
       }
       buttonAction = buttonAction.replaceAll(':id', id);
 
-      layer.bindPopup(getPopupContent(content));
+      var helpPolygon = layer.bindPopup(getPopupContent(content));
       buttonAction = '';
+
+      savePolygon.push(helpPolygon);
     }
   }
 
@@ -469,6 +471,7 @@
 
   function addActionOption(id) {
     let result = '';
+    result += `<button type="button" onclick="showPath(${id})" class="show btn btn-info btn-sm" style="color: white">Peta</button>`;
     @if(auth()->user()->can('maps-edit')) {
       result += '<a href="{{ route('admin.maps.edit', [':id',$date_in, $date_out]) }}" class="show btn btn-warning btn-sm" style="color: white" >Edit</a>';
     }

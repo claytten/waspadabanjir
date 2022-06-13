@@ -209,12 +209,14 @@
     }
   }
 
-  L.geoJSON(getGeoJSONData(), {
+  var polylayer = L.geoJSON(getGeoJSONData(), {
     style: function(feature){
       return {color: feature.properties.color}
     },
     onEachFeature: onEachFeatureCallback
   }).addTo(maps);
+
+  maps.fitBounds(polylayer.getBounds());
 </script>
     
 @endsection

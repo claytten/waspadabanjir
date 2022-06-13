@@ -7,9 +7,11 @@ use App\Models\Subscribers\Repositories\Interfaces\SubscribeRepositoryInterface;
 use App\Models\Reports\Repositories\Interfaces\ReportRepositoryInterface;
 use App\Models\Subscribers\Requests\CreateSubscribeRequest;
 use App\Http\Controllers\Controller;
+use App\Jobs\onCompleteSubscribe;
 use App\Models\Maps\Fields\Field;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class LandingController extends Controller
 {
@@ -54,7 +56,7 @@ class LandingController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-    {        
+    {   
         if ($request->ajax()) {
             $date_in = Carbon::now()->toDateString();
             $date_out = Carbon::now()->toDateString();
@@ -65,6 +67,16 @@ class LandingController extends Controller
                 "features" => array()
             );
             foreach($fields as $item){
+                $addressing = $item->detailLocations()->pluck('district', 'village')->toArray();
+                $address = '';
+                $count = count($addressing);
+                foreach($addressing as $index => $value) {
+                    if($count == 1) {
+                        $address .= $value;
+                    } else {
+                        $address .= $value. ', ';
+                    }
+                }
                 $temp = array(
                   "type" => "Feature",
                   "properties" => array(
@@ -77,7 +89,9 @@ class LandingController extends Controller
                       "date_in_time"=> $this->fieldRepo->convertTimeAttribute($item->date_in),
                       "date_out"    => ($item->date_out !== null ? $this->fieldRepo->convertDateAttribute($item->date_out) : false),
                       "date_out_time"=> ($item->date_out !== null ? $this->fieldRepo->convertTimeAttribute($item->date_out) : false),
-                      "status"      => $item->status
+                      "address"     => $address,
+                      "status"      => $item->status,
+                      "url"         => route('maps.show', $item->id)
                     )
                   ),
                   "geometry" => array(

@@ -9,17 +9,6 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('css/front.css')}}">
 @endsection
 
-@section('inline_css')
-<style>
-  #aboutModal.open{
-    width: 100%;
-    max-height: 100%;
-    height: 100%;
-    top: 0 !important;
-  }
-  </style>
-@endsection
-
 @section('content_body')
 <div class="wrap" id="loading">
   <div class="loading">
@@ -45,7 +34,16 @@
         <i class="material-icons">subscriptions</i>
       </a>
     </li>
+    <li>
+      <a class="btn-floating yellow modal-trigger tooltipped" href="#tableArea" data-position="left" data-tooltip="Data Banjir Dalam Bentuk Tabel">
+        <i class="material-icons">room</i>
+      </a>
+    </li>
   </ul>
+</div>
+
+<div id="query">
+  <p>{{ Carbon\Carbon::now()->format('d M Y') }}</p> 
 </div>
 
 {{-- Feature Discovery --}}
@@ -134,6 +132,40 @@
     </div>
   </div>
 </div>
+
+{{-- selectModal --}}
+<div id="tableArea" class="modal">
+  <div class="modal-content z-depth-3">
+    <div class="row">
+      <div class="col s12 right">
+        <a href="javascript:void(0)" class="transparent right modal-close">
+          <i class="material-icons center" style="color:black">cancel</i>
+        </a>
+      </div>
+      <div class="col s12 center">
+        <h4 style="text-transform: uppercase;">Tabel Data Banjir</h4>
+      </div>
+      <div class="col s12">
+        <div class="table-responsive">
+          <table class="table align-items-center table-flush tableField">
+            <thead class="thead-light">
+              <tr>
+                <th>No</th>
+                <th>Kecamatan</th>
+                <th>Tanggal Awal Kejadian</th>
+                <th>Tanggal Akhir Kejadian</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tBodyField">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 @endsection
 
 @section('plugins_js')
@@ -141,8 +173,8 @@
 <script type="text/javascript" src="{{ asset('js/leaflet_fullscreen.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/esri-leaflet.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/esri-leaflet-geocoder.js') }}"></script>
-<script type="text/javascript" src="{{ asset('js/easy-button.js') }}"></script>
-<script type="text/javascript" src="{{ asset('js/front.js') }}" defer></script>
+<script type="text/javascript" src="{{ asset('js/easy-button-minify.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/front-minify.js') }}" defer></script>
 @endsection
 
 @section('inline_js')
@@ -163,7 +195,5 @@
     });
     Cookies.get('discoveryClosed') ? '' : $('.tap-target').tapTarget('open');
   });
-
-  const getURL = "{{ route('home') }}";
 </script>
 @endsection

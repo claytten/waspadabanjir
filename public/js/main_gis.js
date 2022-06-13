@@ -43,6 +43,7 @@ let helpPolygon = undefined;
 let color = undefined;
 let firstPoint = L.circleMarker();
 let drawingState = false;
+let savePolygon = [];
 
 // Start Drawing Button
 const startDrawingButton = L.easyButton({
@@ -571,3 +572,16 @@ L.geoJSON(getGeoJSONData(), {
   },
   onEachFeature: onEachFeatureCallback
 }).addTo(maps);
+
+
+const showPath = (id) => {
+  console.log(id);
+  for (var i in savePolygon){
+    var polygonID = savePolygon[i].feature.properties.popupContent.id;
+    if (polygonID == id){
+      closeTable();
+      maps.fitBounds(savePolygon[i].getBounds());
+      savePolygon[i].openPopup();
+    };
+  }
+}
