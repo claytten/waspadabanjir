@@ -579,7 +579,7 @@ const showPath = (id) => {
   for (var i in savePolygon){
     var polygonID = savePolygon[i].feature.properties.popupContent.id;
     if (polygonID == id){
-      closeTable();
+      $('#mapsLayout').toggle(200);
       maps.fitBounds(savePolygon[i].getBounds());
       savePolygon[i].openPopup();
     };
