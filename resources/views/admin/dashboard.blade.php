@@ -105,7 +105,7 @@
           <div class="row align-items-center">
             <div class="col">
               <h6 class="text-light text-uppercase ls-1 mb-1">Overview</h6>
-              <h5 class="h3 text-white mb-0 header-stat">Statistik Banjir Tahun 2021</h5>
+              <h5 class="h3 text-white mb-0 header-stat">Statistik Banjir Tahun 2022</h5>
             </div>
             <div class="col">
               <ul class="nav nav-pills justify-content-end">
