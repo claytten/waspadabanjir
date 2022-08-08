@@ -142,7 +142,7 @@ geoJsonLayer.eachLayer(function(layer) {
         <span class="text-muted">${item.date_in}, Pukul ${item.date_in_time}</span>
       </td>
       <td>
-        <span class="text-muted">${item.date_out}, Pukul ${item.date_out_time}</span>
+        <span class="text-muted">${(item.date_out === false ? 'Sedang Berlangsung' : item.date_out_time + ' WIB, '+ item.date_out)}</span>
       </td>
       <td class="table-actions">
         <button type="button" class="waves-effect waves-light btn tooltipped modal-close" data-position="top" data-tooltip="Tunjuk Arah Pada Peta" onclick="showPath('${item.id}')">
