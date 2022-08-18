@@ -26,13 +26,12 @@ class RoleController extends Controller
         $this->permission_avail = [
             'admin'         => ['list', 'create', 'edit', 'delete'],
             'roles'         => ['list', 'create', 'edit', 'delete'],
-            'Peta'          => ['list', 'create', 'edit', 'delete'],
+            'maps'          => ['list', 'create', 'edit', 'delete'],
             'subscriber'    => ['list', 'create', 'edit', 'delete'],
-            'laporan'       => ['list', 'create', 'edit', 'delete'],
-            'provinsi'      => ['list', 'create', 'edit', 'delete'],
-            'kabupaten/Kota'=> ['list', 'create', 'edit', 'delete'],
-            'kecamatan'     => ['list', 'create', 'edit', 'delete'],
-            'kecamatan'     => ['list', 'create', 'edit', 'delete']
+            'reports'       => ['list', 'create', 'edit', 'delete'],
+            'provinces'     => ['list', 'create', 'edit', 'delete'],
+            'regencies'     => ['list', 'create', 'edit', 'delete'],
+            'villages'      => ['list', 'create', 'edit', 'delete']
         ];
     }
 

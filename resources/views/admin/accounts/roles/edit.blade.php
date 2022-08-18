@@ -37,8 +37,37 @@
           </div>
           <div class="card-body">
             @foreach ($options as $key => $item)
+            @php $nameKey = ''; @endphp
+              @switch(str_replace('_', ' - ', $key))
+                  @case('admin')
+                    @php $nameKey = 'Admin'; @endphp
+                    @break
+                  @case('roles')
+                    @php $nameKey = 'Roles'; @endphp
+                    @break
+                  @case('maps')
+                    @php $nameKey = 'Peta'; @endphp
+                    @break
+                  @case('subscriber')
+                    @php $nameKey = 'Subscriber'; @endphp
+                    @break
+                  @case('reports')
+                    @php $nameKey = 'Laporan'; @endphp
+                    @break
+                  @case('provinces')
+                    @php $nameKey = 'Provinsi'; @endphp
+                    @break
+                  @case('regencies')
+                    @php $nameKey = 'Kabupaten/Kota'; @endphp
+                    @break
+                  @case('villages')
+                    @php $nameKey = 'kecamatan'; @endphp
+                    @break
+                  @default
+                    @break
+              @endswitch
             <fieldset class="form-group">
-                <legend class="col-form-label">{{ ucwords(str_replace('_', ' - ', $key)) }}</legend>
+                <legend class="col-form-label">{{ ucwords($nameKey) }}</legend>
                 <div class="row">
                     @foreach ($item as $value)
                     <div class="col-12 col-md-3">

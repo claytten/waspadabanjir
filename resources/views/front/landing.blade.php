@@ -75,7 +75,7 @@
                 <p>Terdapat 2 Pilihan yang bisa kamu gunakan</p>
                 <p>- Tambahkan &nbsp;"<strong>join plain-fifteen</strong>"&nbsp; pada kolom pesan WhatsApp. Kemudian kirim pesan tersebut ke "+14155238886"</p>
                 <p>- Scan Barcode di bawah ini atau <a href="http://wa.me/+14155238886?text=join%20plain-fifteen" target="_blank">Klik Disini</a>.
-                  Maka kolom pesan WhatsApp akan terisi otomatis dengan kalimat &nbsp;"<strong>join slowly-happen</strong>"&nbsp;. Kemudian kirim pesan tersebut
+                  Maka kolom pesan WhatsApp akan terisi otomatis dengan kalimat &nbsp;"<strong>join plain-fifteen</strong>"&nbsp;. Kemudian kirim pesan tersebut
                 </p>
                 <img class="materialboxed" width="200" src="{{ asset('images/step/whatsapp_scan_me.png') }}">
               </div>
