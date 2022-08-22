@@ -13,8 +13,6 @@ class Subscribe extends Model
 
     protected $table = 'subscribers';
 
-    public $timestamps = false;
-
     /**
      * The attributes that are mass assignable.
      *

@@ -61,13 +61,15 @@
                         <td>Pertanyaan</td>
                       @endif
                       @if(auth()->user()->can('reports-edit'))
-                        @if ($item->status)
+                        @if($item->status == 'accept')
                           <td><button type="button" class="btn btn-success btn-sm" onclick="changeStatus('{{$item->id}}', '{{$index}}')">Terverifikasi</button></td>
-                        @else
+                        @elseif ($item->status == 'process')
                           <td><button type="button" class="btn btn-danger btn-sm" onclick="changeStatus('{{$item->id}}', '{{$index}}')" >Belum terverifikasi</button></td>
+                        @else
+                          <td><button type="button" class="btn btn-danger btn-sm">Laporan Ditolak</button></td>
                         @endif
                       @else
-                        {{ $item->status ? 'Terverifikasi' : 'Belum terverifikasi' }}
+                        {{ $item->status == 'accept' ? 'Terverifikasi' : ($item->status == 'decline' ? 'Laporan Ditolak' : 'Belum terverifikasi') }}
                       @endif
                       <td>
                         {{-- @if(auth()->user()->can('reports-edit'))
@@ -154,9 +156,9 @@
       denyButtonColor: '#f5365c',
     }).then((result) => {
       if (result.isConfirmed) {
-        ajaxStatus(id, no, 1);
+        ajaxStatus(id, no, 'accept');
       } else if (result.isDenied) {
-        ajaxStatus(id, no, 0);
+        ajaxStatus(id, no, 'decline');
       }
     })
   }
@@ -181,7 +183,7 @@
           Swal.fire({
             position: 'middle',
             icon: 'success',
-            title: 'Status Laporan telah di ubah ke '+ (status === 1 ? 'Terverifikasi' : 'Belum terverifikasi') +'',
+            title: 'Status Laporan telah di ubah ke '+ (result.data['status'] === 'accept' ? 'Terverifikasi' : (result.data['status'] == 'decline' ? 'Laporan Ditolak' : '')) +'',
             showConfirmButton: false,
             timer: 1500
           }).then(() => {
@@ -193,11 +195,12 @@
             } else {
               reportResult = 'Pertanyaan'
             }
+            console.log(status)
             const updateData = [
               no,
               result.data['name'],
               reportResult,
-              '<button type="button" class="btn btn-'+ (status === 1 ? 'success' : 'danger')+' btn-sm" onclick="changeStatus('+id+', '+no+')">'+ (status === 1 ? 'Terverifikasi' : 'Belum terverifikasi') +'</button>',
+              '<button type="button" class="btn btn-'+ (result.data['status'] === 'accept' ? 'success' : 'danger')+' btn-sm" '+(result.data['status'] != 'decline' ? 'onclick="changeStatus('+id+', '+no+')"' : '')+' >'+ (result.data['status'] === 'accept' ? 'Terverifikasi' : (result.data['status'] == 'process' ? 'Belum terverifikasi' : 'Laporan Ditolak')) +'</button>',
               addActionOption(id),
             ];
             reportsTable.row($("#rows_"+id)).data(updateData);

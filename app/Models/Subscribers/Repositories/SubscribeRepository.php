@@ -254,9 +254,9 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
      */
     public function subscribersWhatsapp(): string
     {
-      $subscribers = $this->listSubscribes()->sortBy('name');
+      $subscribers = $this->model->whereDate('created_at', Carbon::today())->get();
       if(count($subscribers) > 0) {
-        $message = "--MENU DAFTAR PENGGUNA--\nBerikut daftar pengguna Whatsapp di portal informasi banjir : \n";
+        $message = "--MENU DAFTAR PENGGUNA ".Carbon::createFromFormat('Y-m-d H:i:s', Carbon::today())->format('d-m-Y')."--\nBerikut daftar pengguna Whatsapp di portal informasi banjir : \n";
         $coundColumn = 1;
         foreach($subscribers as $item) {
           $addressSubsribe = "{$item->regency->name}, {$item->regency->province->name}";
