@@ -31,12 +31,12 @@
     <li><a href="{{ route('form.report')}}" class="btn-floating red tooltipped" data-position="left" data-tooltip="Laporkan Banjir"><i class="material-icons">flag</i></a></li>
     <li>
       <a class="btn-floating green modal-trigger tooltipped" href="#subscriptionForm" data-position="left" data-tooltip="Langganan Berita Banjir di WhatsApp">
-        <i class="material-icons">subscriptions</i>
+        <img src="{{ asset('images/logo/whatsapp.svg') }}" style="padding-top: 20% !important" />
       </a>
     </li>
     <li>
       <a class="btn-floating yellow modal-trigger tooltipped" href="#tableArea" data-position="left" data-tooltip="Data Banjir Dalam Bentuk Tabel">
-        <i class="material-icons">room</i>
+        <i class="material-icons" style="color: black !important">room</i>
       </a>
     </li>
   </ul>
