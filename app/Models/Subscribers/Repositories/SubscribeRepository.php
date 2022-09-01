@@ -231,7 +231,7 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
         case 'd':
           Cache::forget($from);
           Cache::put($from, array('d'), 600);
-          $message = "--Pengaturan Pengguna--\n\nBerikut merupakan pilihan dalam opsi pengaturan. Data apa yang kamu inginkan ubah?\n1. Nama\n2. Alamat\n\n\nBalas *SATU ANGKA* saja yaa.";
+          $message = "--Pengaturan Pengguna--\n\nBerikut merupakan pilihan dalam opsi pengaturan. Data apa yang kamu inginkan ubah?\n1. Nama\n2. Alamat\n\n\nBalas *SATU ANGKA* saja yaa.\nKetik *menu* jika ingin kembali.";
           break;
         case 'e':
           $subRepo = new SubscribeRepository($findNumber);
