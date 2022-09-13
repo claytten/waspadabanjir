@@ -89,7 +89,7 @@
                   <div class="form-group row">
                     <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Status</label>
                     <div class="col-md-10">
-                      <input class="form-control" name="status" type="text" value="{{ ($report->status) ? 'Terverifikasi' : 'Belum terverifikasi' }}" id="status" disabled>
+                      <input class="form-control" name="status" type="text" value="{{ ($report->status == 'accept') ? 'Terverifikasi' : ($report->status == 'process' ? 'Belum terverifikasi' : 'Laporan ditolak') }}" id="status" disabled>
                     </div>
                   </div>
                 </div>
