@@ -168,7 +168,7 @@ body {
               </div>
             </div>
             <footer style="text-align: center">
-              <span>Copyright © 2021 <a class="blue-text text-darken-2" href="{{ route('home') }}" target="_blank">{{ (!empty(config('app.name')) ? config('app.name') : 'Laravel') }}</a> All rights reserved.</span>
+              <span>Copyright © 2022 <a class="blue-text text-darken-2" href="{{ route('home') }}" target="_blank">{{ (!empty(config('app.name')) ? config('app.name') : 'Laravel') }}</a> All rights reserved.</span>
             </footer>
         </div>
     </div>            
@@ -222,12 +222,8 @@ body {
       type: 'GET',
       async: false,
       cache: false,
-      error: function (xhr, status, error) {
-        console.log(xhr.responseText);
-      },
       success: function(response){
         data = response.data;
-        console.log('this is response', response.data);
       }
     });
 
@@ -248,7 +244,7 @@ body {
 
   var geoJsonLayer = L.geoJSON(getGeoJSONData(), {
     style: function(feature){
-      return {color: feature.properties.color}
+      return {color: feature.properties.level.color}
     },
     onEachFeature: onEachFeatureCallback
   }).addTo(maps);

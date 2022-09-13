@@ -282,6 +282,19 @@
             <div class="col-lg-6">
               <div class="card-body">
                 <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group row">
+                      <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Level Banjir</label>
+                      <div class="col-md-10">
+                        <select name="level" id="level" class="form-control" data-toggle="select">
+                          <option value=""></option>
+                          @foreach($levels as $level)
+                            <option value="{{ $level['id'] }}" {{ $level['id'] == $map->level ? 'selected' : '' }} title="{{ $level['desc'] }}">{{ $level['name'] }}</option>
+                          @endforeach
+                        </select>
+                      </div>
+                    </div>
+                  </div>
                   <div class="col-md-12" id="status-form">
                     <div class="form-group row">
                       <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Status Penerbitan</label>
@@ -369,7 +382,8 @@
 <script type="text/javascript" src="{{ asset('js/esri-leaflet-geocoder.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/dropzone/dist/min/dropzone.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('js/edit_gis.js') }}" defer></script>
+<script type="text/javascript" src="{{ asset('js/popper.min.js') }}" ></script>
+<script type="text/javascript" src="{{ asset('js/edit_gis.min.js') }}" defer></script>
 <script type="text/javascript" src="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/select2/dist/js/select2.min.js')}}"></script>
 <script type="text/javascript" src="{{ asset('vendor/lightcase/js/lightcase.js')}}"></script>
@@ -391,6 +405,13 @@
     $('#broadcast').select2({
       'placeholder': '--Pilih Status Siaran--',
     });
+    $('#level').select2({
+      'placeholder': 'Select Level'
+    });
+    $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+    $("#level .select2-container").tooltip({
+      title: $('#level option:selected').attr('title')}
+    );
     $('a[data-rel^=lightcase]').lightcase();
 
     $('#villages, .btn-submit-action').prop('disabled', true);

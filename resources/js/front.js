@@ -57,9 +57,6 @@ const getGeoJSONData = () => {
       type: 'GET',
       async: false,
       cache: false,
-      error: function (xhr, status, error) {
-        console.log(xhr.responseText);
-      },
       success: function(response){
         data = response.data;
       }
@@ -88,6 +85,10 @@ const getPopupContent = (field) => {
         <td>: ${field.total_village} Kelurahan</td>
       </tr>
       <tr>
+        <th>Level</th>
+        <td>: ${field.level.name} &nbsp;&nbsp;<i class="fa fa-info-circle tooltipped" data-toggle="tooltip" data-placement="top" title="${field.level.desc}"></i></td>
+      </tr>
+      <tr>
         <th>Untuk lebih jelas</th>
         <td>: <a href="${field.url}">Klik Disini</a></td>
       </tr>
@@ -97,8 +98,8 @@ const getPopupContent = (field) => {
 
 const onEachFeatureCallback = (feature, layer) => {
   if (feature.properties && feature.properties.popupContent) {
-    let { id, total_victims, total_village,date_in, date_in_time, date_out, date_out_time, url } = feature.properties.popupContent;
-    let content = {id, total_victims, total_village, date_in, date_in_time, date_out, date_out_time, url};
+    let { id, total_victims, total_village,date_in, date_in_time, date_out, date_out_time, url, address, level } = feature.properties.popupContent;
+    let content = {id, total_victims, total_village, date_in, date_in_time, date_out, date_out_time, url, address, level};
 
     var helpPolygon = layer.bindPopup(getPopupContent(content));
 
@@ -109,7 +110,7 @@ const onEachFeatureCallback = (feature, layer) => {
 var geoJsonLayer = L.geoJSON(getGeoJSONData(), {
   style: function(feature){
     return {
-      color: feature.properties.color
+      color: feature.properties.popupContent.level.color
     }
   },
   onEachFeature: onEachFeatureCallback
@@ -127,22 +128,27 @@ const showPath = (id) => {
 
 let counting = 0;
 geoJsonLayer.eachLayer(function(layer) {
-  console.log(layer);
   let item = layer.feature.properties.popupContent;
   counting += 1;
+  const address = item.address.reduce( (pv,cv,i) => {
+    return i == 0 ? cv.village.toLowerCase() + '-' + cv.district.toLowerCase() : pv + ', ' + cv.village.toLowerCase() + ',' + cv.district.toLowerCase();
+  }, '');
   $('#tBodyField').append(`
     <tr>
       <td>
         <b>${counting}</b>
       </td>
       <td>
-        <p>${item.address}</p>
+        <p>${address}</p>
       </td>
       <td>
         <span class="text-muted">${item.date_in}, Pukul ${item.date_in_time}</span>
       </td>
       <td>
         <span class="text-muted">${(item.date_out === false ? 'Sedang Berlangsung' : item.date_out_time + ' WIB, '+ item.date_out)}</span>
+      </td>
+      <td>
+        <span class="text-muted tooltipped" data-position="top" data-tooltip="${item.level.desc}">${item.level.name}</span>
       </td>
       <td class="table-actions">
         <button type="button" class="waves-effect waves-light btn tooltipped modal-close" data-position="top" data-tooltip="Tunjuk Arah Pada Peta" onclick="showPath('${item.id}')">

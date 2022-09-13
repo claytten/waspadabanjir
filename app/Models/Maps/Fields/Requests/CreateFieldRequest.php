@@ -24,14 +24,14 @@ class CreateFieldRequest extends FormRequest
     public function rules()
     {
         return [
-            'color'     => ['required', 'string'],
             'description'=>['required', 'string'],
             'deaths'    => ['required', 'numeric', 'min:0'],
             'losts'     => ['required', 'numeric', 'min:0'],
             'injured'   => ['required', 'numeric', 'min:0'],
             'date_in'   => ['required', 'date'],
             'locations' => ['required', 'array'],
-            'status'    => ['required']
+            'status'    => ['required'],
+            'level'     => ['required']
         ];
     }
 
@@ -45,8 +45,7 @@ class CreateFieldRequest extends FormRequest
         return [
             'description.required'  => 'Deskripsi harus diisi',
             'description.string'    => 'Deskripsi harus berupa string',
-            'color.required'        => 'Warna harus diisi',
-            'color.string'          => 'Warna harus berupa string',
+            'level.required'        => 'Level harus diisi',
             'deaths.required'       => 'Jumlah kematian harus diisi',
             'deaths.numeric'        => 'Jumlah kematian harus berupa angka',
             'deaths.min'            => 'Jumlah kematian minimal 0',

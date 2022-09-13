@@ -41,11 +41,11 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
     public function listFields(string $date_in = '', string $date_out = '') : Collection
     {
         if($date_in === $date_out) {
-            $fields_today = $this->model->where('date_in', 'LIKE', '%'.$date_in.'%')->get();
-            $fields_doing = $this->model->where('date_out', null)->get();
+            $fields_today = $this->model::with('detailLocations')->where('date_in', 'LIKE', '%'.$date_in.'%')->get();
+            $fields_doing = $this->model::with('detailLocations')->where('date_out', null)->get();
             return $fields_today->merge($fields_doing);
         } else {
-            return $this->model->whereBetween('date_in', [$date_in, $date_out])->get();
+            return $this->model::with('detailLocations')->whereBetween('date_in', [$date_in, $date_out])->get();
         }
     }
 
@@ -58,8 +58,8 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
      */
     public function listFieldsPublic(string $date_in = ''): Collection
     {
-        $fields_today = $this->model->where('date_in', 'LIKE', '%'.$date_in.'%')->where('status', 1)->get();
-        $fields_doing = $this->model->where('date_out', null)->where('status', 1)->get();
+        $fields_today = $this->model::with('detailLocations')->where('date_in', 'LIKE', '%'.$date_in.'%')->where('status', 1)->get();
+        $fields_doing = $this->model::with('detailLocations')->where('date_out', null)->where('status', 1)->get();
         return $fields_today->merge($fields_doing);
     }
 
@@ -242,6 +242,7 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
 
             $coundColumn += 1;
         }
+        $message .= "\n\nSilahkan ketik *menu* jika ingin menampilkan daftar layanan portal banjir. ";
       } else {
         $message = "Sementara belum ada berita banjir di Kabupaten Klaten.";
       }
@@ -259,8 +260,9 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
       $date_out_time = ($item->date_out !== null ? $this->convertTimeAttribute($item->date_out) : false);
       $date_out = $item->date_out !== null ? $date_out_time.' WIB, '.$this->convertDateAttribute($item->date_out) : 'Sedang Berlangsung';
       $locationCount = $item->detailLocations->count();
+      $level = Field::F_LEVEL[$item->level - 1];
       
-      $message .= "\nArea banjir {$indexItem}";
+      $message .= "\nArea banjir {$indexItem} (*{$level['name']}*)";
       $message .= "\n  -Jumlah Korban : {$totalVictims}";
       $message .= "\n  -Tanggal Awal Kejadian : {$date_in_time} WIB, {$date_in}";
       $message .= "\n  -Tanggal Akhir Kejadian : {$date_out}";

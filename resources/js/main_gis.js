@@ -71,7 +71,6 @@ const startDrawingButton = L.easyButton({
 
       btn.state('start-polyline');
       cancelPolyline();
-
     }
   }]
 });
@@ -361,6 +360,20 @@ const drawArea = () => {
             <div class="col-lg-6">
               <div class="card-body">
                 <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group row">
+                      <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Level Banjir</label>
+                      <div class="col-md-10">
+                        <select name="level" id="level" class="form-control" data-toggle="select">
+                          <option value=""></option>
+                          <option value="1" title="Debit air meningkat atau tidak surut kurun waktu 6 jam. Warga harus mengungsi dari lokasi bencana banjir">Siaga 1</option>
+                          <option value="2" title="Debit air meningkatan signifikan dan meluas dari pintu air. Warga diminta segera mengungsi.">Siaga 2</option>
+                          <option value="3" title="Terdapat peningkatan debit air disekitar pintu air. Warga diminta berhati-hati.">Siaga 3</option>
+                          <option value="4" title="Belum ada peningkatan debit air disekitar pintu air. Warga masih tergolong aman.">Siaga 4</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
                   <div class="col-md-12" id="status-form">
                     <div class="form-group row">
                       <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Status Penerbitan</label>
@@ -425,6 +438,9 @@ const drawArea = () => {
   $('#btn-set-date-out').prop('disabled', true).tooltip();
   $('#mapsForm').append(`<input type="text" class="form-control" id="area" name="area" style="display:none">`);
   $('#mapsForm').append('<input type="text" class="form-control" id="color" name="color" style="display:none" value="'+ randCol +'">');
+  $('#level').select2({
+    'placeholder': 'Select Level'
+  });
   $('#status').select2({
     'placeholder': 'Select Status',
   });
@@ -568,7 +584,7 @@ document.onkeydown = (e) => {
 
 L.geoJSON(getGeoJSONData(), {
   style: function(feature){
-    return {color: feature.properties.color}
+    return {color: feature.properties.popupContent.level.color};
   },
   onEachFeature: onEachFeatureCallback
 }).addTo(maps);

@@ -337,16 +337,12 @@ const getGeoJSONData = () => {
   return data;
 }
 const onEachFeatureCallback = (feature, layer) => {
-    console.log(feature);
-    if (feature.properties) {
-        polygon = L.polygon([feature.geometry.coordinates], {
-            color: feature.properties.color,
-            fillOpacity: 0.4
-        });
-        
-        // const setCenter = polygon.getBounds().getCenter();
-        // maps.panTo(new L.LatLng(setCenter.lng, setCenter.lat));
-    }
+  if (feature.properties) {
+    polygon = L.polygon([feature.geometry.coordinates], {
+      color: feature.properties.color,
+      fillOpacity: 0.4
+    });
+  }
 }
 
 const updateGeoJSONData = (color) => {
@@ -367,7 +363,6 @@ const updateGeoJSONData = (color) => {
       console.log(xhr.responseText);
     },
     success: function(response){
-      console.log(response);
       if (response.status === 'success') {
         console.log('updateGeoJSON', polygon);
         polylayer = polygon;
@@ -398,7 +393,7 @@ document.onkeydown = (e) => {
 };
 polylayer = L.geoJSON(getGeoJSONData(), {
   style: function(feature){
-    return {color: feature.properties.color}
+    return {color: feature.properties.level.color}
   },
   onEachFeature: onEachFeatureCallback
 }).addTo(maps);

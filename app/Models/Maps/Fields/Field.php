@@ -12,6 +12,33 @@ class Field extends Model
 {
     use HasFactory;
 
+    public const F_LEVEL = [
+      [
+        'id' => 1,
+        'name' => 'Siaga 1',
+        'color' => "#E76667",
+        'desc' => 'Debit air meningkat atau tidak surut kurun waktu 6 jam. Warga harus mengungsi dari lokasi bencana banjir'
+      ],
+      [
+        'id' => 2,
+        'name' => 'Siaga 2',
+        'color' => "#F8996A",
+        "desc" => 'Debit air meningkatan signifikan dan meluas dari pintu air. Warga diminta segera mengungsi.'
+      ],
+      [
+        'id' => 3,
+        'name' => 'Siaga 3',
+        'color' => "#F1F16A",
+        'desc' => 'Terdapat peningkatan debit air disekitar pintu air. Warga diminta berhati-hati.'
+      ],
+      [
+        'id' => 4,
+        'name' => 'Siaga 4',
+        'color' => "#00CC80",
+        'desc' => 'Belum ada peningkatan debit air disekitar pintu air. Warga masih tergolong aman.'
+      ]
+    ];
+
     protected $table = 'fields';
 
     public $timestamps = false;
@@ -23,7 +50,6 @@ class Field extends Model
      */
     protected $fillable = [
         'name',
-        'color',
         'area',
         'description',
         'deaths',
@@ -31,7 +57,8 @@ class Field extends Model
         'injured',
         'date_in',
         'date_out',
-        'status'
+        'status',
+        'level'
     ];
 
     /**

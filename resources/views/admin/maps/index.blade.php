@@ -53,6 +53,7 @@
                       <thead class="thead-light">
                         <tr>
                           <th>No</th>
+                          <th>Lokasi</th>
                           <th>Tanggal Awal Kejadian</th>
                           <th>Tanggal Akhir Kejadian</th>
                           <th>Jumlah Korban</th>
@@ -63,6 +64,7 @@
                       <tfoot>
                         <tr>
                           <th>No</th>
+                          <th>Lokasi</th>
                           <th>Tanggal Awal Kejadian</th>
                           <th>Tanggal Akhir Kejadian</th>
                           <th>Jumlah Korban</th>
@@ -127,7 +129,8 @@
 <script type="text/javascript" src="{{ asset('js/esri-leaflet-geocoder.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/dropzone/dist/min/dropzone.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('js/main_gis.js') }}" defer></script>
+<script type="text/javascript" src="{{ asset('js/popper.min.js') }}" ></script>
+<script type="text/javascript" src="{{ asset('js/main_gis.min.js') }}" defer></script>
 <script type="text/javascript" src="{{ asset('vendor/datatables.net/js/jquery.dataTables.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
@@ -140,6 +143,7 @@
 <script>
   "use strict"
   $(document).ready(function() {
+    $("body").tooltip({ selector: '[data-toggle=tooltip]' });
     $('#districts, #villages').select2({width: "100%"});
     $('#villages, .btn-submit-action').prop('disabled', true);
     $('#mapsLayout').hide();
@@ -168,6 +172,9 @@
       autoclose: false
     });
     $('#end_date').prop('disabled', true);
+    $("#level .select2-container").tooltip({
+      title: $('#level option:selected').attr('title')}
+    );
   });
 
   const mapTable = $("#mapsTable").DataTable({
@@ -238,6 +245,10 @@
           <td>: ${(field.status) ? 'Terbit' : 'Draft'}</td>
         </tr>
         <tr>
+          <th>Level</th>
+          <td>: ${field.level.name} &nbsp;&nbsp;<i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="${field.level.desc}"></i></td>
+        </tr>
+        <tr>
           <th>Aksi</th>
           <td>: ${buttonAction}</td>
         </tr>
@@ -247,15 +258,15 @@
 
   const onEachFeatureCallback = (feature, layer) => {
     if (feature.properties && feature.properties.popupContent) {
-      let { id, total_victims, total_village,date_in, date_in_time, date_out, date_out_time, status } = feature.properties.popupContent;
-      let content = {id, total_victims, total_village, date_in, date_in_time, date_out, date_out_time, status};
+      let { id, total_victims, total_village,date_in, date_in_time, date_out, date_out_time, status, level } = feature.properties.popupContent;
+      let content = {id, total_victims, total_village, date_in, date_in_time, date_out, date_out_time, status, level};
 
       if({{ auth()->user()->can('maps-edit') }}) {
-        buttonAction += '<a href="{{ route('admin.maps.edit', [':id',$date_in, $date_out]) }}" class="show btn btn-warning btn-sm" style="color: white" ><i class="fas fa-edit"></i></a>';
+        buttonAction += '<a href="{{ route('admin.maps.edit', [':id',$date_in, $date_out]) }}" class="show btn btn-warning btn-sm" style="color: white" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit"></i></a>';
       }
-      buttonAction += '<a href="{{ route('admin.maps.show', [':id',$date_in, $date_out]) }}"class="show btn btn-info btn-sm" style="color: white"><i class="fas fa-eye"></i></a>';
+      buttonAction += '<a href="{{ route('admin.maps.show', [':id',$date_in, $date_out]) }}"class="show btn btn-info btn-sm" style="color: white" data-toggle="tooltip" data-placement="top" title="Detail"><i class="fas fa-eye"></i></a>';
       if({{ auth()->user()->can('maps-delete') }}) {
-        buttonAction += `<button type="button" onclick="deleteArea(${id})" class="show btn btn-danger btn-sm" style="color: white"><i class="fas fa-trash-alt"></i></button>`;
+        buttonAction += `<button type="button" onclick="deleteArea(${id})" class="show btn btn-danger btn-sm" style="color: white" data-toggle="tooltip" data-placement="top" title="Hapus"><i class="fas fa-trash-alt"></i></button>`;
       }
       buttonAction = buttonAction.replaceAll(':id', id);
 
@@ -444,6 +455,9 @@
                 status = (value['status'] === 1) ? 'Terbit' : 'Draft';
                 mapTable.row.add([
                   counting += 1,
+                  value['detail_locations'].reduce( (pv,cv,i) => {
+                    return i == 0 ? cv.village.toLowerCase() + '-' + cv.district.toLowerCase() : pv + ', ' + cv.village.toLowerCase() + ',' + cv.district.toLowerCase();
+                  }, ''),
                   convertDateTime(value['date_in']),
                   (value['date_out'] !== null) ? convertDateTime(value['date_out']) : 'Sedang Berlangsung',
                   value['deaths'] + value['injured'] + value['losts'] + ' Orang',
@@ -471,7 +485,7 @@
 
   function addActionOption(id) {
     let result = '';
-    result += `<button type="button" onclick="showPath(${id})" class="show btn btn-info btn-sm" style="color: white">Peta</button>`;
+    result += `<button type="button" onclick="showPath(${id})" class="show btn btn-info btn-sm" style="color: white">Arah</button>`;
     @if(auth()->user()->can('maps-edit')) {
       result += '<a href="{{ route('admin.maps.edit', [':id',$date_in, $date_out]) }}" class="show btn btn-warning btn-sm" style="color: white" >Edit</a>';
     }

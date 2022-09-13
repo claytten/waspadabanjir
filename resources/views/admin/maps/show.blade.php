@@ -34,7 +34,7 @@
         <div class="card-header">
           <div class="row align-items-center">
             <div class="col-lg-8 col-md-6">
-              <h3 class="mb-0" id="form-map-title">Rincian Data Peta</h3>
+              <h3 class="mb-0" id="form-map-title">Rincian Data Peta (Level - {{ $map->level['name'] }})</h3>
             </div>
             <div class="col-lg-4 col-md-6 d-flex justify-content-end">
               <a class="btn btn-info" href="{{ route('admin.map.view', [$date_in, $date_out]) }}">Kembali</a>
@@ -190,7 +190,6 @@
       },
       success: function(response){
         data = response.data;
-        console.log('this is response', response.data);
       }
     });
 
@@ -200,8 +199,8 @@
   const onEachFeatureCallback = (feature, layer) => {
     if (feature.properties && feature.properties.popupContent) {
         polygon = L.polygon([feature.geometry.coordinates], {
-            color: feature.properties.color,
-            fillOpacity: 0.4
+          color: feature.properties.color,
+          fillOpacity: 0.4
         });
         
         const setCenter = polygon.getBounds().getCenter();
@@ -211,7 +210,7 @@
 
   var polylayer = L.geoJSON(getGeoJSONData(), {
     style: function(feature){
-      return {color: feature.properties.color}
+      return {color: feature.properties.level['color']}
     },
     onEachFeature: onEachFeatureCallback
   }).addTo(maps);

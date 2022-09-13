@@ -67,20 +67,9 @@ class LandingController extends Controller
                 "features" => array()
             );
             foreach($fields as $item){
-                $addressing = $item->detailLocations()->pluck('district', 'village')->toArray();
-                $address = '';
-                $count = count($addressing);
-                foreach($addressing as $index => $value) {
-                    if($count == 1) {
-                        $address .= $value;
-                    } else {
-                        $address .= $value. ', ';
-                    }
-                }
                 $temp = array(
                   "type" => "Feature",
                   "properties" => array(
-                    "color" => $item->color,
                     "popupContent" => array(
                       "id"          => $item->id,
                       "total_victims"=> ($item->deaths + $item->injured + $item->losts),
@@ -89,8 +78,9 @@ class LandingController extends Controller
                       "date_in_time"=> $this->fieldRepo->convertTimeAttribute($item->date_in),
                       "date_out"    => ($item->date_out !== null ? $this->fieldRepo->convertDateAttribute($item->date_out) : false),
                       "date_out_time"=> ($item->date_out !== null ? $this->fieldRepo->convertTimeAttribute($item->date_out) : false),
-                      "address"     => $address,
+                      "address"     => $item->detailLocations()->get(),
                       "status"      => $item->status,
+                      "level"       => Field::F_LEVEL[$item->level - 1],
                       "url"         => route('maps.show', $item->id)
                     )
                   ),
@@ -179,7 +169,7 @@ class LandingController extends Controller
             $temp = array(
                 "type" => "Feature",
                 "properties" => array(
-                    "color" => $field->color,
+                    "level" => Field::F_LEVEL[$field->level - 1],
                 ),
                 "geometry" => array(
                     "type" => 'Polygon',

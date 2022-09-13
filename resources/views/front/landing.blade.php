@@ -9,6 +9,12 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('css/front.css')}}">
 @endsection
 
+@section('inline_css')
+<style>
+  #tableArea { width: 75% !important ; height: 75% !important ; }
+</style>
+@endsection
+
 @section('content_body')
 <div class="wrap" id="loading">
   <div class="loading">
@@ -151,9 +157,10 @@
             <thead class="thead-light">
               <tr>
                 <th>No</th>
-                <th>Kecamatan</th>
+                <th>Lokasi</th>
                 <th>Tanggal Awal Kejadian</th>
                 <th>Tanggal Akhir Kejadian</th>
+                <th>Keterangan</th>
                 <th></th>
               </tr>
             </thead>

@@ -198,8 +198,6 @@ body {
               <option value="${value['id']}">${value['name']}
               </option>`);
           });
-        } else {
-          console.log("data trouble");
         }
       }
     });
@@ -219,8 +217,6 @@ body {
 
   function addAddress() {
     const result = `${$('#villages option:selected').text().trim()}, ${$('#districts option:selected').text().trim()}, ${$('#regencies option:selected').text().trim()}, ${$('#provinces option:selected').text().trim()}`;
-    console.log(result);
-    console.log(`hehe ${$('#regencies option:selected').text()}`);
     $('#address').val('').val(result);
     $("label[for='address']").addClass("active");
   }
@@ -233,7 +229,6 @@ body {
         text: 'Silahkan Lengkapi Data yang belum terisi'
       });
     } else if($('#reporting_type').val() === 'report') {
-      console.log('hehe');
       if(!$('#phone').val() || !$('#address').val()) {
         Swal.fire({
           icon: 'error',
@@ -250,7 +245,6 @@ body {
         formData.append('phone', $('#phone').val());
         formData.append('address', $('#address').val());
       }
-      console.log(formData);
       $.ajax({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -262,7 +256,6 @@ body {
         processData: false,
         data: formData,
         error: function (xhr, status, error) {
-          console.log(xhr.responseText);
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
@@ -271,7 +264,6 @@ body {
         },
         success:function(result) {
           if(result) {
-            console.log(result);
             Swal.fire({
               position: 'middle',
               icon: 'success',
@@ -279,8 +271,6 @@ body {
               showConfirmButton: false,
               timer: 1500
             }).then(() => window.location.href = result.redirect_url);
-          } else {
-            console.log("data trouble");
           }
         }
       })
@@ -335,8 +325,6 @@ body {
           });
           $('#regencies').prop('disabled', false);
           $('#districts, #villages, .btn-add-address').prop('disabled', true);
-        } else {
-          console.log("data trouble");
         }
       }
     })
@@ -360,8 +348,6 @@ body {
           });
           $('#districts').prop('disabled', false);
           $('#villages, .btn-add-address').prop('disabled', true);
-        } else {
-          console.log("data trouble");
         }
       }
     })
@@ -384,8 +370,6 @@ body {
           });
           $('#villages').prop('disabled', false);
           $('.btn-add-address').prop('disabled', true);
-        } else {
-          console.log("data trouble");
         }
       }
     })

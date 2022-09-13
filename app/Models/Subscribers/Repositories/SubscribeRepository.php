@@ -4,6 +4,7 @@ namespace App\Models\Subscribers\Repositories;
 
 use App\Jobs\onAskingReportToAdmin;
 use App\Jobs\onResponServiced;
+use App\Models\Maps\Fields\Field;
 use App\Models\Subscribers\Exceptions\CreateSubscribeInvalidArgumentException;
 use Jsdecena\Baserepo\BaseRepository;
 use App\Models\Subscribers\Subscribe;
@@ -182,7 +183,10 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
           "body" => "D.Ubah informasi pengguna",
         ],
         [
-          "body" => "E.Berhenti langganan"
+          "body" => "E.Keterangan Level Banjir"
+        ],
+        [
+          "body" => "F.Berhenti langganan"
         ]
       ]);
       $nameTeam = config('app.name');
@@ -234,6 +238,14 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
           $message = "--Pengaturan Pengguna--\n\nBerikut merupakan pilihan dalam opsi pengaturan. Data apa yang kamu inginkan ubah?\n1. Nama\n2. Alamat\n\n\nBalas *SATU ANGKA* saja yaa.\nKetik *menu* jika ingin kembali.";
           break;
         case 'e':
+          $message = "--Level Banjir--\n\nBerikut merupakan level banjir yang ada di Kabupaten Klaten.";
+          foreach(Field::F_LEVEL as $item) {
+            $message .= "\n{$item['id']}. {$item['name']}\n{$item['desc']}\n";
+          }
+          $message .= "\n\nKetik *menu* jika ingin kembali.";
+          Cache::forget($from);
+          break;
+        case 'f':
           $subRepo = new SubscribeRepository($findNumber);
           $subRepo->updateSubscribe([ 'status' => 0 ]);
           Cache::forget($from);
@@ -451,8 +463,9 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
               $date_out_time = ($item->field->date_out !== null ? $fieldRepo->convertTimeAttribute($item->field->date_out) : false);
               $date_out = $item->field->date_out !== null ? $date_out_time.' WIB, '.$fieldRepo->convertDateAttribute($item->field->date_out) : 'Sedang Berlangsung';
               $locationCount = $item->field->detailLocations->count();
+              $level = Field::F_LEVEL[$item->field->level - 1];
               
-              $message .= "\nArea banjir {$coundColumn}";
+              $message .= "\nArea banjir {$coundColumn} (*{$level['name']}*)";
               $message .= "\n  -Jumlah Korban : {$totalVictims}";
               $message .= "\n  -Tanggal Awal Kejadian : {$date_in_time} WIB, {$date_in}";
               $message .= "\n  -Tanggal Akhir Kejadian : {$date_out}";
