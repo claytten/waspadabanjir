@@ -56,7 +56,7 @@ body {
 @endsection
 
 @section('content_body')
-<div class="container form-box valign-wrapper" style="justify-content: center">
+<div class="container form-box valign-wrapper" style="justify-content: center; height: auto !important">
   <div class="section valign">    
     <div id="contact-page" class="card hoverable">
         <div class="card-content">
@@ -179,7 +179,6 @@ body {
     $('.collapsible').collapsible();
     $('textarea#message').characterCounter();
     $('.address-box').modal({dismissible:false});
-    $('.tooltipped').tooltip();
     $("#provinces, #regencies, #districts, #villages").select2({width: "100%"});
     $('#regencies, #districts, #villages, .btn-add-address').prop('disabled', true);
     $('#reporting').formSelect();
@@ -238,6 +237,7 @@ body {
       }
     } else {
       let formData = new FormData();
+      var totalfiles = document.getElementById('images').files.length;
       formData.append('name',$('#name').val());
       formData.append('message', $('#message').val());
       formData.append('report_type', $('#reporting').val());
@@ -245,9 +245,12 @@ body {
         formData.append('phone', $('#phone').val());
         formData.append('address', $('#address').val());
       }
+      for (var index = 0; index < totalfiles; index++) {
+        formData.append("images[]", document.getElementById('images').files[index]);
+      }
       $.ajax({
         headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         url: "{{ route('form.report.store') }}",
         type: 'POST',
@@ -298,10 +301,25 @@ body {
             </a>
           </div>
         </div>
+        <div class="row image-input">
+          <div class="file-field input-field col s11" >
+            <div class="btn">
+              <span>Foto</span>
+              <input type="file" id="images" name="images[]" accept="image/png, image/jpeg, image/jpg" onChange="validateImage(this)" multiple required>
+            </div>
+            <div class="file-path-wrapper">
+              <input class="file-path validate" type="text" placeholder="Upload one or more files">
+            </div>
+          </div>
+          <div class="input-field col s1 center-align" style="padding-left: 0">
+            <i class="material-icons tooltipped prefix" data-position="top" data-tooltip="Hanya bisa unggah 1 berkas foto .jpg|.jpeg|.png dengan maksimal ukurang 2MB">info_outline</i>
+          </div>
+        </div>
       `);
     } else {
       $('.address-input, .phone-input').remove();
     }
+    $('.tooltipped').tooltip();
   }
 
   function searchProvince() {
@@ -382,6 +400,65 @@ body {
   function resetForm() {
     $('#reportForm')[0].reset();
     $('.address-input, .phone-input').remove();
+  }
+  
+  function validateImage(e) {
+    const chkFiles = Array.from(e.files).reduce( (pv,cv,i) => {
+      const {name:fileName, size:fileSize} = cv;
+      if((/^([^.]*)\.(jpeg|png|jpg)$/i).test(fileName)) {
+        if(fileSize >= 2097152) {
+          pv.push(false);
+        } else {
+          pv.push(true);
+        }
+      } else {
+        pv.push(false);
+      }
+      return pv;
+    }, []);
+    
+    if(chkFiles.includes(false)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Ukuran berkas terlalu besar atau ekstensi berkas tidak sesuai',
+      });
+      e.value = '';
+      $('.file-path-wrapper input').val('');
+      $('.image-preview-wrap').remove();
+    } else {
+      $('.image-preview-wrap').remove();
+      Array.from(e.files).map( (v,i) => {
+        const {name:fileName, size:fileSize} = v;
+        const url = URL.createObjectURL(v); 
+        $('.image-input').after(`
+          <div class="row image-preview-wrap" id="image-preview-wrap-${i}">
+            <div class="input-field col s10">
+              <img class="materialboxed col s3" width="50" height="50" src="${url}">
+              <label class="col s9" id="name-text-${i}">${fileName}</label>
+            </div>
+            <div class="input-field col s2">
+              <button type="button" id="delete-image-${i}" class="waves-effect waves-light red btn" style="width: 100%"><i class="material-icons">close</i></button>
+            </div>
+          </div>
+        `);
+        $('#delete-image-'+i).on("click", () => {
+          const naming = $('#name-text-'+i).text();
+          let newText = $('.file-path').val().split(', ');
+          if(newText.length == 1) {
+            $('.file-path').val('');
+          } else {
+            console.log(newText, naming);
+            newText = newText.filter(e => e !== naming).join(', ');
+            $('.file-path').val(newText);
+          }
+          const fileListArr = Array.from(e.files).splice(i, 1);
+          $('#images').files = fileListArr;
+          $('#image-preview-wrap-'+i).remove();
+        });
+      });
+      $('.materialboxed').materialbox();
+    }
   }
 </script>
 @endsection

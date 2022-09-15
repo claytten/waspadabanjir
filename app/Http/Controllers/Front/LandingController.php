@@ -9,6 +9,8 @@ use App\Models\Subscribers\Requests\CreateSubscribeRequest;
 use App\Http\Controllers\Controller;
 use App\Jobs\onCompleteSubscribe;
 use App\Models\Maps\Fields\Field;
+use App\Models\Reports\Repositories\ReportRepository;
+use App\Models\Reports\Requests\CreateReportRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -139,17 +141,21 @@ class LandingController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function storeReport(Request $request) 
+    public function storeReport(CreateReportRequest $request) 
     {
-        $data = $request->except('_tokne', '_method');
+      $report = $this->reportRepo->createReport($request->validated());
 
-        $this->reportRepo->createReport($data);
+      $reportRepo = new ReportRepository($report);
 
-        return response()->json([
-            'code'          => 200,
-            'status'        => 'success',
-            'redirect_url'  => route('home'),
-        ]);
+      if ($request->hasFile('images')) {
+        $reportRepo->saveMapImages(collect($request->file('images')));
+      }
+
+      return response()->json([
+        'code'          => 200,
+        'status'        => 'success',
+        'redirect_url'  => route('home'),
+      ]);
     }
 
     /**

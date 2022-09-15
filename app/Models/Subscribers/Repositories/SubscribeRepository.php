@@ -18,6 +18,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Twilio\Rest\Client;
 
 class SubscribeRepository extends BaseRepository implements SubscribeRepositoryInterface
@@ -499,22 +500,50 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
      */
     public function OptionReportMenu(string $answerID, string $from, string $body, object $findNumber, object $reportRepo): string 
     {
-      if(strtolower($body) === 'menu') {
+      if(strtolower($body) === 'menu' || strtolower($body) === 'kembali') {
         Cache::forget($from);
         return $message = $this->defaultMenu($findNumber['name']);
       }
 
       if(isset(Cache::get($from)[1])) {
+        if(Cache::get($from)[1] == '2') { // 2 means status report
+          return $this->reportActionAction(Cache::get($from)[1], $from, $body, $findNumber, $reportRepo);
+        }
         return $this->responseReportMenu(Cache::get($from)[1], $from, $body, $findNumber, $reportRepo);
       }
 
       Cache::forget($from);
       Cache::put($from, array('c', $answerID), 600);
-      $message = "Silahkan ketik isi laporan yang kamu inginkan. Namun kamu hanya bisa mengirim pesan teks saja yaa.";
+      $header = [
+        '1' => 'kritik dan saran',
+        '2' => 'laporan kejadian banjir',
+        '3' => 'pertanyaan',
+      ];
+      $message = "Silahkan ketik isi ".$header[$answerID]." yang kamu inginkan.\nnamun kamu hanya bisa mengirim pesan teks saja yaa.\n\nKetik *kembali* atau *menu* jika ingin kembali ke menu utama.";
       return $message;
     }
 
-    private function responseReportMenu(string $answerID, string $from,string $body,object $findNumber, object $reportRepo)
+    public function reportActionAction(string $answerID, string $from, string $body, object $findNumber, object $reportRepo): string
+    {
+      if(strtolower($body) === 'menu') {
+        Cache::forget($from);
+        return $message = $this->defaultMenu($findNumber['name']);
+      }
+
+      if(strtolower($body) === 'kembali') {
+        $back2 = array_pop(Cache::get($from));
+        Cache::forget($from);
+        Cache::put($from, $back2, 600);
+        return $message = "Silahkan ketik isi laporan yang kamu inginkan.\nNamun kamu hanya bisa mengirim pesan teks saja yaa.";
+      }
+
+      Cache::forget($from);
+      Cache::put($from, array('c', '2', $body, 'image'), 600);
+      $message = "Silahkan kirim *Satu Foto* pendukung laporan.\nNamun kamu hanya bisa mengirim foto (.jpg|.jpeg|.png) kurang dari 2MB.\nJika mengirim foto lebih dari satu. Maka, foto yang pertama yang akan tersimpan.\n\nKetik *kembali* jika ingin mengubah isi laporan.\nKetik *menu* jika ingin kembali ke menu utama.";
+      return $message;
+    }
+
+    public function responseReportMenu(string $answerID, string $from, string $body, object $findNumber, object $reportRepo, string $img = '')
     {
       $data= array([
         'name'        => $findNumber['name'],
@@ -522,30 +551,29 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
         'phone'       => ($answerID === '2') ? $findNumber['phone'] : null,
         'address'     => ($answerID === '2') ? $findNumber['address'] : null,
         'message'     => $body,
-        'from'        => $from
+        'from'        => $from,
+        'img'         => $img
       ]);
 
-      if($data[0]['report_type'] === 'ask') {
-        $user = Cache::get('adminWA');
-        $date = Carbon::now()->setTimezone('Asia/Jakarta')->format('H:i, d-m-Y');
-        $message = "Notifikasi Pertanyaan\n";
-        $message .= "\n dari : {$findNumber['name']} ({$findNumber['phone']})";
-        $message .= "\n Waktu pelaporan : {$date}";
-        $message .= "\n Isi pertanyaan: {$body}";
-        $user->body = strval($message);
-        onAskingReportToAdmin::dispatch($user);
-      } else if($data[0]['report_type'] === 'report') {
-        $user = Cache::get('adminWA');
-        $date = Carbon::now()->setTimezone('Asia/Jakarta')->format('H:i, d-m-Y');
-        $message = "Notifikasi Laporan Banjir\n";
-        $message .= "\n dari : {$findNumber['name']} ({$findNumber['phone']})";
-        $message .= "\n Waktu pelaporan : {$date}";
-        $message .= "\n Isi laporan: {$body}";
-        $user->body = strval($message);
-        onAskingReportToAdmin::dispatch($user);
-      }
+      $user = Cache::get('adminWA');
+      $date = Carbon::now()->setTimezone('Asia/Jakarta')->format('H:i, d-m-Y');
+      $message = $data[0]['report_type'] == 'ask' ? "Notifikasi Pertanyaan\n" : ($data[0]['report_type'] === 'report' ? "Notifikasi Laporan Banjir\n" : "Notifikasi Kritik & Saran\n");
+      $message .= "\n dari : {$findNumber['name']} ({$findNumber['phone']})";
+      $message .= "\n Waktu pelaporan : {$date}";
+      $message .= "\n Isi pertanyaan: {$body}";
+      $user->body = strval($message);
+      onAskingReportToAdmin::dispatch($user);
 
       return $reportRepo->storeReportWhatsapp($data[0]);
+    }
+
+    public function uploadImageFromWA(string $from, string $url, string $ext): string
+    {
+      $exts = explode('/', $ext);
+      $name = substr($url, strrpos($url, '/') + 1).".".$exts[1];
+      $content = file_get_contents($url);
+      Storage::put('public/reports/'.$name, $content);
+      return 'reports/'.$name;
     }
 
     /**
@@ -655,5 +683,20 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
       Cache::forget($from);
       Cache::forget("address_{$from}");
       return "Hore. Alamat kamu telah diperbaharui menjadi {$regencies[$body -1]['name']}.\n\nketik *menu* atau *kembali* untuk melihat daftar layanan portal banjir.";
+    }
+
+    public function filterFileMenu(string $nuMedia, string $ext): string
+    {
+      if (strpos($ext, 'image') !== false) {
+        $message = "Kata kunci tidak sesuai. Silahkan ketik *menu* untuk menampilkan daftar kata kunci layanan.";
+      } elseif (strpos($ext, 'text') !== false) {
+        $message = "Pengiriman berkas dokumen tidak didukung. Silahkan ketik *menu* untuk menampilkan daftar kata kunci layanan.";
+      } elseif (strpos($ext, 'audio') !== false) {
+        $message = "Pengiriman audio tidak didukung. Silahkan ketik *menu* untuk menampilkan daftar kata kunci layanan.";
+      } else {
+        $message = "Maaf kata kunci yang kamu gunakan tidak ada. Silahkan ulangi lagi sesuai daftar yang ada pada pelaporan.";
+      }
+
+      return $message;
     }
 }

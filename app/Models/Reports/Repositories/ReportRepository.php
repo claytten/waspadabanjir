@@ -5,6 +5,7 @@ namespace App\Models\Reports\Repositories;
 use Jsdecena\Baserepo\BaseRepository;
 use App\Models\Reports\Report;
 use App\Models\Reports\Exceptions\ReportNotFoundException;
+use App\Models\Reports\ReportImage;
 use App\Models\Reports\Repositories\Interfaces\ReportRepositoryInterface;
 use App\Models\Tools\UploadableTrait;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -12,7 +13,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Tools\PhoneFilterTrait;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\File;
 
 class ReportRepository extends BaseRepository implements ReportRepositoryInterface
 {
@@ -107,9 +109,17 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
      */
     public function storeReportWhatsapp(array $data) : string
     {
-        $this->createReport($data);
+        $report = $this->createReport($data);
+        if($data['img'] !== '') {
+            $fieldImage = new ReportImage([
+                'report_id'  => $this->model->id,
+                'src'       => $data['img']
+            ]);
+            $report->images()->save($fieldImage);
+        }
+
         Cache::forget($data['from']);
-        return "Terima Kasih sudah memberikan laporan.\nLaporan kamu akan diperiksa admin secepatnya\n\nSilahkan ketik *menu* jika ingin menampilkan daftar layanan portal banjir.";
+        return "Terima kasih atas laporan yang kamu kirimkan. Kami akan segera memprosesnya.\n\nKetik *menu* jika ingin kembali ke menu utama.";
     }
 
     /**
@@ -156,5 +166,36 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
         $countReport = $this->model->whereDate('created_at', '=', $date)->get();
 
         return count($countReport);
+    }
+
+    /**
+     * @param Collection $collection
+     *
+     * @return void
+     */
+    public function saveMapImages(Collection $collection)
+    {
+        $collection->each(function (UploadedFile $file) {
+            $filename = $this->uploadOne($file, 'reports');
+            $fieldImage = new ReportImage([
+                'report_id'  => $this->model->id,
+                'src'       => $filename
+            ]);
+            $this->model->images()->save($fieldImage);
+        });
+    }
+
+    /**
+     * Destroye File on Storage
+     *
+     * @param Collection $collection
+     *
+     *
+     */
+    public function deleteFiles(Collection $collection)
+    {
+        $collection->each(function ($file) {
+            File::delete("storage/{$file->src}");
+        });
     }
 }

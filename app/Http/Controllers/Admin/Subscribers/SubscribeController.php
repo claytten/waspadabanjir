@@ -247,6 +247,10 @@ class SubscribeController extends Controller
     public function listenToReplies(Request $request) {
       $from = $request->input('From');
       $body = $request->input('Body');
+      $nuMedia = $request->input('NumMedia');
+      $media = $request->has('MediaUrl0') ? $request->input('MediaUrl0') : null;
+      $ext = $request->has('MediaContentType0') ? $request->input('MediaContentType0') : null;
+      Log::debug($request->all());
       if(Cache::has('dailyUsersUsage')) {
         Cache::increment('dailyUsersUsage');
       } else {
@@ -259,7 +263,7 @@ class SubscribeController extends Controller
         if($admin->phone === ltrim($from, 'whatsapp:')) {
           $message = strval($this->adminMenu($admin, $from, $body));
         } else {
-          $message = strval($this->guestMenu($from, $body));          
+          $message = strval($this->guestMenu($from, $body, $nuMedia, $ext, $media));          
         }
         if(strlen($message) > 1600) {
           $message = str_split($message, 1600);
@@ -302,55 +306,88 @@ class SubscribeController extends Controller
       return $message;
     }
 
-    private function guestMenu($from, $body) {
+    private function guestMenu($from, $body, $nuMedia, $ext, $media) {
       $findNumber = $this->subscribeRepo->findSubscriberByPhone(ltrim($from, 'whatsapp:'));
       if(!empty($findNumber)) {
         if ($findNumber->status === 1) {
           $answerID = Cache::has($from) ? Cache::get($from) : null;
-          if ($answerID !== null) {
-            switch($answerID[0]) {
-              case 'menu':
-                Cache::forget($from);
-                $message = strval($this->subscribeRepo->defaultMenu($findNumber->name));
-                break;
-              case 'a':
-                $message = strval($this->subscribeRepo->listDistrictMenu($from, $body, $this->districtRepo, $this->fieldRepo));
-                break;
-              case 'c':
-                if(strtolower($body) === '1' || (isset($answerID[1]) ? $answerID[1] : null) === '1') {
-                  $message = strval($this->subscribeRepo->OptionReportMenu('1', $from, $body, $findNumber, $this->reportRepo));
-                } elseif (strtolower($body) === '2' || (isset($answerID[1]) ? $answerID[1] : null) === '2') {
-                  $message = strval($this->subscribeRepo->OptionReportMenu('2', $from, $body, $findNumber, $this->reportRepo));
-                } elseif (strtolower($body) === '3' || (isset($answerID[1]) ? $answerID[1] : null) === '3') {
-                  $message = strval($this->subscribeRepo->OptionReportMenu('3', $from, $body, $findNumber, $this->reportRepo));
-                } elseif (strtolower($body) === 'menu' || strtolower($body) === 'kembali') {
-                  Cache::forget($from);
-                  $message = $this->subscribeRepo->defaultMenu($findNumber['name']);
-                } else {
-                  $message = "Maaf kata kunci yang kamu gunakan tidak ada. Silahkan ulangi lagi sesuai daftar yang ada pada pelaporan.";
-                }
-                break;
-              case 'd':
-                if(strtolower($body) === '1' || (isset($answerID[1]) ? $answerID[1] : null) === '1') {
-                  $message = strval($this->subscribeRepo->optionChangeInformation('1', $from, $body, $findNumber, $this->regencyRepo));
-                  //$message = strval($this->subscribeRepo->OptionReportMenu('1', $from, $body, $findNumber, $this->reportRepo));
-                } elseif (strtolower($body) === '2' || (isset($answerID[1]) ? $answerID[1] : null) === '2') {
-                  $message = strval($this->subscribeRepo->optionChangeInformation('2', $from, $body, $findNumber, $this->regencyRepo));
-                } elseif(strtolower($body) === '3' || (isset($answerID[1]) ? $answerID[1] : null) === '3') {
-                  $message = 'kembali';
-                } elseif (strtolower($body) === 'menu') {
-                  Cache::forget($from);
-                  $message = $this->subscribeRepo->defaultMenu($findNumber['name']);
-                } else {
-                  $message = "Maaf kata kunci yang kamu gunakan tidak ada. Silahkan ulangi lagi sesuai daftar yang ada pada pengaturan pengguna.";
-                }
-                break;
-              default:
-                $message = "Kata kunci tidak sesuai. Silahkan ketik *menu* untuk menampilkan daftar kata kunci layanan.";
-                break;
+          if($nuMedia !== null && $nuMedia > 0) { // if request from media (image, video, audio, document, stiker)
+            if($answerID !== null) {
+              switch(count($answerID)) {
+                case 1:
+                  $message = strval($this->subscribeRepo->filterFileMenu($nuMedia, $ext));
+                  break;
+                case 2:
+                  $message = strval($this->subscribeRepo->filterFileMenu($nuMedia, $ext));
+                  break;
+                case 3:
+                  $message = strval($this->subscribeRepo->filterFileMenu($nuMedia, $ext));
+                  break;
+                case 4:
+                  if($answerID[0] == 'c' && $answerID[1] == '2' && $answerID[3] === 'image' && strpos($ext, 'image') !== false) {
+                    $nameFile = strval($this->subscribeRepo->uploadImageFromWA($from, $media, $ext));
+                    $message = strval($this->subscribeRepo->responseReportMenu($answerID[1], $from, strval($answerID[2]), $findNumber, $this->reportRepo, $nameFile));
+                  } else {
+                    $message = strval($this->subscribeRepo->filterFileMenu($nuMedia, $ext));
+                  }
+                  break;
+                default:
+                  $message = strval($this->subscribeRepo->filterFileMenu($nuMedia, $ext));
+                  break;
+              }
+            } else {
+              $message = strval($this->subscribeRepo->filterFileMenu($nuMedia, $ext));
             }
           } else {
-            $message = $this->subscribeRepo->listDefaultMenu($from, $findNumber, $body, $this->districtRepo, $this->fieldRepo);
+            if ($answerID !== null) { // if request from texting and emoji
+              switch($answerID[0]) {
+                case 'menu':
+                  Cache::forget($from);
+                  $message = strval($this->subscribeRepo->defaultMenu($findNumber->name));
+                  break;
+                case 'a':
+                  $message = strval($this->subscribeRepo->listDistrictMenu($from, $body, $this->districtRepo, $this->fieldRepo));
+                  break;
+                case 'c':
+                  if(strtolower($body) === '1' || (isset($answerID[1]) ? $answerID[1] : null) === '1') {
+                    $message = strval($this->subscribeRepo->OptionReportMenu('1', $from, $body, $findNumber, $this->reportRepo));
+                  } elseif (strtolower($body) === '2' || (isset($answerID[1]) ? $answerID[1] : null) === '2') {
+                    $message = strval($this->subscribeRepo->OptionReportMenu('2', $from, $body, $findNumber, $this->reportRepo));
+                  } elseif (strtolower($body) === '3' || (isset($answerID[1]) ? $answerID[1] : null) === '3') {
+                    if((isset($answerID[3]) ? $answerID[3] : null) === 'image') {
+                      $message = strval("Silahkan kirim *Satu Foto* pendukung laporan.\nNamun kamu hanya bisa mengirim foto (.jpg|.jpeg|.png) kurang dari 2MB.\nJika mengirim foto lebih dari satu. Maka, foto yang pertama yang akan tersimpan.\n\nKetik *kembali* jika ingin mengubah isi laporan.\nKetik *menu* jika ingin kembali ke menu utama.");
+                    } else {
+                      $message = strval($this->subscribeRepo->OptionReportMenu('3', $from, $body, $findNumber, $this->reportRepo));
+                    }
+                  } elseif (strtolower($body) === 'menu' || strtolower($body) === 'kembali') {
+                    Cache::forget($from);
+                    $message = $this->subscribeRepo->defaultMenu($findNumber['name']);
+                  } else {
+                    $message = "Maaf kata kunci yang kamu gunakan tidak ada. Silahkan ulangi lagi sesuai daftar yang ada pada pelaporan.";
+                  }
+                  break;
+                case 'd':
+                  if(strtolower($body) === '1' || (isset($answerID[1]) ? $answerID[1] : null) === '1') {
+                    $message = strval($this->subscribeRepo->optionChangeInformation('1', $from, $body, $findNumber, $this->regencyRepo));
+                    //$message = strval($this->subscribeRepo->OptionReportMenu('1', $from, $body, $findNumber, $this->reportRepo));
+                  } elseif (strtolower($body) === '2' || (isset($answerID[1]) ? $answerID[1] : null) === '2') {
+                    $message = strval($this->subscribeRepo->optionChangeInformation('2', $from, $body, $findNumber, $this->regencyRepo));
+                  } elseif(strtolower($body) === '3' || (isset($answerID[1]) ? $answerID[1] : null) === '3') {
+                    $message = 'kembali';
+                  } elseif (strtolower($body) === 'menu') {
+                    Cache::forget($from);
+                    $message = $this->subscribeRepo->defaultMenu($findNumber['name']);
+                  } else {
+                    $message = "Maaf kata kunci yang kamu gunakan tidak ada. Silahkan ulangi lagi sesuai daftar yang ada pada pengaturan pengguna.";
+                  }
+                  break;
+                default:
+                  $message = "Kata kunci tidak sesuai. Silahkan ketik *menu* untuk menampilkan daftar kata kunci layanan.";
+                  break;
+              }
+            } else {
+              $message = $this->subscribeRepo->listDefaultMenu($from, $findNumber, $body, $this->districtRepo, $this->fieldRepo);
+            } 
           }
         } elseif ($body == 'subscribe') {
           $subRepo = new SubscribeRepository($findNumber);

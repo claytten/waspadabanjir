@@ -38,7 +38,15 @@ interface SubscribeRepositoryInterface extends BaseRepositoryInterface
 
     public function listDistrictMenu(string $from, string $body, object $districtRepo, object $fieldRepo) :string;
 
+    public function responseReportMenu(string $answerID, string $from, string $body,object $findNumber, object $reportRepo, string $img = '');
+
     public function OptionReportMenu(string $answerID, string $from, string $body, object $findNumber, object $reportRepo): string;
 
     public function optionChangeInformation(string $answerID, string $from, string $body, object $findNumber, object $regencyRepo): string;
+
+    public function filterFileMenu(string $nuMedia, string $ext): string;
+
+    public function reportActionAction(string $answerID, string $from, string $body, object $findNumber, object $reportRepo): string;
+
+    public function uploadImageFromWA(string $from, string $url, string $ext): string;
 }

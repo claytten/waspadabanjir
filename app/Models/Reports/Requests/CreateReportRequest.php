@@ -3,6 +3,8 @@
 namespace App\Models\Reports\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class CreateReportRequest extends FormRequest
 {
@@ -23,11 +25,18 @@ class CreateReportRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'name'      => ['required', 'string'],
-            'address'   => ['required'],
-            'phone'     => ['required']
+        $rule = [
+            'name'        => ['required', 'string'],
+            'report_type' => ['required', Rule::in(['ask', 'report', 'suggest'])],
+            'message'     => ['required', 'string'],
         ];
+
+        if(request('report_type') == 'report') {
+            $rule['phone'] = ['required', 'string', 'max:15'];
+            $rule['address'] = ['required', 'string'];
+            $rule['images'] = ['required', 'array'];
+        }
+        return $rule;
     }
 
     /**

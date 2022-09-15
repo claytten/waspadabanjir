@@ -23,4 +23,8 @@ interface ReportRepositoryInterface extends BaseRepositoryInterface
     public function reportWhatsapp(): string;
 
     public function dailyReport(string $date): int;
+
+    public function saveMapImages(Collection $collection);
+
+    public function deleteFiles(Collection $collection);
 }

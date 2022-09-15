@@ -4,6 +4,7 @@ namespace App\Models\Reports;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Reports\ReportImage;
 
 class Report extends Model
 {
@@ -24,5 +25,14 @@ class Report extends Model
         'message',
         'status'
     ];
+
+    /**
+     * Get all of the images for the Report
+     *
+     */
+    public function images()
+    {
+        return $this->hasMany(ReportImage::class);
+    }
     
 }

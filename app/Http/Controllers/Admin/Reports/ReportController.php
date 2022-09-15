@@ -139,6 +139,9 @@ class ReportController extends Controller
     {
         $report = $this->reportRepo->findReportById($id);
         $reportRepo = new ReportRepository($report);
+        if($report->images()) {
+            $reportRepo->deleteFiles($report->images);
+        }
         $reportRepo->deleteReport();
 
         return response()->json([

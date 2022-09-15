@@ -10,6 +10,7 @@
 ])
 
 @section('plugins_css')
+<link rel="stylesheet" href="{{ asset('vendor/lightcase/css/lightcase.css')}}">
 @endsection
 
 @section('inline_css')
@@ -67,6 +68,21 @@
                     </div>
                   </div>
                 </div>
+                <div class="col-md-12">
+                  <div class="form-group row">
+                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Isi Laporan</label>
+                    <div class="col-md-10">
+                      <textarea class="form-control" name="message" value="{{ $report->message }}" id="message" disabled>{{ $report->message }}</textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="card-body">
+              <div class="row">
                 @if ($report->report_type === 'report')
                   <div class="col-md-12">
                     <div class="form-group row">
@@ -93,16 +109,20 @@
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
 
-          <div class="col-lg-6">
-            <div class="card-body">
-              <div class="form-group">
-                <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Isi Laporan</label>
-                <div class="col-md-10">
-                  <textarea class="form-control" name="message" value="{{ $report->message }}" id="message" disabled>{{ $report->message }}</textarea>
+                <div class="col-md-12">
+                  <div class="form-group row">
+                    <label for="example-text-input" class="col-md-2 col-form-label form-control-label">Foto</label>
+                    <div class="col-md-10">
+                      @forelse ($report->images as $item)
+                        <a href="{{ url('/storage'.'/'.$item->src) }}" data-rel="lightcase:myCollection" >
+                          <img class="img-fluid rounded" src="{{ url('/storage'.'/'.$item->src) }}" width="150px;">
+                        </a>
+                      @empty
+                        <span class="form-control">Tidak ada gambar</span>
+                      @endforelse
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -115,11 +135,15 @@
 @endsection
 
 @section('plugins_js')
+<script type="text/javascript" src="{{ asset('vendor/lightcase/js/lightcase.js')}}"></script>
 @endsection
 
 @section('inline_js')
 <script>
   "use strict"
+  $(document).ready(function() {
+    $('a[data-rel^=lightcase]').lightcase();
+  });
 </script>
     
 @endsection
