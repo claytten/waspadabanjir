@@ -237,16 +237,16 @@ body {
       }
     } else {
       let formData = new FormData();
-      var totalfiles = document.getElementById('images').files.length;
       formData.append('name',$('#name').val());
       formData.append('message', $('#message').val());
       formData.append('report_type', $('#reporting').val());
       if ($('#reporting').val() === 'report') {
+        var totalfiles = document.getElementById('images').files.length;
         formData.append('phone', $('#phone').val());
         formData.append('address', $('#address').val());
-      }
-      for (var index = 0; index < totalfiles; index++) {
-        formData.append("images[]", document.getElementById('images').files[index]);
+        for (var index = 0; index < totalfiles; index++) {
+          formData.append("images[]", document.getElementById('images').files[index]);
+        }
       }
       $.ajax({
         headers: {
@@ -318,6 +318,7 @@ body {
       `);
     } else {
       $('.address-input, .phone-input').remove();
+      $('.image-input').remove();
     }
     $('.tooltipped').tooltip();
   }
