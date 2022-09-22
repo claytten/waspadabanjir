@@ -308,11 +308,11 @@ body {
               <input type="file" id="images" name="images[]" accept="image/png, image/jpeg, image/jpg" onChange="validateImage(this)" multiple required>
             </div>
             <div class="file-path-wrapper">
-              <input class="file-path validate" type="text" placeholder="Upload one or more files">
+              <input class="file-path validate" type="text" placeholder="Unggah satu foto atau lebih">
             </div>
           </div>
           <div class="input-field col s1 center-align" style="padding-left: 0">
-            <i class="material-icons tooltipped prefix" data-position="top" data-tooltip="Hanya bisa unggah 1 berkas foto .jpg|.jpeg|.png dengan maksimal ukurang 2MB">info_outline</i>
+            <i class="material-icons tooltipped prefix" data-position="top" data-tooltip="bisa unggah lebih dari 1 berkas foto .jpg|.jpeg|.png dengan maksimal ukuran tiap foto kurang dari 2MB">info_outline</i>
           </div>
         </div>
       `);
