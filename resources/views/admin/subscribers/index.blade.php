@@ -60,8 +60,8 @@
                   <td>{{ $index +1 }}</td>
                   <td>{{ ucwords($item->name) }}</td>
                   <td>
-                    <label id="phoneNumb{{$index}}" class="phoneNumb">{{ $item->phone }}</label>
-                    <button class="btn btn-info btn-sm" id="buttonPhoneNumb{{$index}}" onclick="phoneNumbAct({{$index}})">
+                    <label id="phoneNumb{{$item->id}}" class="phoneNumb">{{ $item->phone }}</label>
+                    <button class="btn btn-info btn-sm" id="buttonPhoneNumb{{$item->id}}" onclick="phoneNumbAct({{$item->id}})">
                       <i class="fa fa-eye" aria-hidden="true"></i>
                     </button>
                   </td>
@@ -69,9 +69,9 @@
                     {{$item->regency->name}},
                     {{$item->regency->province->name}}</td>
                   @if ($item->status)
-                    <td><button type="button" class="btn btn-success btn-sm" onclick="changeStatus('{{$item->id}}', '{{$item->status}}', '{{ $index+1 }}')">Aktif</button></td>
+                    <td><button type="button" class="btn btn-success btn-sm" onclick="changeStatus('{{$item->id}}', '{{ $index }}', '{{$item->status}}')">Aktif</button></td>
                   @else
-                    <td><button type="button" class="btn btn-danger btn-sm" onclick="changeStatus('{{$item->id}}', '{{$item->status}}', '{{ $index+1 }}')" >Nonaktif</button></td>
+                    <td><button type="button" class="btn btn-danger btn-sm" onclick="changeStatus('{{$item->id}}', '{{ $index }}', '{{$item->status}}')" >Nonaktif</button></td>
                   @endif
                   <td>
                     @if(auth()->user()->can('subscriber-edit'))
@@ -101,7 +101,7 @@
 
 {{-- Create Subscribers --}}
 <div class="modal fade" id="modal-add-subscribers" tabindex="-1" role="dialog" aria-labelledby="modal-add-subscribers" aria-hidden="true">
-  <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">>
+  <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">
     <div class="modal-content">
       <div class="modal-body p-0">
         <div class="card bg-secondary border-0 mb-0">
@@ -312,11 +312,10 @@
     $("#provinces, #regencies, #status").select2({width: "100%"});
     $('#multiple_phone, #multiple_phone_regency').select2();
     $('#regencies').prop('disabled', true);
-    $(`.phoneNumb`).toggle("fast");
-
+    
     $.ajax({
       headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       },
       url: "{{ route('api.provinces.index') }}",
       type : "GET",
@@ -334,21 +333,22 @@
       }
     });
   });
-
+  
+  $(`.phoneNumb`).toggle("fast");
   const subscribeTable = $("#subscribeTable").DataTable({
-      lengthMenu: [ 5, 10, 25, 50, 75, 100 ],
-      language: {
-        "emptyTable": "Urutkan atau data"
-      },
-      pageLength: 5,
-      columnDefs: [
-        {
-          target: 5,
-          orderable: false,
-          searchable: false
-        }
-      ],
-      responsive: true,
+    lengthMenu: [ 5, 10, 25, 50, 75, 100 ],
+    language: {
+      "emptyTable": "Urutkan atau data"
+    },
+    pageLength: 5,
+    columnDefs: [
+      {
+        target: 5,
+        orderable: false,
+        searchable: false
+      }
+    ],
+    responsive: true,
   });
 
   const phoneRegex = /^(^\+62|62|^08)(\d{3,4}-?){2}\d{3,4}$/;
@@ -396,20 +396,17 @@
     });
   }
 
-  function changeStatus(id, no) {
+  function changeStatus(id, no, status) {
     Swal.fire({
-      title: 'Apakah kamu ingin mengubah status subscriber?',
-      showDenyButton: true,
+      title: `Apakah kamu ingin mengubah status subscriber menjadi ${status == '1' ? `nonaktif` : `aktif`}?`,
       showCancelButton: true,
-      confirmButtonText: `Aktif`,
+      confirmButtonText: `Ya, Ubah!`,
       confirmButtonColor: '#2dce89',
-      denyButtonText: `Nonaktif`,
-      denyButtonColor: '#f5365c',
+      cancelButtonText: `Tidak, Batalkan!`,
+      cancelButtonColor: '#fb6340'
     }).then((result) => {
       if (result.isConfirmed) {
-        ajaxStatus(id, no, 1);
-      } else if (result.isDenied) {
-        ajaxStatus(id, no, 0);
+        ajaxStatus(id, no, status == '1' ? 0 : 1);
       }
     })
   }
@@ -438,16 +435,21 @@
             showConfirmButton: false,
             timer: 1500
           }).then(() => {
-            console.log(typeof result.data['status'], result.data['status']);
             const updateData = [
-              no,
+              parseInt(no)+1,
               result.data['name'],
-              result.data['phone'],
+              `
+                <label id="phoneNumb${id}" class="phoneNumb">${result.data['phone']}</label>
+                <button class="btn btn-info btn-sm" id="buttonPhoneNumb${id}" onclick="phoneNumbAct(${id})">
+                  <i class="fa fa-eye" aria-hidden="true"></i>
+                </button>
+              `,
               `${result.address['regency_name']}, ${result.address['province_name']},`,
-              '<button type="button" class="btn btn-'+ (result.data['status'] === "1" ? 'success' : 'danger')+' btn-sm" onclick="changeStatus('+id+', '+no+')">'+ (result.data['status'] === "1" ? 'Aktif' : 'Nonaktif') +'</button>',
+              '<button type="button" class="btn btn-'+ (result.data['status'] === "1" ? 'success' : 'danger')+' btn-sm" onclick="changeStatus('+id+', '+no+', '+result.data['status']+')">'+ (result.data['status'] === "1" ? 'Aktif' : 'Nonaktif') +'</button>',
               addActionOption(id, result.data['name'], result.data['phone'], result.data['status'], no),
             ];
             subscribeTable.row($("#rows_"+id)).data(updateData);
+            phoneNumbAct(id);
           });
         } else {
           console.log("Terjadi Kesalahan");
@@ -529,29 +531,40 @@
       }
 
       $.post(link, $(this).serialize(), function(result){
-        console.log(result);
         const rows = (subscribeTable.rows().count() == 0) ? "1" : subscribeTable.row(':last').data()[0];
         if($("#_method").val() == "POST"){
           // Store
           subscribeTable.row.add([
             parseInt(rows)+1,
             result.data['name'],
-            result.data['phone'],
+            `
+              <label id="phoneNumb${result.data['id']}" class="phoneNumb">${result.data['phone']}</label>
+              <button class="btn btn-info btn-sm" id="buttonPhoneNumb${result.data['id']}" onclick="phoneNumbAct(${result.data['id']})">
+                <i class="fa fa-eye" aria-hidden="true"></i>
+              </button>
+            `,
             `${result.address['regency_name']}, ${result.address['province_name']}`,
-            '<button type="button" class="btn btn-'+ (result.data['status'] === "1" ? 'success' : 'danger')+' btn-sm" onclick="changeStatus('+result.data['id']+', '+parseInt(rows)+1+')">'+ (result.data['status'] === "1" ? 'Aktif' : 'Nonaktif') +'</button>',
+            '<button type="button" class="btn btn-'+ (result.data['status'] === "1" ? 'success' : 'danger')+' btn-sm" onclick="changeStatus('+result.data['id']+', '+parseInt(rows)+1+', '+result.data['status']+')">'+ (result.data['status'] === "1" ? 'Aktif' : 'Nonaktif') +'</button>',
             addActionOption(result.data['id'],result.data['name'], result.data['phone'], result.data['status'], parseInt(rows)+1)
           ]).draw().node().id = "rows_"+result.data['id'];
+          phoneNumbAct(result.data['id']);
         } else {
           // Update
           const newData = [
             idEdit,
             result.data['name'],
-            result.data['phone'],
+            `
+              <label id="phoneNumb${result.data['id']}" class="phoneNumb">${result.data['phone']}</label>
+              <button class="btn btn-info btn-sm" id="buttonPhoneNumb${result.data['id']}" onclick="phoneNumbAct(${result.data['id']})">
+                <i class="fa fa-eye" aria-hidden="true"></i>
+              </button>
+            `,
             `${result.address['regency_name']}, ${result.address['province_name']},`,
-              '<button type="button" class="btn btn-'+ (result.data['status'] === "1" ? 'success' : 'danger')+' btn-sm" onclick="changeStatus('+result.data['id']+', '+idEdit+')">'+ (result.data['status'] === "1" ? 'Aktif' : 'Nonaktif') +'</button>',
+              '<button type="button" class="btn btn-'+ (result.data['status'] === "1" ? 'success' : 'danger')+' btn-sm" onclick="changeStatus('+result.data['id']+', '+idEdit+', '+result.data['status']+')">'+ (result.data['status'] === "1" ? 'Aktif' : 'Nonaktif') +'</button>',
             addActionOption(result.data['id'], result.data['name'], result.data['phone'], result.data['status'], idEdit)
           ];
           subscribeTable.row($("#rows_"+$("#id").val())).data(newData);
+          phoneNumbAct(result.data['id']);
         }
 
         if($('#_method').val() === "POST") {
