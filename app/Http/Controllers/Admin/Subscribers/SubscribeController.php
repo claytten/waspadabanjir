@@ -252,12 +252,6 @@ class SubscribeController extends Controller
     $nuMedia = $request->input('NumMedia');
     $media = $request->has('MediaUrl0') ? $request->input('MediaUrl0') : null;
     $ext = $request->has('MediaContentType0') ? $request->input('MediaContentType0') : null;
-    Log::debug($request->all());
-    if (Cache::has('dailyUsersUsage')) {
-      Cache::increment('dailyUsersUsage');
-    } else {
-      Cache::forever('dailyUsersUsage', 1);
-    }
     try {
       $admin = Cache::rememberForever('adminWA', function () use ($request) {
         return $this->userRepo->findUserByEmail('superadmin@gmail.com');
@@ -265,6 +259,11 @@ class SubscribeController extends Controller
       if ($admin->phone === ltrim($from, 'whatsapp:')) {
         $message = strval($this->adminMenu($admin, $from, $body));
       } else {
+        if (Cache::has('dailyUsersUsage')) {
+          Cache::increment('dailyUsersUsage');
+        } else {
+          Cache::forever('dailyUsersUsage', 1);
+        }
         $message = strval($this->guestMenu($from, $body, $nuMedia, $ext, $media));
       }
       if (strlen($message) > 1600) {
