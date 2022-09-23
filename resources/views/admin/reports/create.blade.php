@@ -1,10 +1,10 @@
 @extends('layouts.admin.app',[
-  'headers' => 'active',
-  'menu' => 'reports',
-  'title' => 'Laporan',
-  'first_title' => 'Laporan',
-  'first_link' => route('admin.reports.index'),
-  'second_title' => 'Pembuatan'
+'headers' => 'active',
+'menu' => 'reports',
+'title' => 'Laporan',
+'first_title' => 'Laporan',
+'first_link' => route('admin.reports.index'),
+'second_title' => 'Pembuatan'
 ])
 
 @section('plugins_css')
@@ -24,9 +24,9 @@
                 <h3 class="mb-0" id="form-map-title">Form Laporan</h3>
               </div>
               <div class="col-lg-4 col-md-6 d-flex justify-content-end">
-                <a class="btn btn-info" href="{{ route('admin.admin.index') }}">Kembali</a>
-                <button type="button" class="btn btn-warning" onclick="resetReport()" >Atur Ulang Form</button>
-                <button type="submit" class="btn btn-primary" id="btn-submit" >Submit</button>
+                <a class="btn btn-info" href="{{ route('admin.reports.index') }}">Kembali</a>
+                <button type="button" class="btn btn-warning" onclick="resetReport()">Atur Ulang Form</button>
+                <button type="submit" class="btn btn-primary" id="btn-submit">Submit</button>
               </div>
             </div>
           </div>
@@ -39,13 +39,16 @@
                 <div class="row">
                   <div class="col-md-12">
                     <div class="form-group row">
-                      <label for="name" class="col-md-2 col-form-label form-control-label @error('name') is-invalid @enderror">Nama Pelapor</label>
+                      <label for="name"
+                        class="col-md-2 col-form-label form-control-label @error('name') is-invalid @enderror">Nama
+                        Pelapor</label>
                       <div class="col-md-10">
-                        <input class="form-control @error('name') is-invalid @enderror" name="name" type="text" id="name" required>
+                        <input class="form-control @error('name') is-invalid @enderror" name="name" type="text"
+                          id="name" required>
                         @error('name')
-                          <span class="invalid-feedback" role="alert">
-                              <strong>{{ $message }}</strong>
-                          </span>
+                        <span class="invalid-feedback" role="alert">
+                          <strong>{{ $message }}</strong>
+                        </span>
                         @enderror
                       </div>
                     </div>
@@ -54,16 +57,17 @@
                     <div class="form-group row">
                       <label for="report_type" class="col-md-2 col-form-label form-control-label">Tipe Laporan</label>
                       <div class="col-md-10">
-                        <select name="report_type" onchange="changeType()" id="report_type" class="form-control @error('report_type') is-invalid @enderror" data-toggle="select" required>
+                        <select name="report_type" onchange="changeType()" id="report_type"
+                          class="form-control @error('report_type') is-invalid @enderror" data-toggle="select" required>
                           <option value=""></option>
                           <option value="ask">Pertanyaan</option>
                           <option value="suggest">Kritik & Saran</option>
                           <option value="report">Laporan Banjir</option>
                         </select>
                         @error('report_type')
-                          <span class="invalid-feedback" role="alert">
-                              <strong>{{ $message }}</strong>
-                          </span>
+                        <span class="invalid-feedback" role="alert">
+                          <strong>{{ $message }}</strong>
+                        </span>
                         @enderror
                       </div>
                     </div>
@@ -72,11 +76,12 @@
                     <div class="form-group row">
                       <label for="message" class="col-md-2 col-form-label form-control-label">Isi Laporan</label>
                       <div class="col-md-10">
-                        <textarea class="form-control @error('message') is-invalid @enderror" name="message" id="message" required></textarea>
+                        <textarea class="form-control @error('message') is-invalid @enderror" name="message"
+                          id="message" required></textarea>
                         @error('message')
-                          <span class="invalid-feedback" role="alert">
-                              <strong>{{ $message }}</strong>
-                          </span>
+                        <span class="invalid-feedback" role="alert">
+                          <strong>{{ $message }}</strong>
+                        </span>
                         @enderror
                       </div>
                     </div>
@@ -90,15 +95,16 @@
                 <div class="form-group row">
                   <label for="status" class="col-md-2 col-form-label form-control-label">Status Laporan</label>
                   <div class="col-md-10">
-                    <select name="status" id="status" class="form-control @error('status') is-invalid @enderror" data-toggle="select">
+                    <select name="status" id="status" class="form-control @error('status') is-invalid @enderror"
+                      data-toggle="select">
                       <option value=""></option>
                       <option value="1">Terverifikasi</option>
                       <option value="0">Belum Terverifikasi</option>
                     </select>
                     @error('status')
-                      <span class="invalid-feedback" role="alert">
-                          <strong>{{ $message }}</strong>
-                      </span>
+                    <span class="invalid-feedback" role="alert">
+                      <strong>{{ $message }}</strong>
+                    </span>
                     @enderror
                   </div>
                 </div>
@@ -112,14 +118,15 @@
 </form>
 
 {{-- Modal set Address --}}
-<div class="modal fade" id="modal-add-address" tabindex="-1" role="dialog" aria-labelledby="modal-add-address" aria-hidden="true">
+<div class="modal fade" id="modal-add-address" tabindex="-1" role="dialog" aria-labelledby="modal-add-address"
+  aria-hidden="true">
   <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">>
     <div class="modal-content">
       <div class="modal-body p-0">
         <div class="card bg-secondary border-0 mb-0">
           <div class="card-body px-lg-5 py-lg-5">
             <div class="text-center text-muted mb-4">
-                <small>Masukan Alamat Pelapor</small>
+              <small>Masukan Alamat Pelapor</small>
             </div>
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
@@ -151,12 +158,13 @@
             <div class="form-group">
               <div class="input-group input-group-merge input-group-alternative">
                 <label class="form-control-label" for="input-address">Kelurahan</label>
-                <select name="village_id" id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select" onchange="searchVillage()">
+                <select name="village_id" id="villages" class="form-control @error('villages') is-invalid @enderror"
+                  data-toggle="select" onchange="searchVillage()">
                   <option value="" disabled selected>--Pilih Kelurahan--</option>
                 </select>
               </div>
             </div>
-            
+
             <div class="text-center">
               <button type="button" onclick="addAddress()" class="btn btn-primary my-4 btn-add-address">Submit</button>
             </div>
@@ -353,5 +361,5 @@
     $('.btn-add-address').prop('disabled', false);
   }
 </script>
-    
+
 @endsection
