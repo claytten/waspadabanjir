@@ -43,6 +43,5 @@ class yearlyUsersUsage extends Command
         Cache::forever('yearlyUsersResult', $yearUsage);
         Cache::forget('monthlyUsersResult');
         Log::info("Successfully accumulate user yearly usage to result");
-        $this->info('Successfully accumulate user yearly usage to result');
     }
 }

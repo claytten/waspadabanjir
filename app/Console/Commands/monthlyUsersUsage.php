@@ -43,6 +43,5 @@ class monthlyUsersUsage extends Command
         Cache::forever('monthlyUsersResult', $monthlyUsage);
         Cache::forget('dailyUsersResult');
         Log::info("Successfully accumulate user monthly usage to result");
-        $this->info('Successfully accumulate user monthly usage to result');
     }
 }

@@ -289,7 +289,7 @@ class SubscribeController extends Controller
         $message = strval($this->userRepo->defaultMenu($admin->name));
         break;
       case 'a':
-        $dailyUsage = (Cache::get('dailyUsersResult') === null) ? '0' : Cache::get('dailyUsersResult');
+        $dailyUsage = (Cache::get('dailyUsersResult') === null) ? (Cache::get('dailyUsersUsage') === null ? '0' : Cache::get('dailyUsersUsage')) : Cache::get('dailyUsersResult');
         $monthlyUsage = (Cache::get('monthlyUsersResult') === null) ? '0' : Cache::get('monthlyUsersResult');
         $yearlyUsage = (Cache::get('yearlyUsersResult') === null) ? '0' : Cache::get('yearlyUsersResult');
         $dailyReport = $this->reportRepo->dailyReport(date('Y-m-d')) > 0 ? strval($this->reportRepo->dailyReport(date('Y-m-d'))) : '0';

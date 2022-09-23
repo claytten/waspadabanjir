@@ -43,6 +43,5 @@ class dailyUsersUsage extends Command
         Cache::forever('dailyUsersResult', $usersUsage);
         Cache::forget('dailyUsersUsage');
         Log::info("Successfully accumulate user daily usage to result");
-        $this->info('Successfully accumulate user daily usage to result');
     }
 }
