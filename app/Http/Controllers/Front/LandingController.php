@@ -11,12 +11,14 @@ use App\Jobs\onCompleteSubscribe;
 use App\Models\Maps\Fields\Field;
 use App\Models\Reports\Repositories\ReportRepository;
 use App\Models\Reports\Requests\CreateReportRequest;
+use App\Models\Tools\PhoneFilterTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class LandingController extends Controller
 {
+  use PhoneFilterTrait;
   /**
    * @var FieldRepositoryInterface
    */
@@ -143,6 +145,16 @@ class LandingController extends Controller
    */
   public function storeReport(CreateReportRequest $request)
   {
+    if ($request->report_type == 'report') {
+      $statusPhone = $this->checkingPhone($request->phone);
+      if ($statusPhone == false) {
+        return response()->json([
+          'code'  => 200,
+          'status' => 'error',
+          'message' => 'Nomor telepon tidak valid'
+        ]);
+      }
+    }
     $report = $this->reportRepo->createReport($request->validated());
 
     $reportRepo = new ReportRepository($report);
@@ -154,6 +166,7 @@ class LandingController extends Controller
     return response()->json([
       'code'          => 200,
       'status'        => 'success',
+      'message'       => 'Laporan Anda Telah Terkirim',
       'redirect_url'  => route('home'),
     ]);
   }

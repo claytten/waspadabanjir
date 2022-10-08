@@ -7,146 +7,154 @@
 
 @section('inline_css')
 <style>
-body { margin: 0; }
-html,
-body,
-.form-box {
-  height: 100%;
-}
-body {
-  background-color: #C0E3C2;
-}
-
-@media only screen and (min-width: 993px) {
-  .container-modal {
-    width: 25% !important;
+  body {
+    margin: 0;
   }
-}
 
-@media only screen and (max-width : 601px) {
+  html,
+  body,
   .form-box {
-    height: auto;
+    height: 100%;
   }
+
+  body {
+    background-color: #C0E3C2;
+  }
+
+  @media only screen and (min-width: 993px) {
+    .container-modal {
+      width: 25% !important;
+    }
+  }
+
+  @media only screen and (max-width : 601px) {
+    .form-box {
+      height: auto;
+    }
+
+    .container-modal {
+      width: 90% !important;
+    }
+  }
+
   .container-modal {
-    width: 90% !important;
+    width: 25%;
   }
-}
 
-.container-modal {
-  width: 25%;
-}
+  .address-box {
+    display: none;
+    position: fixed;
+    left: 0;
+    right: 0;
+    padding: 0;
+    height: auto;
+    margin: auto;
+    overflow-y: auto;
+    border-radius: 2px;
+    will-change: top, opacity;
+  }
 
-.address-box {
-  display: none;
-  position: fixed;
-  left: 0;
-  right: 0;
-  padding: 0;
-  height: auto;
-  margin: auto;
-  overflow-y: auto;
-  border-radius: 2px;
-  will-change: top, opacity;
-}
-.address-box:focus {
-  border: none;
-  outline: none;
-}
+  .address-box:focus {
+    border: none;
+    outline: none;
+  }
 </style>
 @endsection
 
 @section('content_body')
 <div class="container form-box valign-wrapper" style="justify-content: center; height: auto !important">
-  <div class="section valign">    
+  <div class="section valign">
     <div id="contact-page" class="card hoverable">
-        <div class="card-content">
+      <div class="card-content">
+        <div class="row">
+          <div class="col s12 m6">
             <div class="row">
-              <div class="col s12 m6">
-                <div class="row">
-                  <div class="col s12">
-                    <h5>Form Pelaporan</h5>
-                  </div>
-                </div>
-                <form id="reportForm">
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <input id="name" type="text" class="validate" name="name" required>
-                      <label for="name">Nama Lengkap</label>
-                      <span class="helper-text" data-error="Tolong Masukan Nama Dengan Benar"></span>
-                    </div>
-                  </div>
-                  <div class="row report-input">
-                    <div class="input-field col s12">
-                      <select id="reporting" onchange="reportingAction()" required>
-                        <option value="" disabled selected></option>
-                        <option value="ask">Pertanyaan</option>
-                        <option value="suggest">Kritik & Saran</option>
-                        <option value="report">Laporan Banjir</option>
-                      </select>
-                      <label>Jenis Pelaporan</label>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <textarea id="message" class="materialize-textarea" data-length="120" required></textarea>
-                      <label for="message">Isi Laporan</label>
-                      <span class="helper-text" data-error="Jumlah Karakter yang digunakan melebihi batas"></span>
-                    </div>
-                  </div>
-                </form>
-                <div class="row">
-                  <div class="input-field col s12" style="text-align: right">
-                    <a href="{{ route('home') }}" class="btn waves-effect waves-light red">Back
-                      <i class="material-icons left">arrow_back</i>
-                    </a>
-                    <button class="btn waves-effect waves-light orange" type="button" onclick="resetForm()">Reset</button>
-                    <button class="btn waves-effect waves-light" type="button" onclick="submitSubForm()">Send
-                      <i class="material-icons right">send</i>
-                    </button>
-                  </div>
-                </div>
-              </div>                      
-              <div class="col s12 m6">
-                <ul class="collapsible collapsible-accordion" data-collapsible="accordion">
-                  <li class="active">
-                    <div class="collapsible-header active"><i class="material-icons right">live_help</i> Petunjuk</div>
-                    <div class="collapsible-body" style="">
-                      <p>Berikut beberapa cara untuk bertanya/melaporkan situasi banjir di daerah Kabupaten Klaten.</p>
-                      <p>- Melalui form laporan pada halaman ini.</p>
-                      <p>- Melalui email (<strong>waspadabanjirklaten@gmail.com</strong>).</p>
-                      <p>- Melalui berlangganan layanan WhatsApp (<a href="http://wa.me/+14155238886?text=join%20plain-fifteen" target="_blank">Klik Disini</a>)</p>
-                    </div>
-                  </li>
-                </ul>
+              <div class="col s12">
+                <h5>Form Pelaporan</h5>
               </div>
             </div>
-            <footer style="text-align: center">
-              <span>Copyright © 2022 <a class="blue-text text-darken-2" href="{{ route('home') }}" target="_blank">{{ (!empty(config('app.name')) ? config('app.name') : 'Laravel') }}</a> All rights reserved.</span>
-            </footer>
+            <form id="reportForm">
+              <div class="row">
+                <div class="input-field col s12">
+                  <input id="name" type="text" class="validate" name="name" required>
+                  <label for="name">Nama Lengkap</label>
+                  <span class="helper-text" data-error="Tolong Masukan Nama Dengan Benar"></span>
+                </div>
+              </div>
+              <div class="row report-input">
+                <div class="input-field col s12">
+                  <select id="reporting" onchange="reportingAction()" required>
+                    <option value="" disabled selected></option>
+                    <option value="ask">Pertanyaan</option>
+                    <option value="suggest">Kritik & Saran</option>
+                    <option value="report">Laporan Banjir</option>
+                  </select>
+                  <label>Jenis Pelaporan</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <textarea id="message" class="materialize-textarea" data-length="120" required></textarea>
+                  <label for="message">Isi Laporan</label>
+                  <span class="helper-text" data-error="Jumlah Karakter yang digunakan melebihi batas"></span>
+                </div>
+              </div>
+            </form>
+            <div class="row">
+              <div class="input-field col s12" style="text-align: right">
+                <a href="{{ route('home') }}" class="btn waves-effect waves-light red">Back
+                  <i class="material-icons left">arrow_back</i>
+                </a>
+                <button class="btn waves-effect waves-light orange" type="button" onclick="resetForm()">Reset</button>
+                <button class="btn waves-effect waves-light" type="button" onclick="submitSubForm()">Send
+                  <i class="material-icons right">send</i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col s12 m6">
+            <ul class="collapsible collapsible-accordion" data-collapsible="accordion">
+              <li class="active">
+                <div class="collapsible-header active"><i class="material-icons right">live_help</i> Petunjuk</div>
+                <div class="collapsible-body" style="">
+                  <p>Berikut beberapa cara untuk bertanya/melaporkan situasi banjir di daerah Kabupaten Klaten.</p>
+                  <p>- Melalui form laporan pada halaman ini.</p>
+                  <p>- Melalui email (<strong>waspadabanjirklaten@gmail.com</strong>).</p>
+                  <p>- Melalui berlangganan layanan WhatsApp (<a
+                      href="http://wa.me/+14155238886?text=join%20plain-fifteen" target="_blank">Klik Disini</a>)</p>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
-    </div>            
+        <footer style="text-align: center">
+          <span>Copyright © 2022 <a class="blue-text text-darken-2" href="{{ route('home') }}" target="_blank">{{
+              (!empty(config('app.name')) ? config('app.name') : 'Laravel') }}</a> All rights reserved.</span>
+        </footer>
+      </div>
+    </div>
   </div>
 </div>
 
 {{-- Address Modal --}}
 <div id="add_address" class="address-box container-modal form-box valign-wrapper">
-  <div class="section valign">    
+  <div class="section valign">
     <div id="contact-page" class="card hoverable">
       <div class="card-content">
         <span class="card-title center">Tambah Alamat</span>
         <div class="row">
           <div class="input-field col s12 ">
-            <select id="provinces" onchange="searchProvince()" >
+            <select id="provinces" onchange="searchProvince()">
               <option value="" disabled selected>--Pilih Provinsi--</option>
             </select>
           </div>
           <div class="input-field col s12">
-            <select id="regencies" onchange="searchRegency()" >
+            <select id="regencies" onchange="searchRegency()">
               <option value="" disabled selected>--Pilih Kabupaten--</option>
             </select>
           </div>
           <div class="input-field col s12">
-            <select id="districts" onchange="searchDistrict()" >
+            <select id="districts" onchange="searchDistrict()">
               <option value="" disabled selected>--Pilih Kecamatan---</option>
             </select>
           </div>
@@ -159,7 +167,8 @@ body {
       </div>
       <div class="card-action right-align">
         <button type="button" class="btn red waves-effect waves-light white-text modal-close">Batalkan</button>
-        <button type="button" class="btn green waves-effect waves-light white-text btn-add-address" onclick="addAddress()">Tambahkan</button>
+        <button type="button" class="btn green waves-effect waves-light white-text btn-add-address"
+          onclick="addAddress()">Tambahkan</button>
       </div>
     </div>
   </div>
@@ -227,20 +236,28 @@ body {
         title: 'Oops...',
         text: 'Silahkan Lengkapi Data yang belum terisi'
       });
-    } else if($('#reporting_type').val() === 'report') {
-      if(!$('#phone').val() || !$('#address').val()) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Silahkan Lengkapi Data yang belum terisi'
-        });
-      }
     } else {
       let formData = new FormData();
       formData.append('name',$('#name').val());
       formData.append('message', $('#message').val());
       formData.append('report_type', $('#reporting').val());
       if ($('#reporting').val() === 'report') {
+        if(!$('#phone').val() || !$('#address').val()) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Silahkan Lengkapi Data yang belum terisi'
+          });
+          return false;
+        }
+        if(!phoneRegex.test($('#phone').val())) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Silakan gunakan nomor telepon yang benar'
+          });
+          return false;
+        }
         var totalfiles = document.getElementById('images').files.length;
         formData.append('phone', $('#phone').val());
         formData.append('address', $('#address').val());
@@ -269,14 +286,14 @@ body {
           if(result) {
             Swal.fire({
               position: 'middle',
-              icon: 'success',
-              title: 'Laporan Anda Telah Terkirim',
+              icon: result.status,
+              title: result.message,
               showConfirmButton: false,
               timer: 1500
             }).then(() => window.location.href = result.redirect_url);
           }
         }
-      })
+      });
     }
   }
 
