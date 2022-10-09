@@ -1,17 +1,20 @@
 @extends('layouts.admin.app',[
-  'headers' => 'active',
-  'menu' => 'maps',
-  'title' => 'Peta',
-  'first_title' => 'Peta',
-  'first_link' => route('admin.map.view', [$date_in, $date_out])
+'headers' => 'active',
+'menu' => 'maps',
+'title' => 'Peta',
+'first_title' => 'Peta',
+'first_link' => route('admin.map.view', [$date_in, $date_out])
 ])
 
 @section('plugins_css')
 <link rel="stylesheet" type="text/css" href="{{ asset('css/leaflet.css')}}">
 <link rel="stylesheet" type="text/css" href="{{ asset('css/easy-button.css')}}">
-<link rel="stylesheet" type="text/css" rel='stylesheet' href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css">
-<link rel="stylesheet" type="text/css" href="{{ asset('vendor/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ asset('vendor/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css') }}">
+<link rel="stylesheet" type="text/css" rel='stylesheet'
+  href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css">
+<link rel="stylesheet" type="text/css"
+  href="{{ asset('vendor/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}">
+<link rel="stylesheet" type="text/css"
+  href="{{ asset('vendor/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css') }}">
 <!-- Load Esri Leaflet Geocoder from CDN -->
 <link rel="stylesheet" type="text/css" href="{{ asset('css/esri-leaflet-geocoder.css')}}">
 <link rel="stylesheet" href="{{ asset('vendor/select2/dist/css/select2.min.css') }}">
@@ -20,99 +23,106 @@
 
 @section('inline_css')
 <style>
-#mapid {
-  height:750px;
-  z-index: 9;
-}
-.leaflet-popup-content table tr {
-  height: 30px;
-}
+  #mapid {
+    height: 750px;
+    z-index: 9;
+  }
+
+  .leaflet-popup-content table tr {
+    height: 30px;
+  }
 </style>
 @endsection
 
 @section('header-right')
 <div class="col-lg-6 col-5 text-right">
-  <input class="btn btn-sm btn-neutral" placeholder="Sortir Tanggal Awal" type="text" name="start_date" id="start_date" onchange="onChangeStartDate()">
-  <input class="btn btn-sm btn-neutral" placeholder="Sortir Tanggal Akhir" type="text" name="end_date" id="end_date" onchange="onChangeEndDate()">
+  <input class="btn btn-sm btn-neutral" placeholder="Sortir Tanggal Awal" type="text" name="start_date" id="start_date"
+    onchange="onChangeStartDate()">
+  <input class="btn btn-sm btn-neutral" placeholder="Sortir Tanggal Akhir" type="text" name="end_date" id="end_date"
+    onchange="onChangeEndDate()">
   <button type="button" class="btn btn-sm btn-neutral" onclick="mapsTables()">Data peta secara tabel</button>
 </div>
 @endsection
 
 @section('content_body')
 <div class="row">
-    <div class="col">
-        <div class="card">
-            <!-- Card header -->
-            <div class="card-header">
-                <h3 class="mb-0">Manajemen Data Peta Tanggal Kejadian {{ ($date_in === $date_out) ? $date_in : $date_in.' Sampai '.$date_out }}</h3>
-            </div>
-            <div class="card">
-                <div id="formtable">
-                  <div class="table-responsive py-4" id="mapsLayout">
-                    <table class="table table-flush" id="mapsTable">
-                      <thead class="thead-light">
-                        <tr>
-                          <th>No</th>
-                          <th>Lokasi</th>
-                          <th>Tanggal Awal Kejadian</th>
-                          <th>Tanggal Akhir Kejadian</th>
-                          <th>Jumlah Korban</th>
-                          <th>Status</th>
-                          <th>Aksi</th>
-                        </tr>
-                      </thead>
-                      <tfoot>
-                        <tr>
-                          <th>No</th>
-                          <th>Lokasi</th>
-                          <th>Tanggal Awal Kejadian</th>
-                          <th>Tanggal Akhir Kejadian</th>
-                          <th>Jumlah Korban</th>
-                          <th>Status</th>
-                          <th>Aksi</th>
-                        </tr>
-                      </tfoot>
-                      <tbody></tbody>
-                    </table>
-                  </div>
-                </div>
-                <div id="mapid"></div>
-                <div class='pointer'></div>
-            </div>
+  <div class="col">
+    <div class="card">
+      <!-- Card header -->
+      <div class="card-header">
+        <h3 class="mb-0">Manajemen Data Peta Tanggal Kejadian {{ ($date_in === $date_out) ? $date_in : $date_in.' Sampai
+          '.$date_out }}</h3>
+      </div>
+      <div class="card">
+        <div id="formtable">
+          <div class="table-responsive py-4" id="mapsLayout">
+            <table class="table table-flush" id="mapsTable">
+              <thead class="thead-light">
+                <tr>
+                  <th>No</th>
+                  <th>Lokasi</th>
+                  <th>Tanggal Awal Kejadian</th>
+                  <th>Tanggal Akhir Kejadian</th>
+                  <th>Jumlah Korban</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tfoot>
+                <tr>
+                  <th>No</th>
+                  <th>Lokasi</th>
+                  <th>Tanggal Awal Kejadian</th>
+                  <th>Tanggal Akhir Kejadian</th>
+                  <th>Jumlah Korban</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </tfoot>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
+        <div id="mapid"></div>
+        <div class='pointer'></div>
+      </div>
     </div>
+  </div>
 </div>
 
 {{-- Modal set Address --}}
-<div class="modal fade" id="modal-add-address" tabindex="-1" role="dialog" aria-labelledby="modal-add-address" aria-hidden="true">
+<div class="modal fade" id="modal-add-address" tabindex="-1" role="dialog" aria-labelledby="modal-add-address"
+  aria-hidden="true">
   <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">>
     <div class="modal-content">
       <div class="modal-body p-0">
         <div class="card bg-secondary border-0 mb-0">
           <div class="card-body px-lg-5 py-lg-5">
-              <div class="text-center text-muted mb-4">
-                  <small>Tambahkan Alamat</small>
+            <div class="text-center text-muted mb-4">
+              <small>Tambahkan Alamat</small>
+            </div>
+            <div class="form-group">
+              <div class="input-group input-group-merge input-group-alternative">
+                <label class="form-control-label" for="input-address">Kecamatan</label>
+                <select onchange="searchDistrict()" id="districts" class="form-control" data-toggle="select">
+                  <option value="" disabled selected>--Pilih Kecamatan--</option>
+                </select>
               </div>
-              <div class="form-group">
-                <div class="input-group input-group-merge input-group-alternative">
-                  <label class="form-control-label" for="input-address">Kecamatan</label>
-                  <select onchange="searchDistrict()" id="districts" class="form-control" data-toggle="select">
-                    <option value="" disabled selected>--Pilih Kecamatan--</option>
-                  </select>
-                </div>
+            </div>
+            <div class="form-group">
+              <div class="input-group input-group-merge input-group-alternative">
+                <label class="form-control-label" for="input-address">Kelurahan</label>
+                <select name="village_id" id="villages" class="form-control @error('villages') is-invalid @enderror"
+                  data-toggle="select" onchange="searchVillage()">
+                  <option value="" disabled selected>--Pilih Kelurahan--</option>
+                </select>
               </div>
-              <div class="form-group">
-                <div class="input-group input-group-merge input-group-alternative">
-                  <label class="form-control-label" for="input-address">Kelurahan</label>
-                  <select name="village_id" id="villages" class="form-control @error('villages') is-invalid @enderror" data-toggle="select" onchange="searchVillage()">
-                    <option value="" disabled selected>--Pilih Kelurahan--</option>
-                  </select>
-                </div>
-              </div>
-              
-              <div class="text-center">
-                <button type="button" onclick="editAction('village')" class="btn btn-primary my-4 btn-submit-action">Submit</button>
-              </div>
+            </div>
+
+            <div class="text-center">
+              <button type="button" onclick="editAction('village')"
+                class="btn btn-primary my-4 btn-submit-action">Submit</button>
+            </div>
           </div>
         </div>
       </div>
@@ -128,13 +138,15 @@
 <script type="text/javascript" src="{{ asset('js/esri-leaflet.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/esri-leaflet-geocoder.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/dropzone/dist/min/dropzone.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('js/popper.min.js') }}" ></script>
+<script type="text/javascript" src="{{ asset('vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}">
+</script>
+<script type="text/javascript" src="{{ asset('js/popper.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/main_gis.min.js') }}" defer></script>
 <script type="text/javascript" src="{{ asset('vendor/datatables.net/js/jquery.dataTables.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js') }}">
+</script>
 <script type="text/javascript" src="{{ asset('vendor/select2/dist/js/select2.min.js')}}"></script>
 <script type="text/javascript" src="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.js') }}"></script>
 @endsection
@@ -399,8 +411,8 @@
         if(response.status === 'success') {
           Swal.fire({
             position: 'middle',
-            icon: 'success',
-            title: 'Data berhasil dihapus!',
+            icon: response.status,
+            title: response.messsage,
             showConfirmButton: false,
             timer: 1500
           }).then(() => window.location.href = response.redirect_url);
@@ -571,5 +583,5 @@
     window.location.href = "{{URL::to('admin/maps/view')}}" + "/" + start_date + "/" + end_date;
   }
 </script>
-    
+
 @endsection
