@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\onCompleteSubscribe;
 use App\Jobs\onSubscribeProcessing;
 use App\Models\Subscribers\Repositories\SubscribeRepository;
+use App\Models\Subscribers\Subscribe;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -172,6 +173,15 @@ class SubscribeController extends Controller
   public function store(Request $request)
   {
     $data = $request->except('_token', '_method');
+    $chkSub = $this->subscribeRepo->checkUniquePhone($data['phone']);
+    if (!empty($chkSub)) {
+      return response()->json([
+        'code' => 200,
+        'status' => 'error',
+        'data'  => '',
+        'message' => 'Nomor Sudah Digunakan. Silakan Coba Lagi.'
+      ]);
+    }
     $subscribe = $this->subscribeRepo->createSubscribe($data);
     $address[] = array(
       "regency_name"  => $subscribe->regency->name,
@@ -183,6 +193,7 @@ class SubscribeController extends Controller
     return response()->json([
       'code'  => 200,
       'status' => 'success',
+      'message' => 'Data Subscriber telah dibuat!',
       'data'  => $subscribe,
       'address' => $address[0]
     ]);
@@ -222,6 +233,7 @@ class SubscribeController extends Controller
     return response()->json([
       'code'  => 200,
       'status' => 'success',
+      'message' => 'Data Subscriber telah diperbaharui!',
       'data'  => $subscribe,
       'address' => $address[0],
     ]);

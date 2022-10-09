@@ -1,14 +1,16 @@
 @extends('layouts.admin.app',[
-  'headers' => 'active',
-  'menu' => 'subscribers',
-  'title' => 'Subscribers',
-  'first_title' => 'Subscribers',
-  'first_link' => route('admin.subscribers.index')
+'headers' => 'active',
+'menu' => 'subscribers',
+'title' => 'Subscribers',
+'first_title' => 'Subscribers',
+'first_link' => route('admin.subscribers.index')
 ])
 
 @section('plugins_css')
-<link rel="stylesheet" type="text/css" href="{{ asset('vendor/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ asset('vendor/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css') }}">
+<link rel="stylesheet" type="text/css"
+  href="{{ asset('vendor/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}">
+<link rel="stylesheet" type="text/css"
+  href="{{ asset('vendor/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.css') }}">
 <link rel="stylesheet" href="{{ asset('vendor/select2/dist/css/select2.min.css') }}">
 @endsection
@@ -16,10 +18,13 @@
 @section('header-right')
 <div class="col-lg-6 col-5 text-right">
   @if(auth()->user()->can('subscriber-create'))
-    <a href="javascript:void(0)" class="btn btn-sm btn-neutral" onclick="resetForm()" data-toggle="modal" data-target="#modal-add-subscribers">Buat Subscriber</a>
+  <a href="javascript:void(0)" class="btn btn-sm btn-neutral" onclick="resetForm()" data-toggle="modal"
+    data-target="#modal-add-subscribers">Buat Subscriber</a>
   @endif
-  @if (auth()->user()->getRoleNames()[0] === 'Super Admin' || auth()->user()->id === (!empty($cacheSub) ? $cacheSub->id : null))
-    <a href="javascript:void(0)" class="btn btn-sm btn-neutral" data-toggle="modal" data-target="#modal-send-multiple">Siaran</a>
+  @if (auth()->user()->getRoleNames()[0] === 'Super Admin' || auth()->user()->id === (!empty($cacheSub) ? $cacheSub->id
+  : null))
+  <a href="javascript:void(0)" class="btn btn-sm btn-neutral" data-toggle="modal"
+    data-target="#modal-send-multiple">Siaran</a>
   @endif
 </div>
 @endsection
@@ -56,41 +61,47 @@
           </tfoot>
           <tbody>
             @foreach($subscribers as $index => $item)
-                <tr id="rows_{{ $item->id }}">
-                  <td>{{ $index +1 }}</td>
-                  <td>{{ ucwords($item->name) }}</td>
-                  <td>
-                    <label id="phoneNumb{{$item->id}}" class="phoneNumb">{{ $item->phone }}</label>
-                    <button class="btn btn-info btn-sm" id="buttonPhoneNumb{{$item->id}}" onclick="phoneNumbAct({{$item->id}})">
-                      <i class="fa fa-eye" aria-hidden="true"></i>
-                    </button>
-                  </td>
-                  <td>
-                    {{$item->regency->name}},
-                    {{$item->regency->province->name}}</td>
-                  @if ($item->status)
-                    <td><button type="button" class="btn btn-success btn-sm" onclick="changeStatus('{{$item->id}}', '{{ $index }}', '{{$item->status}}')">Aktif</button></td>
-                  @else
-                    <td><button type="button" class="btn btn-danger btn-sm" onclick="changeStatus('{{$item->id}}', '{{ $index }}', '{{$item->status}}')" >Nonaktif</button></td>
-                  @endif
-                  <td>
-                    @if(auth()->user()->can('subscriber-edit'))
-                      <button 
-                        onclick="editSubscribe('{{ $item['id']}}', '{{ $item['name'] }}', '{{ $item->phone }}', '{{ $item['status']}}', '{{ $index+1 }}')" 
-                        type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-add-subscribers">
-                        Ubah
-                      </button>
-                    @endif
-                    @if(auth()->user()->can('subscriber-delete'))
-                      <button onclick="deleteSubscribe('{{ $item->id }}')"  type="button" class="btn btn-danger btn-sm">Hapus</button>
-                    @endif
-                    @if (auth()->user()->getRoleNames()[0] === 'Super Admin' || auth()->user()->id === (!empty($cacheSub) ? $cacheSub->id : null))
-                      <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modal-send-personal" onclick="$('#personal_phone_to').val('{{ $item->phone }}')">
-                        <i class="fa fa-paper-plane" aria-hidden="true"></i>
-                      </button>
-                    @endif
-                  </td>
-                </tr>
+            <tr id="rows_{{ $item->id }}">
+              <td>{{ $index +1 }}</td>
+              <td>{{ ucwords($item->name) }}</td>
+              <td>
+                <label id="phoneNumb{{$item->id}}" class="phoneNumb">{{ $item->phone }}</label>
+                <button class="btn btn-info btn-sm" id="buttonPhoneNumb{{$item->id}}"
+                  onclick="phoneNumbAct({{$item->id}})">
+                  <i class="fa fa-eye" aria-hidden="true"></i>
+                </button>
+              </td>
+              <td>
+                {{$item->regency->name}},
+                {{$item->regency->province->name}}</td>
+              @if ($item->status)
+              <td><button type="button" class="btn btn-success btn-sm"
+                  onclick="changeStatus('{{$item->id}}', '{{ $index }}', '{{$item->status}}')">Aktif</button></td>
+              @else
+              <td><button type="button" class="btn btn-danger btn-sm"
+                  onclick="changeStatus('{{$item->id}}', '{{ $index }}', '{{$item->status}}')">Nonaktif</button></td>
+              @endif
+              <td>
+                @if(auth()->user()->can('subscriber-edit'))
+                <button
+                  onclick="editSubscribe('{{ $item['id']}}', '{{ $item['name'] }}', '{{ $item->phone }}', '{{ $item['status']}}', '{{ $index+1 }}')"
+                  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-add-subscribers">
+                  Ubah
+                </button>
+                @endif
+                @if(auth()->user()->can('subscriber-delete'))
+                <button onclick="deleteSubscribe('{{ $item->id }}')" type="button"
+                  class="btn btn-danger btn-sm">Hapus</button>
+                @endif
+                @if (auth()->user()->getRoleNames()[0] === 'Super Admin' || auth()->user()->id === (!empty($cacheSub) ?
+                $cacheSub->id : null))
+                <button type="button" class="btn btn-warning btn-sm" data-toggle="modal"
+                  data-target="#modal-send-personal" onclick="$('#personal_phone_to').val('{{ $item->phone }}')">
+                  <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                </button>
+                @endif
+              </td>
+            </tr>
             @endforeach
           </tbody>
         </table>
@@ -100,14 +111,15 @@
 </div>
 
 {{-- Create Subscribers --}}
-<div class="modal fade" id="modal-add-subscribers" tabindex="-1" role="dialog" aria-labelledby="modal-add-subscribers" aria-hidden="true">
+<div class="modal fade" id="modal-add-subscribers" tabindex="-1" role="dialog" aria-labelledby="modal-add-subscribers"
+  aria-hidden="true">
   <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">
     <div class="modal-content">
       <div class="modal-body p-0">
         <div class="card bg-secondary border-0 mb-0">
           <div class="card-body px-lg-5 py-lg-5">
             <div class="text-center text-muted mb-4">
-                <small id="form_title">Tambahkan Subscriber</small>
+              <small id="form_title">Tambahkan Subscriber</small>
             </div>
             <form id="addSubscribeForm">
               <input type="hidden" name="id" id="id" value="">
@@ -116,20 +128,22 @@
               @csrf
               <div class="form-group">
                 <label class="form-control-label" for="name">Nama</label>
-                <input class="form-control @error('name') is-invalid @enderror" placeholder="Nama Lengkap" type="text" name="name" value="{{ old('name') }}" id="name">
+                <input class="form-control @error('name') is-invalid @enderror" placeholder="Nama Lengkap" type="text"
+                  name="name" value="{{ old('name') }}" id="name">
                 @error('name')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
+                <div class="invalid-feedback">
+                  {{ $message }}
+                </div>
                 @enderror
               </div>
               <div class="form-group">
                 <label class="form-control-label" for="phone">Nomor HP</label>
-                <input class="form-control @error('phone') is-invalid @enderror" name="phone" type="text" id="phone" placeholder="contoh (+62xx/08xx)" onchange="phoneNumber(this)" onkeyup="phoneNumber(this)">
+                <input class="form-control @error('phone') is-invalid @enderror" name="phone" type="text" id="phone"
+                  placeholder="contoh (+62xx/08xx)" onchange="phoneNumber(this)" onkeyup="phoneNumber(this)">
                 @error('phone')
-                  <span class="invalid-feedback" role="alert">
-                      <strong>{{ $message }}</strong>
-                  </span>
+                <span class="invalid-feedback" role="alert">
+                  <strong>{{ $message }}</strong>
+                </span>
                 @enderror
               </div>
               <div class="form-group">
@@ -153,14 +167,15 @@
               <div class="form-group">
                 <div class="input-group input-group-merge input-group-alternative">
                   <label class="form-control-label" for="status">Status</label>
-                  <select name="status" id="status" class="form-control @error('status') is-invalid @enderror" data-toggle="select">
+                  <select name="status" id="status" class="form-control @error('status') is-invalid @enderror"
+                    data-toggle="select">
                     <option value="" disabled selected>--Pilih Status--</option>
                     <option value="1">Aktif</option>
                     <option value="0">Nonaktif</option>
                   </select>
                 </div>
               </div>
-              
+
               <div class="text-center">
                 <button type="submit" class="btn btn-primary my-4 btn-add-subscriber">Submit</button>
               </div>
@@ -173,7 +188,8 @@
 </div>
 
 {{-- Send Message Personal --}}
-<div class="modal fade" id="modal-send-personal" tabindex="-1" role="dialog" aria-labelledby="modal-send-personal" aria-hidden="true">
+<div class="modal fade" id="modal-send-personal" tabindex="-1" role="dialog" aria-labelledby="modal-send-personal"
+  aria-hidden="true">
   <div class="modal-dialog modal modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-body p-0">
@@ -194,7 +210,8 @@
                         <div class="input-group-prepend">
                           <span class="input-group-text">dari</span>
                         </div>
-                        <input class="form-control" style="padding-left: 10px" placeholder="Your phone from" type="text" name="personal_phone_from" id="personal_phone_from" value="Admin" readonly>
+                        <input class="form-control" style="padding-left: 10px" placeholder="Your phone from" type="text"
+                          name="personal_phone_from" id="personal_phone_from" value="Admin" readonly>
                       </div>
                     </div>
                   </div>
@@ -204,7 +221,8 @@
                         <div class="input-group-prepend">
                           <span class="input-group-text">to</span>
                         </div>
-                        <input class="form-control" style="padding-left: 10px" placeholder="Your phone to" type="text" name="personal_phone_to" id="personal_phone_to" readonly>
+                        <input class="form-control" style="padding-left: 10px" placeholder="Your phone to" type="text"
+                          name="personal_phone_to" id="personal_phone_to" readonly>
                       </div>
                     </div>
                   </div>
@@ -214,7 +232,8 @@
               <div class="col-lg-12">
                 <div class="form-group">
                   <div class="input-group input-group-merge">
-                    <textarea class="form-control" style="padding-left: 10px" placeholder="Isi Pesan" name="personal_body_message" id="personal_body_message"></textarea>
+                    <textarea class="form-control" style="padding-left: 10px" placeholder="Isi Pesan"
+                      name="personal_body_message" id="personal_body_message"></textarea>
                   </div>
                 </div>
               </div>
@@ -234,7 +253,8 @@
 </div>
 
 {{-- Send Message Multiple --}}
-<div class="modal fade" id="modal-send-multiple" tabindex="-1" role="dialog" aria-labelledby="modal-send-multiple" aria-hidden="true">
+<div class="modal fade" id="modal-send-multiple" tabindex="-1" role="dialog" aria-labelledby="modal-send-multiple"
+  aria-hidden="true">
   <div class="modal-dialog modal modal-dialog-centered modal-lg" role="document">>
     <div class="modal-content">
       <div class="modal-body p-0">
@@ -255,14 +275,16 @@
                         <div class="input-group-prepend">
                           <span class="input-group-text">from</span>
                         </div>
-                        <input class="form-control" style="padding-left: 10px" placeholder="Your phone from" type="text" name="multiple_phone_from" id="multiple_phone_from" value="Admin" readonly>
+                        <input class="form-control" style="padding-left: 10px" placeholder="Your phone from" type="text"
+                          name="multiple_phone_from" id="multiple_phone_from" value="Admin" readonly>
                       </div>
                     </div>
                   </div>
                   <div class="col-lg-6">
                     <div class="form-group">
                       <div class="input-group input-group-merge">
-                        <select name="multiple_phone" id="multiple_phone" class="form-control" data-toggle="select" onchange="changeSenders(this)">
+                        <select name="multiple_phone" id="multiple_phone" class="form-control" data-toggle="select"
+                          onchange="changeSenders(this)">
                           <option value="" disabled selected>--Pilih Penerima--</option>
                           <option value="all">Semua Subscriber</option>
                           <option value="regency">Berdasarkan Kabupaten/Kota</option>
@@ -276,7 +298,8 @@
               <div class="col-lg-12">
                 <div class="form-group">
                   <div class="input-group input-group-merge">
-                    <textarea class="form-control" style="padding-left: 10px" placeholder="Isi Pesan" name="multiple_body_message" id="multiple_body_message"></textarea>
+                    <textarea class="form-control" style="padding-left: 10px" placeholder="Isi Pesan"
+                      name="multiple_body_message" id="multiple_body_message"></textarea>
                   </div>
                 </div>
               </div>
@@ -300,7 +323,8 @@
 <script type="text/javascript" src="{{ asset('vendor/datatables.net/js/jquery.dataTables.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js') }}">
+</script>
 <script type="text/javascript" src="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.js') }}"></script>
 <script src="{{ asset('vendor/select2/dist/js/select2.min.js')}}"></script>
 @endsection
@@ -502,7 +526,8 @@
 
   $("#addSubscribeForm").submit(function(e){
     e.preventDefault();
-
+    let status = '';
+    let message = '';
     $("input").removeClass('is-invalid');
     $(".invalid-feedback").remove();
 
@@ -531,7 +556,18 @@
       }
 
       $.post(link, $(this).serialize(), function(result){
+        console.log(result);
         const rows = (subscribeTable.rows().count() == 0) ? "1" : subscribeTable.row(':last').data()[0];
+        if(result.status == 'error') {
+          Swal.fire({
+            position: 'middle',
+            icon: result.status,
+            title: result.message,
+            showConfirmButton: false,
+            timer: 1500
+          });
+          return false;
+        }
         if($("#_method").val() == "POST"){
           // Store
           subscribeTable.row.add([
@@ -548,6 +584,8 @@
             addActionOption(result.data['id'],result.data['name'], result.data['phone'], result.data['status'], parseInt(rows)+1)
           ]).draw().node().id = "rows_"+result.data['id'];
           phoneNumbAct(result.data['id']);
+          status = result.status;
+          message = result.message;
         } else {
           // Update
           const newData = [
@@ -565,21 +603,23 @@
           ];
           subscribeTable.row($("#rows_"+$("#id").val())).data(newData);
           phoneNumbAct(result.data['id']);
+          status = result.status;
+          message = result.message;
         }
 
         if($('#_method').val() === "POST") {
           Swal.fire({
             position: 'middle',
-            icon: 'success',
-            title: 'Data Subscriber telah dibuat!',
+            icon: status,
+            title: message,
             showConfirmButton: false,
             timer: 1500
           });
         } else {
           Swal.fire({
             position: 'middle',
-            icon: 'success',
-            title: 'Data Subscriber telah diperbaharui!',
+            icon: status,
+            title: message,
             showConfirmButton: false,
             timer: 1500
           });
@@ -773,5 +813,5 @@
     });
   }
 </script>
-    
+
 @endsection

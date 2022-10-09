@@ -66,6 +66,17 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
     }
   }
 
+  public function checkUniquePhone(string $phone): bool
+  {
+    $phone = $this->filterPhone($phone);
+    $chkSub = $this->model->where('phone', $phone)->first();
+    if (!empty($chkSub)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /**
    * Find the subscribe by id
    *
