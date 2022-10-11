@@ -18,9 +18,9 @@ class RoleController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('permission:roles-list',['only' => ['index']]);
-        $this->middleware('permission:roles-create', ['only' => ['create','store']]);
-        $this->middleware('permission:roles-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:roles-list', ['only' => ['index']]);
+        $this->middleware('permission:roles-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:roles-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:roles-delete', ['only' => ['destroy']]);
 
         $this->permission_avail = [
@@ -44,7 +44,7 @@ class RoleController extends Controller
     public function index()
     {
         $roles = Role::withCount('users', 'permissions')->get();
-        return view('admin.accounts.roles.index',compact('roles'));
+        return view('admin.accounts.roles.index', compact('roles'));
     }
 
     /**
@@ -66,12 +66,24 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->except('_token','_method');
+        $data = $request->except('_token', '_method');
+        if (empty($data['permissions'])) {
+            return redirect()->back()->with([
+                'status' => 'danger',
+                'message' => 'Hak akses kosong'
+            ]);
+        }
 
-        $request->validate([
-            'name' => ['required', 'string', 'max:191', 'unique:roles,name']
-        ]);
-        
+        $request->validate(
+            [
+                'name' => ['required', 'string', 'max:191', 'unique:roles,name'],
+            ],
+            [
+                'name.required' => 'nama role tidak boleh kosong',
+                'name.unique' => 'nama role sudah ada',
+            ]
+        );
+
         $role = new Role;
         $role->name = $request->name;
         $role->save();
@@ -81,7 +93,7 @@ class RoleController extends Controller
 
         return redirect()->route('admin.role.index')->with([
             'status'    => 'success',
-            'message'   => 'Role permission successfully added'
+            'message'   => 'Role berhasil disimpan'
         ]);
     }
 
@@ -110,7 +122,7 @@ class RoleController extends Controller
         $old_options = Permission::join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
             ->where('role_has_permissions.role_id', $id)
             ->get()->pluck('name');
-            
+
         return view('admin.accounts.roles.edit', compact('role', 'options', 'old_options'));
     }
 
@@ -123,9 +135,22 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:191', 'unique:roles,name,'.$id]
-        ]);
+        $request->validate(
+            [
+                'name' => ['required', 'string', 'max:191', 'unique:roles,name,' . $id]
+            ],
+            [
+                'name.required' => 'nama role tidak boleh kosong',
+                'name.unique' => 'nama role sudah ada',
+            ]
+        );
+
+        if (empty($request->permissions)) {
+            return redirect()->back()->with([
+                'status' => 'danger',
+                'message' => 'Hak akses kosong'
+            ]);
+        }
 
         $role = Role::findOrFail($id);
         $role->name = $request->name;
@@ -133,24 +158,24 @@ class RoleController extends Controller
 
         // Validate Request
         $old_permission = array();
-        foreach($role->permissions as $permissions){
+        foreach ($role->permissions as $permissions) {
             array_push($old_permission, $permissions->name);
         }
         $new_permission = $request->permissions;
 
         // Check Action
         $revoke = array_diff($old_permission, $new_permission);
-        foreach($revoke as $r){
+        foreach ($revoke as $r) {
             $role->revokePermissionTo($r);
         }
         $assign = array_diff($new_permission, $old_permission);
-        foreach($assign as $a){
+        foreach ($assign as $a) {
             $role->givePermissionTo($a);
         }
 
         return redirect()->route('admin.role.index')->with([
             'status'    => 'success',
-            'message'   => 'Role permission for '. $role->name .' successfully updated'
+            'message'   => 'Role berhasil diubah'
         ]);
     }
 
@@ -165,17 +190,17 @@ class RoleController extends Controller
         $role = Role::findOrFail($id);
 
         // Check if Role assigned to users
-        if($role->users()->exists()){
+        if ($role->users()->exists()) {
             return response()->json([
                 'status' => 'danger',
-                'message' => 'Failed to delete. Please remove role from assigned users'
+                'message' => 'Gagal menghapus role. Role ini sedang digunakan oleh akun admin'
             ]);
         }
 
         $role->delete();
         return response()->json([
             'status'    => 'success',
-            'message' => 'Role permission successfully deleted'
+            'message' => 'Role berhasil dihapus'
         ]);
     }
 }
