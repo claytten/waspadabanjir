@@ -35,11 +35,10 @@ class VillageController extends Controller
     public function __construct(
         VillageRepositoryInterface $villageRepository,
         ProvinceRepositoryInterface $provinceRepository
-    )
-    {
+    ) {
         // Spatie ACL Villages
-        $this->middleware('permission:villages-create', ['only' => ['create','store']]);
-        $this->middleware('permission:villages-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:villages-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:villages-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:villages-delete', ['only' => ['destroy']]);
 
         // binding repository
@@ -56,13 +55,13 @@ class VillageController extends Controller
     {
         if ($request->ajax()) {
             $villages = [];
-            if(!empty($request->districts)) {
+            if (!empty($request->districts)) {
                 $villages = Cache::rememberForever('villages', function () {
                     return $this->villageRepo->listVillages()->sortBy('name');
                 })->where('district_id', $request->districts);
             }
             return response()->json([
-                'data'=> $villages
+                'data' => $villages
             ]);
         }
 
@@ -80,7 +79,7 @@ class VillageController extends Controller
      */
     public function store(CreateVillageRequest $request)
     {
-        $data = $request->except('_token','_method');
+        $data = $request->except('_token', '_method');
         $data['name'] = strtoupper($data['name']);
         $village = $this->villageRepo->createVillage($data);
 
@@ -88,7 +87,7 @@ class VillageController extends Controller
 
         return response()->json([
             'status'    => 'success',
-            'message'   => 'Create Village successful!',
+            'message'   => 'Data Kelurahan Berhasil Ditambahkan!',
             'data'      => $village
         ]);
     }
@@ -114,7 +113,7 @@ class VillageController extends Controller
     public function update(UpdateVillageRequest $request, $id)
     {
         $village = $this->villageRepo->findVillageById($id);
-        $data = $request->except('_token','_method');
+        $data = $request->except('_token', '_method');
         $data['name'] = strtoupper($data['name']);
 
         $vilRepo = new VillageRepository($village);
@@ -124,7 +123,7 @@ class VillageController extends Controller
 
         return response()->json([
             'status'        => 'success',
-            'messages'      => 'Update Village Successfully!',
+            'messages'      => 'Data Kelurahan Berhasil Diubah!',
             'data'          => $village
         ]);
     }
@@ -143,7 +142,7 @@ class VillageController extends Controller
 
         return response()->json([
             'status'    => 'success',
-            'messages'  => 'Village Successfully Destroy'
+            'messages'  => 'Data Kelurahan Berhasil Dihapus!'
         ]);
     }
 }

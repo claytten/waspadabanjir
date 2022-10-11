@@ -33,11 +33,10 @@ class DistrictController extends Controller
     public function __construct(
         ProvinceRepositoryInterface $provinceRepository,
         DistrictRepositoryInterface $districtRepository
-    )
-    {
+    ) {
         // Spatie ACL Districts
-        $this->middleware('permission:districts-create', ['only' => ['create','store']]);
-        $this->middleware('permission:districts-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:districts-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:districts-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:districts-delete', ['only' => ['destroy']]);
 
         // binding repository
@@ -54,11 +53,11 @@ class DistrictController extends Controller
     {
         if ($request->ajax()) {
             $districts = [];
-            if(!empty($request->regencies)) {
+            if (!empty($request->regencies)) {
                 $districts = $this->districtRepo->listDistricts()->sortBy('name')->where('regency_id', $request->regencies);
             }
             return response()->json([
-                'data'=> $districts
+                'data' => $districts
             ]);
         }
 
@@ -74,7 +73,7 @@ class DistrictController extends Controller
      */
     public function store(CreateDistrictRequest $request)
     {
-        $data = $request->except('_token','_method');
+        $data = $request->except('_token', '_method');
         $data['name'] = strtoupper($data['name']);
         $district = $this->districtRepo->createDistrict($data);
         $district->villages_count = 0;
@@ -84,7 +83,7 @@ class DistrictController extends Controller
 
         return response()->json([
             'status'    => 'success',
-            'message'   => 'Create District successful!',
+            'message'   => 'Data Kecamatan Berhasil Ditambahkan!',
             'data'      => $district
         ]);
     }
@@ -109,18 +108,18 @@ class DistrictController extends Controller
      */
     public function update(UpdateDistrictRequest $request, $id)
     {
-        $data = $request->except('_token','_method');
+        $data = $request->except('_token', '_method');
         $data['name'] = strtoupper($data['name']);
         $district = $this->districtRepo->findDistrictById($id);
         $distRepo = new DistrictRepository($district);
         $distRepo->updateDistrict($data);
-        
+
         $district->villages_count = 0;
         $this->districtRepo->listDistricts()->sortBy('name');
 
         return response()->json([
             'status'    => 'success',
-            'message'   => 'Update District Successfully!',
+            'message'   => 'Data Kecamatan Berhasil Diubah!',
             'data'      => $district
         ]);
     }
@@ -139,7 +138,7 @@ class DistrictController extends Controller
 
         return response()->json([
             'status'    => 'success',
-            'message'   => 'District Successfully Destory'
+            'message'   => 'Data Kecamatan Berhasil Dihapus!'
         ]);
     }
 }

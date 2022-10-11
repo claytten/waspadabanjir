@@ -34,11 +34,10 @@ class RegencyController extends Controller
     public function __construct(
         RegencyRepositoryInterface $regencyRepository,
         ProvinceRepositoryInterface $provinceRepository
-    )
-    {
+    ) {
         // Spatie ACL Provinces
-        $this->middleware('permission:regencies-create', ['only' => ['create','store']]);
-        $this->middleware('permission:regencies-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:regencies-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:regencies-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:regencies-delete', ['only' => ['destroy']]);
 
         // binding repository
@@ -55,17 +54,17 @@ class RegencyController extends Controller
     {
         if ($request->ajax()) {
             $regencies = [];
-            if(!empty($request->provinces)) {
+            if (!empty($request->provinces)) {
                 $regencies = $this->regencyRepo->listRegencies()->sortBy('name')->where('province_id', $request->provinces);
             } else {
                 $regencies = $this->regencyRepo->listRegencies()->sortBy('name');
             }
             return response()->json([
-                'data'=> $regencies
+                'data' => $regencies
             ]);
         }
         $provinces = $this->provinceRepo->listProvinces()->sortBy('name');
-        
+
         return view('admin.address.regencies.index', compact('provinces'));
     }
 
@@ -77,7 +76,7 @@ class RegencyController extends Controller
      */
     public function store(CreateRegencyRequest $request)
     {
-        $data = $request->except('_token','_method');
+        $data = $request->except('_token', '_method');
         $data['name'] = strtoupper($data['name']);
         $regency = $this->regencyRepo->createRegency($data);
         $regency->districts_count = 0;
@@ -87,7 +86,7 @@ class RegencyController extends Controller
 
         return response()->json([
             'status'    => 'success',
-            'message'   => 'Create Regency successful!',
+            'message'   => 'Data Kabupaten/Kota Berhasil Ditambahkan!',
             'data'      => $regency
         ]);
     }
@@ -102,7 +101,7 @@ class RegencyController extends Controller
     public function update(UpdateRegencyRequest $request, $id)
     {
         $regency = $this->regencyRepo->findRegencyById($id);
-        $data = $request->except('_token','_method');
+        $data = $request->except('_token', '_method');
         $data['name'] = strtoupper($data['name']);
 
         $regenRepo = new RegencyRepository($regency);
@@ -113,7 +112,7 @@ class RegencyController extends Controller
 
         return response()->json([
             'status'    => 'success',
-            'message'   => 'Update Regency successful!',
+            'message'   => 'Data Kabupaten/Kota Berhasil Diubah!',
             'data'      => $regency
         ]);
     }
@@ -143,7 +142,7 @@ class RegencyController extends Controller
 
         return response()->json([
             'status'      => 'success',
-            'message'     => 'Province successfully destroy'
+            'message'     => 'Data Kabupaten/Kota Berhasil Dihapus!',
         ]);
     }
 }

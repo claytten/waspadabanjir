@@ -48,7 +48,7 @@ class ProvinceController extends Controller
             $provinces = [];
             $provinces = $this->provinceRepo->listProvinces()->sortBy('name');
             return response()->json([
-                'data'=> $provinces
+                'data' => $provinces
             ]);
         }
         $provinces = $this->provinceRepo->listProvinces()->sortBy('name');
@@ -63,7 +63,7 @@ class ProvinceController extends Controller
      */
     public function store(CreateProvinceRequest $request)
     {
-        $data = $request->except('_token','_method');
+        $data = $request->except('_token', '_method');
         $data['name'] = strtoupper($data['name']);
         $province = $this->provinceRepo->createProvince($data);
         $province->regencies_count = 0;
@@ -73,7 +73,7 @@ class ProvinceController extends Controller
 
         return response()->json([
             'status'    => 'success',
-            'message'   => 'Create Province successful!',
+            'message'   => 'Data Provinsi Berhasil Ditambahkan!',
             'data'      => $province
         ]);
     }
@@ -87,14 +87,14 @@ class ProvinceController extends Controller
      */
     public function update(UpdateProvinceRequest $request, $id)
     {
-        $data = $request->except('_token','_method');
+        $data = $request->except('_token', '_method');
         $data['name'] = strtoupper($data['name']);
         $province = $this->provinceRepo->findProvinceById($id);
 
         $provRepo = new ProvinceRepository($province);
         $provRepo->updateProvince($data);
         $province->regencies_count = 0;
-        
+
         if (Cache::has('provinces')) {
             Cache::forget('provinces');
         }
@@ -102,7 +102,7 @@ class ProvinceController extends Controller
 
         return response()->json([
             'status'    => 'success',
-            'message'   => 'Create Province successful!',
+            'message'   => 'Data Provinsi Berhasil Diubah!',
             'data'      => $province,
         ]);
     }
@@ -129,7 +129,7 @@ class ProvinceController extends Controller
         $province = $this->provinceRepo->findProvinceById($id);
         if (Cache::has('provinces')) {
             Cache::forget('provinces');
-            if($province->countRegency() > 0) {
+            if ($province->countRegency() > 0) {
                 Cache::forget('regencies');
                 Cache::forget('districts');
                 Cache::forget('villages');
@@ -140,7 +140,7 @@ class ProvinceController extends Controller
 
         return response()->json([
             'status'      => 'success',
-            'message'     => 'Province successfully destroy'
+            'message'     => 'Data Provinsi Berhasil Dihapus'
         ]);
     }
 }
