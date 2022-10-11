@@ -55,7 +55,7 @@
     <!-- Upload Photo -->
     <div class="card">
       <form action="{{ route('admin.update.profile.avatar', auth()->user()->id )}}" method="POST" enctype="multipart/form-data" id="dropzone-form">
-        {{ csrf_field() }}
+        @csrf
         <input type="hidden" name="_method" value="PUT" readonly>
         <input type="hidden" name="statStages" value="photo" readonly>
         <!-- Card header -->
@@ -76,8 +76,13 @@
           <div class="mb-3">
             <div class="fallback">
               <div class="custom-file">
-                <input type="file" accept=".jpg, .jpeg, .png" name="image" class="form-control imgs" onchange="previewImage(this)"id="projectCoverUploads">
+                <input type="file" accept=".jpg, .jpeg, .png" name="image" class="form-control imgs @error('image') is-invalid @enderror" onchange="previewImage(this)"id="projectCoverUploads">
                 <label class="custom-file-label" for="projectCoverUploads">Pilih Berkas</label>
+                @error('image')
+                  <div class="invalid-feedback">
+                    {{ $message }}
+                  </div>
+                @enderror
               </div>
             </div>
           </div>
@@ -279,7 +284,7 @@
 @endsection
 
 @section('plugins_js')
-<script src="{{ asset('vendor/select2/dist/js/select2.min.js')}}"></script>
+<script src="{{ asset('vendor/select2/dist/js/select2.min.js')}}"></scrip>
 @endsection
 
 @section('inline_js')
