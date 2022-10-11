@@ -42,12 +42,11 @@ class UserController extends Controller
     public function __construct(
         ProvinceRepositoryInterface $provinceRepository,
         UserRepositoryInterface $userRepository
-    )
-    {
+    ) {
         // Spatie ACL
-        $this->middleware('permission:admin-list',['only' => ['index']]);
-        $this->middleware('permission:admin-create', ['only' => ['create','store']]);
-        $this->middleware('permission:admin-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:admin-list', ['only' => ['index']]);
+        $this->middleware('permission:admin-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:admin-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:admin-delete', ['only' => ['destroy']]);
 
         $this->userRepo = $userRepository;
@@ -80,7 +79,7 @@ class UserController extends Controller
         }
 
         $users = $this->userRepo->listUsers()->sortBy('name');
-        if(Cache::has('adminWA')) {
+        if (Cache::has('adminWA')) {
             $statusWA = Cache::get('adminWA');
         } else {
             $statusWA['id'] = null;
@@ -108,14 +107,14 @@ class UserController extends Controller
      */
     public function store(CreateUserRequest $request)
     {
-        $data = $request->except('_token','_method');
+        $data = $request->except('_token', '_method');
 
         if ($request->hasFile('image') && $request->file('image') instanceof UploadedFile) {
             $data['image'] = $this->userRepo->saveCoverImage($request->file('image'));
         } else {
             $data['image'] = null;
         }
-        if($request->is_active == "on") {
+        if ($request->is_active == "on") {
             $data['status'] = 1;
         } else {
             $data['status'] = 0;
@@ -124,7 +123,7 @@ class UserController extends Controller
 
         return redirect()->route('admin.admin.index')->with([
             'status'    => 'success',
-            'message'   => 'Create Admin successful!'
+            'message'   => 'Data Admin Berhasil Ditambahkan'
         ]);
     }
 
@@ -149,11 +148,11 @@ class UserController extends Controller
         $roles = Role::pluck('name', 'name')->all();
         $user = $this->userRepo->findUserById($id);
         $provinces = $this->provinceRepo->listProvinces()->sortBy('name');
-        if(substr($user['phone'],0,3) == '+62') {
-            $user['phone'] = substr($user['phone'],3);
+        if (substr($user['phone'], 0, 3) == '+62') {
+            $user['phone'] = substr($user['phone'], 3);
         }
 
-        return view('admin.accounts.admin.edit',compact('user','roles', 'provinces'));
+        return view('admin.accounts.admin.edit', compact('user', 'roles', 'provinces'));
     }
 
     /**
@@ -165,7 +164,7 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, $id)
     {
-        $data = $request->except('_token','_method');
+        $data = $request->except('_token', '_method');
         $user = $this->userRepo->findUserById($id);
         $userRepo = new UserRepository($user);
 
@@ -174,18 +173,18 @@ class UserController extends Controller
             $user->save();
             return response()->json([
                 'status'    => 'success',
-                'message'   => 'Password successfully changed!'
+                'message'   => 'Password Berhasil Diubah!'
             ]);
         }
 
-        if($request->status == "on") {
+        if ($request->status == "on") {
             $data['status'] = 1;
         } else {
             $data['status'] = 0;
         }
 
         if ($request->hasFile('image') && $request->file('image') instanceof UploadedFile) {
-            if(!empty($user->image)) {
+            if (!empty($user->image)) {
                 $userRepo->deleteFile($user->image);
             }
             $data['image'] = $this->userRepo->saveCoverImage($request->file('image'));
@@ -200,7 +199,7 @@ class UserController extends Controller
 
         return redirect()->route('admin.admin.index')->with([
             'status'    => 'success',
-            'message'   => 'Update Account successful!'
+            'message'   => 'Data Admin Berhasil Diubah!'
         ]);
     }
 
@@ -210,27 +209,27 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request,$id)
+    public function destroy(Request $request, $id)
     {
         $users = $this->userRepo->findUserById($id);
         $user = new UserRepository($users);
         $message = '';
-        if($request->user_action == 'block'){
+        if ($request->user_action == 'block') {
             $users->status = false;
             $users->save();
-            $message = 'User successfully blocked';
-        } else if( $request->user_action == 'restore') {
+            $message = 'Data Admin Berhasil di Nonaktifkan';
+        } else if ($request->user_action == 'restore') {
             $users->status = true;
             $users->save();
-            $message = 'User successfully restored';
+            $message = 'Data Admin Berhasil di Aktifkan';
         } else {
-            if(!empty($users->image) ) {
+            if (!empty($users->image)) {
                 $user->deleteFile($users->image);
             }
-            if($users->id === Cache::get('adminWA')->id) {
+            if ($users->id === Cache::get('adminWA')->id) {
                 Cache::forget('adminWA');
             }
-            $message = 'User successfully destroy';
+            $message = 'Data Admin Berhasil Dihapus!';
             $user->deleteUser();
         }
 
@@ -243,7 +242,7 @@ class UserController extends Controller
 
     public function passwordAdminReset(Request $request, $id)
     {
-        $data = $request->except('_token','_method');
+        $data = $request->except('_token', '_method');
         $user = $this->userRepo->findUserById($id);
         $user->password = Hash::make($request->password);
         $user->save();
