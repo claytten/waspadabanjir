@@ -23,7 +23,7 @@ class CreateFieldRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $rule = [
             'description'=>['required', 'string'],
             'deaths'    => ['required', 'numeric', 'min:0'],
             'losts'     => ['required', 'numeric', 'min:0'],
@@ -33,6 +33,10 @@ class CreateFieldRequest extends FormRequest
             'status'    => ['required'],
             'level'     => ['required']
         ];
+        if(request()->hasFile('images')) {
+            $rule['images.*'] = ['required', 'mimes:jpeg,png,jpg', 'max:5000'];
+        }
+        return $rule;
     }
 
     /**
@@ -42,7 +46,7 @@ class CreateFieldRequest extends FormRequest
      */
     public function messages()
     {
-        return [
+        $message = [
             'description.required'  => 'Deskripsi harus diisi',
             'description.string'    => 'Deskripsi harus berupa string',
             'level.required'        => 'Level harus diisi',
@@ -61,5 +65,11 @@ class CreateFieldRequest extends FormRequest
             'locations.array'       => 'Lokasi harus berupa array',
             'status.required'       => 'Status harus diisi'
         ];
+        if(request()->hasFile('images')) {
+            $message['images.*.required'] = 'Berkas foto tidak boleh kosong!';
+            $message['images.*.mimes'] = 'File harus berupa gambar dengan format jpeg, png, atau jpg';
+            $message['images.*.max'] = 'Ukuran file maksimal untuk semua berkas 5 MB';
+        }
+        return $message;
     }
 }
