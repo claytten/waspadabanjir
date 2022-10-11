@@ -34,7 +34,7 @@ class CreateFieldRequest extends FormRequest
             'level'     => ['required']
         ];
         if(request()->hasFile('images')) {
-            $rule['images.*'] = ['required', 'mimes:jpeg,png,jpg', 'max:5000'];
+            $rule['images.*'] = ['required', 'mimes:jpeg,png,jpg', 'max:2048'];
         }
         return $rule;
     }
@@ -68,7 +68,7 @@ class CreateFieldRequest extends FormRequest
         if(request()->hasFile('images')) {
             $message['images.*.required'] = 'Berkas foto tidak boleh kosong!';
             $message['images.*.mimes'] = 'File harus berupa gambar dengan format jpeg, png, atau jpg';
-            $message['images.*.max'] = 'Ukuran file maksimal untuk semua berkas 5 MB';
+            $message['images.*.max'] = 'Ukuran file maksimal untuk tiap berkas 2 MB';
         }
         return $message;
     }
