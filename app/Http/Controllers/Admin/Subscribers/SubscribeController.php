@@ -326,7 +326,7 @@ class SubscribeController extends Controller
       if ($findNumber->status === 1) {
         $answerID = Cache::has($from) ? Cache::get($from) : null;
         if ($nuMedia !== null && $nuMedia > 0) { // if request from media (image, video, audio, document, stiker)
-          if ($answerID !== null) {
+          if ($answerID !== null) { // its filtering for answering report 
             switch (count($answerID)) {
               case 1:
                 $message = strval($this->subscribeRepo->filterFileMenu($nuMedia, $ext));
@@ -414,7 +414,19 @@ class SubscribeController extends Controller
       $answerID = Cache::has($from) ? Cache::get($from) : null;
       if (strtolower($body) === 'mulai' || $answerID !== null) {
         if ((!empty($answerID[0]) ? $answerID[0] : null) === 'mulai') {
-          $message = strval($this->subscribeRepo->registerStep1($from, $body, $answerID, $this->regencyRepo));
+          if($nuMedia !== null && $nuMedia > 0) {
+            if(empty($answerID[1])) { // name condition
+              $message = strval("Kata kunci tidak sesuai. Silakan ulangi mengirimkan nama lengkap kamu dengan benar.\n\nContohnya : Samsudi Yahya");
+            } 
+            if(!empty($answerID[1])) { // regency condition
+              $message = strval("Kata kunci tidak sesuai. Silakan ulangi mengirimkan nama kota kamu tinggal sekarang.\n\nContohnya : Klaten\n\nKetik *kembali* jika ingin kembali ke pengisian sebelumnya.");
+            }
+            if(!empty($answerID[1]) && !empty($answerID[2])) { // regencies condition
+              $message = strval("Mohon maaf, pilihanmu tidak ada dalam daftar diatas. silahkan pilih sesuai petunjuk.\n\n ketik *kembali* jika ingin kembali ke pencarian kota.");
+            }
+          } else {
+            $message = strval($this->subscribeRepo->registerStep1($from, $body, $answerID, $this->regencyRepo, $nuMedia));
+          }
         } else {
           Cache::put($from, array('mulai'), 600);
           $message = "Siapa namamu ?\n\nContohnya : Samsudi Yahya";

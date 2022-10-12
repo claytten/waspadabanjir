@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class SubscribeRepository extends BaseRepository implements SubscribeRepositoryInterface
@@ -427,7 +428,8 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
       return $message;
     }
     $regencies = Cache::get("address_{$from}");
-    if ($body > count($regencies) || $body < 0) {
+    $body = (int) $body;
+    if ($body > count($regencies) || $body <= 0) {
       return "Mohon maaf, pilihanmu tidak ada dalam daftar diatas. silahkan pilih sesuai petunjuk.";
     }
 
@@ -438,7 +440,7 @@ class SubscribeRepository extends BaseRepository implements SubscribeRepositoryI
     Cache::forget($from);
     Cache::forget("store_{$from}");
     Cache::forget("address_{$from}");
-    return "Hore. Data telah tersimpan. ketik *menu* untuk melihat daftar layanan.";
+    return "Terima Kasih sudah melakukan registrasi. ketik *menu* untuk menampilkan daftar layanan informasi.";
   }
 
   /**
