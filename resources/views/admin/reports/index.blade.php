@@ -69,7 +69,7 @@
                           <td><button type="button" class="btn btn-danger btn-sm">Laporan Ditolak</button></td>
                         @endif
                       @else
-                        {{ $item->status == 'accept' ? 'Terverifikasi' : ($item->status == 'process' ? 'Belum terverifikasi': 'Laporan Ditolak') }}
+                        <td>{{ $item->status == 'accept' ? 'Terverifikasi' : ($item->status == 'process' ? 'Belum terverifikasi': 'Laporan Ditolak') }}</td>
                       @endif
                       <td>
                         {{-- @if(auth()->user()->can('reports-edit'))
