@@ -56,10 +56,13 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
      * 
      * @return Collection
      */
-    public function listFieldsPublic(string $date_in = ''): Collection
+    public function listFieldsPublic(string $date_in = '', string $date_out = ''): Collection
     {
-        $fields_today = $this->model::with('detailLocations')->where('date_in', 'LIKE', '%'.$date_in.'%')->where('status', 1)->get();
-        $fields_doing = $this->model::with('detailLocations')->where('date_out', null)->where('status', 1)->get();
+        $fields_today = $this->model::with('detailLocations')->where('status', 1)->where('date_in', 'LIKE', '%'.$date_in.'%')->orWhere('date_out', 'LIKE', '%'.$date_out.'%')->get();
+        $fields_doing = $this->model::with('detailLocations')->where([
+            'status' => 1,
+            'date_out' => null
+        ])->get();
         return $fields_today->merge($fields_doing);
     }
 
@@ -231,7 +234,9 @@ class FieldRepository extends BaseRepository implements FieldRepositoryInterface
      */
     public function listFieldsAndGeo(): string
     {
-      $fields_today = $this->model->where('date_in', 'LIKE', '%'.Carbon::now()->toDateString().'%')->where('status', 1)->get();
+      $fields_today = $this->model->where('status', 1)
+                    ->where('date_in', 'LIKE', '%'.Carbon::now()->toDateString().'%')
+                    ->orWhere('date_out', 'LIKE', '%'.Carbon::now()->toDateString().'%')->get();
       $fields_doing = $this->model->where('date_out', null)->where('status', 1)->get();
       $fields = $fields_today->merge($fields_doing);
       if(count($fields) > 0) {

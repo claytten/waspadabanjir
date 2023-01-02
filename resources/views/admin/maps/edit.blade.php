@@ -667,7 +667,9 @@
       $('#date_out').datepicker({
         disableTouchKeyboard: true,
         autoclose: false,
-        startDate: setStartDateIn
+        startDate: $('#date_in').val(),
+        endDate: '+1d',
+        datesDisabled: '+1d',
       });
     }
   }

@@ -550,7 +550,9 @@
       $('#date_out').datepicker({
         disableTouchKeyboard: true,
         autoclose: false,
-        startDate: setStartDateIn
+        startDate: setStartDateIn,
+        endDate: '+1d',
+        datesDisabled: '+1d',
       });
     }
   }

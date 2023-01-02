@@ -11,7 +11,7 @@ interface FieldRepositoryInterface extends BaseRepositoryInterface
 {
     public function listFields(string $date_in = '', string $date_out = '') : Collection;
 
-    public function listFieldsPublic(string $date_in = ''): Collection;
+    public function listFieldsPublic(string $date_in = '', string $date_out = ''): Collection;
 
     public function createField(array $params) : Field;
 
