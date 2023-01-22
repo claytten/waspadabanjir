@@ -203,9 +203,9 @@
         if($("#_method").val() == "POST"){
           // Store
           tableVillages.row.add([
-            parseInt(rows)+1,
+            (parseInt(rows) == 1 ? 1 : parseInt(rows)+1),
             result.data['name'],
-            addActionOption(result.data['id'], result.data['name'], parseInt(rows)+1)
+            addActionOption(result.data['id'], result.data['name'], (parseInt(rows) == 1 ? 1 : parseInt(rows)+1))
           ]).draw().node().id = "rows_"+result.data['id'];
         } else {
           // Update
@@ -310,6 +310,9 @@
       success:function(result) {
         if(result) {
           let counting = 0;
+          if(result.data.length == 0) {
+            $(".dataTables_empty").text("Tidak ada data.");
+          }
           $.each(result.data, (key,value) => {
             tableVillages.row.add([
               counting += 1,
@@ -349,7 +352,8 @@
     $("#name").val(name);
 
     $("#form_title").text('Form Ubah Data Kelurahan');
-    $("#btn-submit").text("Update").attr('disable', false);
+    $("#btn-submit").text("Update").attr('disabled', false);
+    $("#name").attr('disabled', false);
     $("#provinces, #regencies, #districts").attr('disabled', true);
   }
 
@@ -391,7 +395,6 @@
 
     $("#form_title").text('Form Buat Data Kelurahan');
     $("#btn-submit").text("Submit").attr('disabled', true);
-    tableVillages.clear().draw();
     $('#provinces').attr('disabled', false);
     $('#regencies, #districts').empty().attr('disabled', true);
     $("#name").attr('disabled', true);

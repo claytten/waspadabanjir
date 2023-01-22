@@ -174,10 +174,10 @@
         if($("#_method").val() == "POST"){
           // Store
           tableRegencies.row.add([
-            parseInt(rows)+1,
+            (parseInt(rows) == 1 ? 1 : parseInt(rows)+1),
             result.data['name'],
             result.data['districts_count'],
-            addActionOption(result.data['id'], result.data['name'], parseInt(rows)+1)
+            addActionOption(result.data['id'], result.data['name'], (parseInt(rows) == 1 ? 1 : parseInt(rows)+1))
           ]).draw().node().id = "rows_"+result.data['id'];
         } else {
           // Update
@@ -222,6 +222,9 @@
       success:function(result) {
         if(result) {
           let counting = 0;
+          if(result.data.length == 0) {
+            $(".dataTables_empty").text("Tidak ada data.");
+          }
           $.each(result.data, (key,value) => {
             tableRegencies.row.add([
               counting += 1,
@@ -303,7 +306,6 @@
 
     $("#form_title").text('Form Buat Data Kabupaten');
     $("#btn-submit").text("Submit").attr('disabled', true);
-    tableRegencies.clear().draw();
     $("#name").attr('disabled', true);
   }
 </script>
