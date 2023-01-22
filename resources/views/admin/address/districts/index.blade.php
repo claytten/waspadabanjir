@@ -189,10 +189,10 @@
         if($("#_method").val() == "POST"){
           // Store
           tableDistricts.row.add([
-            (parseInt(rows) == 1 ? 1 : parseInt(rows)+1),
+            parseInt(rows)+1,
             result.data['name'],
             result.data['villages_count'],
-            addActionOption(result.data['id'], result.data['name'], (parseInt(rows) == 1 ? 1 : parseInt(rows)+1))
+            addActionOption(result.data['id'], result.data['name'], parseInt(rows)+1)
           ]).draw().node().id = "rows_"+result.data['id'];
         } else {
           // Update
