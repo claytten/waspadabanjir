@@ -130,6 +130,8 @@
     $('#provinces').select2({
       'placeholder': 'Urutkan Berdasarkan Provinsi',
     });
+    $("#name").attr('disabled', true);
+    $('#btn-submit').attr('disabled', true);
   });
   let tableRegencies = $("#regenciesTable").DataTable({
     lengthMenu: [ 5, 10, 25, 50, 75, 100 ],
@@ -152,6 +154,7 @@
 
     $("input").removeClass('is-invalid');
     $(".invalid-feedback").remove();
+    $('#btn-submit').attr('disabled', true);
 
     const id = $("#id").val();
     let link = "";
@@ -162,6 +165,8 @@
         link = '{{ route('admin.regencies.update', ':id') }}';
         link = link.replace(':id', id);
     }
+
+    $("#btn-submit").text("Loading..");
 
     $.post(link, $(this).serialize(), function(result){
         console.log(result);
@@ -204,6 +209,9 @@
   });
 
   function searchProvince() {
+    tableRegencies.clear().draw();
+    $("#name").attr('disabled', true);
+    $(".dataTables_empty").text("Menunggu data...");
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -213,7 +221,6 @@
       dataType : "json",
       success:function(result) {
         if(result) {
-          tableRegencies.clear().draw();
           let counting = 0;
           $.each(result.data, (key,value) => {
             tableRegencies.row.add([
@@ -223,6 +230,8 @@
               addActionOption(value['id'], value['name'], counting)
             ]).draw().node().id="rows_"+value['id'];
           });
+          $("#name").attr('disabled', false);
+          $('#btn-submit').attr('disabled', false);
         } else {
           console.log("Terjadi Kesalahan");
         }
@@ -253,7 +262,7 @@
     $("#name").val(name);
 
     $("#form_title").text('Form Ubah Data Kabupaten');
-    $("#btn-submit").text("Update");
+    $("#btn-submit").text("Update").attr('disable', false);
   }
 
   function deleteAction(id) {
@@ -293,7 +302,9 @@
     $("#name").val('');
 
     $("#form_title").text('Form Buat Data Kabupaten');
-    $("#btn-submit").text("Submit");
+    $("#btn-submit").text("Submit").attr('disabled', true);
+    tableRegencies.clear().draw();
+    $("#name").attr('disabled', true);
   }
 </script>
     

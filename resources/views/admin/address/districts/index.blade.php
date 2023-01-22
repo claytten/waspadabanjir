@@ -73,7 +73,7 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-map-marker"></i></span>
                     </div>
-                    <input class="form-control @error('name') is-invalid @enderror" placeholder="Nama Kecamatan" type="text" name="name" value="{{ old('name')}}" id="name">
+                    <input class="form-control @error('name') is-invalid @enderror" placeholder="Nama Kecamatan" type="text" name="name" value="{{ old('name')}}" id="name" required>
                     @error('name')
                         <div class="invalid-feedback">
                             {{ $message }}
@@ -144,6 +144,8 @@
     $('#regencies').select2({
       'placeholder': 'Urutkan Berdasarkan Kabupaten/Kota',
     }).attr('disabled', true);
+    $("#name").attr('disabled', true);
+    $('#btn-submit').attr('disabled', true);
   });
 
   let tableDistricts = $("#districtsTable").DataTable({
@@ -167,6 +169,7 @@
 
     $("input").removeClass('is-invalid');
     $(".invalid-feedback").remove();
+    $('#btn-submit').attr('disabled', true);
 
     const id = $("#id").val();
     let link = "";
@@ -177,6 +180,8 @@
         link = '{{ route('admin.districts.update', ':id') }}';
         link = link.replace(':id', id);
     }
+
+    $("#btn-submit").text("Loading..");
 
     $.post(link, $(this).serialize(), function(result){
         console.log(result);
@@ -220,6 +225,8 @@
 
   function searchProvince() {
     $('#regencies').empty();
+    tableDistricts.clear().draw();
+    $("#name, #regencies, #btn-submit").attr('disabled', true);
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -229,10 +236,13 @@
       dataType : "json",
       success:function(result) {
         if(result) {
+          $("#regencies").append('<option value=""></option>');
           $.each(result.data, (key, value) => {
             $('#regencies').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
           });
-          $('#regencies').attr('disabled', false);
+          $('#regencies').select2({
+            'placeholder': 'Urutkan Berdasarkan Kabupaten/Kota',
+          }).attr('disabled', false);
         } else {
           console.log("terjadi kesalahan");
         }
@@ -242,6 +252,8 @@
 
   function searchRegency() {
     tableDistricts.clear().draw();
+    $("#name").attr('disabled', true);
+    $(".dataTables_empty").text("Menunggu data...");
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -264,6 +276,9 @@
               addActionOption(value['id'], value['name'], counting += 1)
             ]).draw().node().id="rows_"+value['id'];
           });
+          $("#name").attr('disabled', false);
+          $('#btn-submit').attr('disabled', false);
+          
         } else {
           console.log("Terjadi Kesalahan");
         }
@@ -294,7 +309,8 @@
     $("#name").val(name);
 
     $("#form_title").text('Form Ubah Data Kecamatan');
-    $("#btn-submit").text("Update");
+    $("#btn-submit").text("Update").attr('disable', false);
+    $("#provinces, #regencies").attr('disabled', true);
   }
 
   function deleteAction(id) {
@@ -334,7 +350,11 @@
     $("#name").val('');
 
     $("#form_title").text('Form Buat Data Kecamatan');
-    $("#btn-submit").text("Submit");
+    $("#btn-submit").text("Submit").attr('disabled', true);
+    tableDistricts.clear().draw();
+    $('#provinces').attr('disabled', false);
+    $("#regencies").empty();
+    $("#name").attr('disabled', true);
   }
 </script>
     

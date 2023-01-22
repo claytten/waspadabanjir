@@ -146,6 +146,7 @@
 
     $("input").removeClass('is-invalid');
     $(".invalid-feedback").remove();
+    $('#btn-submit').attr('disabled', true);
 
     const id = $("#id").val();
     let link = "";
@@ -156,6 +157,8 @@
         link = '{{ route('admin.provinces.update', ':id') }}';
         link = link.replace(':id', id);
     }
+
+    $("#btn-submit").text("Loading..");
 
     $.post(link, $(this).serialize(), function(result){
         console.log(result);
@@ -260,7 +263,7 @@
     $("#name").val('');
 
     $("#form_title").text('Form Buat Data Provinsi');
-    $("#btn-submit").text("Submit");
+    $("#btn-submit").text("Submit").attr('disabled', false);
   }
 </script>
     
