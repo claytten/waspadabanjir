@@ -241,6 +241,7 @@
   }
 
   function searchRegency() {
+    tableDistricts.clear().draw();
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -248,10 +249,12 @@
       url: "{{ route('admin.districts.index') }}?regencies=" + $('#regencies').val(),
       type : "GET",
       dataType : "json",
+      error: function(data){
+        console.log(data);
+      },
       success:function(result) {
+        console.log(result);
         if(result) {
-          console.log(typeof (result), typeof (result.data));
-          tableDistricts.clear().draw();
           let counting = 0;
           $.each(result.data, (key,value) => {
             tableDistricts.row.add([
@@ -270,7 +273,7 @@
 
   function addActionOption(id, name, idEdit) {
     let setName = "'"+name+"'";
-    let editOption = '', deleteOption = '', showOption = '';
+    let editOption = '', deleteOption = '';
     @if(auth()->user()->can('districts-edit')) {
       editOption = '<button type="button" onclick="editAction('+id+', '+setName+', '+idEdit+')" class="edit btn btn-success btn-sm">Ubah</button>';
     }
@@ -281,9 +284,7 @@
     }
     @endif
 
-    showOption = '<a href="#" class="show btn btn-info btn-sm">Rincian</a>';
-
-    return editOption+deleteOption+showOption;
+    return editOption+deleteOption;
   }
 
   function editAction(id,name,idEdit) {

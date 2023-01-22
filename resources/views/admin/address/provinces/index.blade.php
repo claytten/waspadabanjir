@@ -93,7 +93,6 @@
                       @if(auth()->user()->can('provinces-delete'))
                         <button type="button" onclick="deleteAction('{{$item['id']}}')" class="delete btn btn-danger btn-sm">Hapus</button>
                       @endif
-                      <a href="#" class="show btn btn-info btn-sm">Rincian</a>
                     </td>
                   </tr>
                   @endforeach
@@ -240,7 +239,7 @@
 
   function addActionOption(id,name, idEdit) {
     let setName = "'"+name+"'";
-    let editOption = '', deleteOption = '', showOption = '';
+    let editOption = '', deleteOption = '';
     @if(auth()->user()->can('provinces-edit')) {
       editOption = '<button type="button" onclick="editAction('+id+', '+setName+', '+idEdit+')" class="edit btn btn-success btn-sm">Ubah</button>';
     }
@@ -251,9 +250,7 @@
     }
     @endif
 
-    showOption = '<a href="#" class="show btn btn-info btn-sm">Rincian</a>';
-
-    return editOption+deleteOption+showOption;
+    return editOption+deleteOption;
   }
 
   function resetForm() {    
