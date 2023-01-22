@@ -306,7 +306,6 @@
 
     $("#form_title").text('Form Buat Data Kabupaten');
     $("#btn-submit").text("Submit").attr('disabled', true);
-    $("#name").attr('disabled', true);
   }
 </script>
     
