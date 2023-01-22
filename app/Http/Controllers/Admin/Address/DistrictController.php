@@ -78,9 +78,6 @@ class DistrictController extends Controller
         $district = $this->districtRepo->createDistrict($data);
         $district->villages_count = 0;
 
-        $this->provinceRepo->listProvinces()->sortBy('name');
-        $this->districtRepo->listDistricts()->sortBy('name');
-
         return response()->json([
             'status'    => 'success',
             'message'   => 'Data Kecamatan Berhasil Ditambahkan!',
@@ -115,7 +112,6 @@ class DistrictController extends Controller
         $distRepo->updateDistrict($data);
 
         $district->villages_count = 0;
-        $this->districtRepo->listDistricts()->sortBy('name');
 
         return response()->json([
             'status'    => 'success',

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin\Address;
 use App\Models\Address\Provinces\Repositories\Interfaces\ProvinceRepositoryInterface;
 use App\Models\Address\Villages\Repositories\Interfaces\VillageRepositoryInterface;
 use App\Models\Address\Villages\Repositories\VillageRepository;
-use App\Models\Address\Villages\Village;
 use App\Models\Address\Villages\Requests\CreateVillageRequest;
 use App\Models\Address\Villages\Requests\UpdateVillageRequest;
 use App\Http\Controllers\Controller;
@@ -83,8 +82,6 @@ class VillageController extends Controller
         $data['name'] = strtoupper($data['name']);
         $village = $this->villageRepo->createVillage($data);
 
-        $this->villageRepo->listVillages()->sortBy('name');
-
         return response()->json([
             'status'    => 'success',
             'message'   => 'Data Kelurahan Berhasil Ditambahkan!',
@@ -118,8 +115,6 @@ class VillageController extends Controller
 
         $vilRepo = new VillageRepository($village);
         $vilRepo->updateVillage($data);
-
-        $this->villageRepo->listVillages()->sortBy('name');
 
         return response()->json([
             'status'        => 'success',

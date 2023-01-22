@@ -81,9 +81,6 @@ class RegencyController extends Controller
         $regency = $this->regencyRepo->createRegency($data);
         $regency->districts_count = 0;
 
-        $provinces = $this->provinceRepo->listProvinces()->sortBy('name');
-        $this->regencyRepo->listRegencies()->sortBy('name');
-
         return response()->json([
             'status'    => 'success',
             'message'   => 'Data Kabupaten/Kota Berhasil Ditambahkan!',
@@ -107,8 +104,6 @@ class RegencyController extends Controller
         $regenRepo = new RegencyRepository($regency);
         $regenRepo->updateRegency($data);
         $regency->districts_count = 0;
-
-        $this->regencyRepo->listRegencies()->sortBy('name');
 
         return response()->json([
             'status'    => 'success',

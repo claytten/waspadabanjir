@@ -98,7 +98,6 @@ class ProvinceController extends Controller
         if (Cache::has('provinces')) {
             Cache::forget('provinces');
         }
-        $this->provinceRepo->listProvinces()->sortBy('name');
 
         return response()->json([
             'status'    => 'success',
