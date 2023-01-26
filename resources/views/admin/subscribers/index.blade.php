@@ -255,7 +255,7 @@
 {{-- Send Message Multiple --}}
 <div class="modal fade" id="modal-send-multiple" tabindex="-1" role="dialog" aria-labelledby="modal-send-multiple"
   aria-hidden="true">
-  <div class="modal-dialog modal modal-dialog-centered modal-lg" role="document">>
+  <div class="modal-dialog modal modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-body p-0">
         <div class="card bg-secondary border-0 mb-0">
@@ -306,7 +306,7 @@
 
               <div class="col-lg-12">
                 <div class="text-center">
-                  <button type="button" class="btn btn-primary my-4" onclick="sendMultipleMessage()">Submit</button>
+                  <button type="button" class="btn btn-primary my-4" onclick="sendMultipleMessage()" id="button-multiple-messages">Submit</button>
                 </div>
               </div>
 
@@ -759,6 +759,8 @@
 
   function sendMultipleMessage() {
     if($('#multiple_body_message').val()) {
+      $('#button-multiple-messages').text('Loading...');
+      $('#multiple_phone, #button-multiple-messages, #multiple_body_message').prop('disabled', true);
       $.ajax({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -777,6 +779,8 @@
             title: 'Oops...',
             text: 'Terjadi Kesalahan!'
           });
+          $('#button-multiple-messages').text('Submit');
+          $('#multiple_phone, #button-multiple-messages, #multiple_body_message').prop('disabled', false);
         },
         success:function(result) {
           if(result) {
@@ -791,6 +795,8 @@
           } else {
             console.log("Terjadi Kesalahan");
           }
+          $('#button-multiple-messages').text('Submit');
+          $('#multiple_phone, #button-multiple-messages, #multiple_body_message').prop('disabled', false);
         }
       });
     } else {

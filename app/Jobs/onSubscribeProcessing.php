@@ -9,11 +9,12 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Notifications\Notification;
 use Twilio\Rest\Client;
 
-class onSubscribeProcessing implements ShouldQueue
+class onSubscribeProcessing extends Notification implements ShouldQueue
 {
-  use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+  use Queueable, Dispatchable;
 
 	private $message, $recipient;
 
