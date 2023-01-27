@@ -23,4 +23,6 @@ interface DistrictRepositoryInterface extends BaseRepositoryInterface
     public function listDistrictByRegencies(): string;
 
     public function createListDistrictMenu(): array;
+
+    public function checkDuplicateDistrict(string $name, int $regency_id): ?District;
 }

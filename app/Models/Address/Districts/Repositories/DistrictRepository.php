@@ -166,4 +166,8 @@ class DistrictRepository extends BaseRepository implements DistrictRepositoryInt
         return $setAddress;
       });
     }
+
+    public function checkDuplicateDistrict(string $name, int $regency_id): ?District {
+        return $this->model->where('name', 'LIKE', "%{$name}%")->where('regency_id', $regency_id)->first();
+    }
 }

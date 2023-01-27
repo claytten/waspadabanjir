@@ -11,6 +11,7 @@ use App\Models\Address\Regencies\Requests\UpdateRegencyRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class RegencyController extends Controller
 {
@@ -78,6 +79,12 @@ class RegencyController extends Controller
     {
         $data = $request->except('_token', '_method');
         $data['name'] = strtoupper($data['name']);
+        if (!empty($this->regencyRepo->checkDuplicateRegency($data['name'], $data['province_id']))) {
+            return response()->json([
+                'status'    => 'error',
+                'message'   => 'Data Kabupaten/Kota Sudah Ada pada Provinsi Tersebut!'
+            ]);
+        }
         $regency = $this->regencyRepo->createRegency($data);
         $regency->districts_count = 0;
 
@@ -100,6 +107,12 @@ class RegencyController extends Controller
         $regency = $this->regencyRepo->findRegencyById($id);
         $data = $request->except('_token', '_method');
         $data['name'] = strtoupper($data['name']);
+        if (!empty($this->regencyRepo->checkDuplicateRegency($data['name'], $data['province_id']))) {
+            return response()->json([
+                'status'    => 'error',
+                'message'   => 'Data Kabupaten/Kota Sudah Ada pada Provinsi Tersebut!'
+            ]);
+        }
 
         $regenRepo = new RegencyRepository($regency);
         $regenRepo->updateRegency($data);

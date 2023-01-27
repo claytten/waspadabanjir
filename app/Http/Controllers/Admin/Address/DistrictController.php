@@ -75,6 +75,13 @@ class DistrictController extends Controller
     {
         $data = $request->except('_token', '_method');
         $data['name'] = strtoupper($data['name']);
+        if (!empty($this->districtRepo->checkDuplicateDistrict($data['name'], $data['regency_id']))) {
+            return response()->json([
+                'status'    => 'error',
+                'message'   => 'Data Kecamatan Sudah Ada pada Kabupaten/Kota Tersebut!'
+            ]);
+        }
+
         $district = $this->districtRepo->createDistrict($data);
         $district->villages_count = 0;
 
@@ -107,6 +114,13 @@ class DistrictController extends Controller
     {
         $data = $request->except('_token', '_method');
         $data['name'] = strtoupper($data['name']);
+        if (!empty($this->districtRepo->checkDuplicateDistrict($data['name'], $data['regency_id']))) {
+            return response()->json([
+                'status'    => 'error',
+                'message'   => 'Data Kecamatan Sudah Ada pada Kabupaten/Kota Tersebut!'
+            ]);
+        }
+        
         $district = $this->districtRepo->findDistrictById($id);
         $distRepo = new DistrictRepository($district);
         $distRepo->updateDistrict($data);

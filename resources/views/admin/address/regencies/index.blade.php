@@ -45,7 +45,7 @@
               <div class="col-md-12">
                 <div class="form-group">
                   <div class="input-group input-group-merge">
-                    <select onchange="searchProvince()" name="province_id" id="provinces" class="form-control @error('provinces') is-invalid @enderror" data-toggle="select">
+                    <select onchange="searchProvince()" name="province_id" id="provinces" class="form-control @error('provinces') is-invalid @enderror" data-toggle="select" required>
                       <option value=""></option>
                       @foreach($provinces as $item)
                           <option value="{{$item['id']}}">{{$item['name']}}</option>
@@ -62,7 +62,7 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-map-marker"></i></span>
                     </div>
-                    <input class="form-control @error('name') is-invalid @enderror" placeholder="Nama Kabuapten/Kota" type="text" name="name" value="{{ old('name')}}" id="name">
+                    <input class="form-control @error('name') is-invalid @enderror" placeholder="Nama Kabuapten/Kota" type="text" name="name" value="{{ old('name')}}" id="name" required>
                     @error('name')
                         <div class="invalid-feedback">
                             {{ $message }}
@@ -130,8 +130,7 @@
     $('#provinces').select2({
       'placeholder': 'Urutkan Berdasarkan Provinsi',
     });
-    $("#name").attr('disabled', true);
-    $('#btn-submit').attr('disabled', true);
+    $("#btn-submit, #name, #btn-reset").prop('disabled', true);
   });
   let tableRegencies = $("#regenciesTable").DataTable({
     lengthMenu: [ 5, 10, 25, 50, 75, 100 ],
@@ -166,40 +165,53 @@
         link = link.replace(':id', id);
     }
 
-    $("#btn-submit").text("Loading..");
+    $("#btn-submit").text("Loading..").prop('disabled', true);
+    $("#btn-reset").prop('disabled', true);
 
     $.post(link, $(this).serialize(), function(result){
-        console.log(result);
-        const rows = (tableRegencies.rows().count() == 0) ? "1" : tableRegencies.row(':last').data()[0];
+      if(result.status == 'error') {
         if($("#_method").val() == "POST"){
-          // Store
-          tableRegencies.row.add([
-            parseInt(rows)+1,
-            result.data['name'],
-            result.data['districts_count'],
-            addActionOption(result.data['id'], result.data['name'], parseInt(rows)+1)
-          ]).draw().node().id = "rows_"+result.data['id'];
-        } else {
-          // Update
-          const newData = [
-            idEdit,
-            result.data['name'],
-            result.data['districts_count'],
-            addActionOption(result.data['id'], result.data['name'], idEdit)
-          ];
-          tableRegencies.row($("#rows_"+$("#id").val())).data(newData);
+          $("#btn-submit").text("Submit");
+        }else {
+          $("#btn-submit").text("Update");
         }
-
-        resetForm();
-    
-        // Append Alert Result
         Swal.fire(
           result.status,
           result.message,
-          'success'
+          'error'
         );
+        resetForm();
+        return;
+      }
+      const rows = (tableRegencies.rows().count() == 0) ? "1" : tableRegencies.row(':last').data()[0];
+      if($("#_method").val() == "POST"){
+        // Store
+        tableRegencies.row.add([
+          parseInt(rows)+1,
+          result.data['name'],
+          result.data['districts_count'],
+          addActionOption(result.data['id'], result.data['name'], parseInt(rows)+1)
+        ]).draw().node().id = "rows_"+result.data['id'];
+      } else {
+        // Update
+        const newData = [
+          idEdit,
+          result.data['name'],
+          result.data['districts_count'],
+          addActionOption(result.data['id'], result.data['name'], idEdit)
+        ];
+        tableRegencies.row($("#rows_"+$("#id").val())).data(newData);
+      }
+
+      resetForm();
+  
+      // Append Alert Result
+      Swal.fire(
+        result.status,
+        result.message,
+        'success'
+      );
     }).fail(function(jqXHR, textStatus, errorThrown){
-        console.log(jqXHR);
         Swal.fire({
           icon: 'error',
           title: 'Oops... ' + textStatus,
@@ -209,9 +221,10 @@
   });
 
   function searchProvince() {
+    resetForm();
     tableRegencies.clear().draw();
-    $("#name").attr('disabled', true);
     $(".dataTables_empty").text("Menunggu data...");
+    $("#btn-submit, #btn-reset, #name").prop('disabled', true);
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -233,8 +246,8 @@
               addActionOption(value['id'], value['name'], counting)
             ]).draw().node().id="rows_"+value['id'];
           });
-          $("#name").attr('disabled', false);
-          $('#btn-submit').attr('disabled', false);
+          $("#btn-submit, #btn-reset, #name").prop('disabled', false);
+          $("#name").val('');
         } else {
           console.log("Terjadi Kesalahan");
         }
@@ -265,7 +278,8 @@
     $("#name").val(name);
 
     $("#form_title").text('Form Ubah Data Kabupaten');
-    $("#btn-submit").text("Update").attr('disable', false);
+    $("#btn-submit").text("Update").prop('disabled', false);
+    $("#btn-reset, #name").prop('disabled', false);
   }
 
   function deleteAction(id) {
@@ -298,6 +312,13 @@
     });
   }
 
+  function resetAction() {
+    resetForm();
+    tableRegencies.clear().draw();
+    $("#name").val('');
+    $("#btn-submit, #btn-reset, #name").prop('disabled', true);
+  }
+
   function resetForm() {    
     $("#id").val('');
     $("#idEdit").val('');
@@ -305,7 +326,8 @@
     $("#name").val('');
 
     $("#form_title").text('Form Buat Data Kabupaten');
-    $("#btn-submit").text("Submit").attr('disabled', true);
+    $("#btn-submit").text("Submit").prop('disabled', false);
+    $("#btn-reset, #name").prop('disabled', false);
   }
 </script>
     

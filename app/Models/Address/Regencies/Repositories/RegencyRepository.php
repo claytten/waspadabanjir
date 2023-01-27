@@ -115,6 +115,10 @@ class RegencyRepository extends BaseRepository implements RegencyRepositoryInter
         }
     }
 
+    public function checkDuplicateRegency(string $name, int $province_id): ?Regency {
+        return $this->model->where('name', 'LIKE', "%{$name}%")->where('province_id', $province_id)->first();
+    }
+
     /**
      * Find the regency by name
      * 

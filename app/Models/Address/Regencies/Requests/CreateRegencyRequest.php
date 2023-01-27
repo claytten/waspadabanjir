@@ -24,7 +24,7 @@ class CreateRegencyRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'string', 'max:191', 'unique:regencies,name']
+            'name' => ['required', 'string', 'max:191']
         ];
     }
 

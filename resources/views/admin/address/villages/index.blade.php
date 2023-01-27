@@ -45,7 +45,7 @@
               <div class="col-md-12">
                 <div class="form-group">
                   <div class="input-group input-group-merge">
-                    <select onchange="searchProvince()" id="provinces" class="form-control @error('provinces') is-invalid @enderror" data-toggle="select">
+                    <select onchange="searchProvince()" id="provinces" class="form-control @error('provinces') is-invalid @enderror" data-toggle="select" required>
                       <option value=""></option>
                       @foreach($provinces as $item)
                           <option value="{{$item['id']}}">{{$item['name']}}</option>
@@ -59,7 +59,7 @@
               <div class="col-md-12">
                 <div class="form-group">
                   <div class="input-group input-group-merge">
-                      <select onchange="searchRegency()" id="regencies" class="form-control @error('regencies') is-invalid @enderror" data-toggle="select">
+                      <select onchange="searchRegency()" id="regencies" class="form-control @error('regencies') is-invalid @enderror" data-toggle="select" required>
                           <option value=""></option>
                       </select>
                   </div>
@@ -70,7 +70,7 @@
               <div class="col-md-12">
                 <div class="form-group">
                   <div class="input-group input-group-merge">
-                    <select onchange="searchDistrict()" name="district_id" id="districts" class="form-control @error('districts') is-invalid @enderror" data-toggle="select">
+                    <select onchange="searchDistrict()" name="district_id" id="districts" class="form-control @error('districts') is-invalid @enderror" data-toggle="select" required>
                       <option value=""></option>
                     </select>
                   </div>
@@ -153,13 +153,12 @@
 
     $('#regencies').select2({
       'placeholder': 'Urutkan Berdasarkan Kabupaten/Kota',
-    }).attr('disabled', true);
+    });
 
     $('#districts').select2({
       'placeholder': 'Urutkan Berdasarkan Kecamatan',
-    }).attr('disabled', true);
-    $("#name").attr('disabled', true);
-    $('#btn-submit').attr('disabled', true);
+    });
+    $("#regencies, #districts, #btn-submit, #name, #btn-reset").prop('disabled', true);
   });
 
   let tableVillages = $("#villagesTable").DataTable({
@@ -183,7 +182,6 @@
 
     $("input").removeClass('is-invalid');
     $(".invalid-feedback").remove();
-    $("#btn-submit").attr('disabled', true);
 
     const id = $("#id").val();
     let link = "";
@@ -195,39 +193,48 @@
         link = link.replace(':id', id);
     }
 
-    $("#btn-submit").text("Loading..");
+    $("#btn-submit").text("Loading..").prop('disabled', true);
+    $("#btn-reset").prop('disabled', true);
     
     $.post(link, $(this).serialize(), function(result){
-        console.log(result);
-        const rows = (tableVillages.rows().count() == 0) ? "1" : tableVillages.row(':last').data()[0];
+      if(result.status == 'error') {
         if($("#_method").val() == "POST"){
-          // Store
-          tableVillages.row.add([
-            parseInt(rows)+1,
-            result.data['name'],
-            addActionOption(result.data['id'], result.data['name'], parseInt(rows)+1)
-          ]).draw().node().id = "rows_"+result.data['id'];
-        } else {
-          // Update
-          const newData = [
-            idEdit,
-            result.data['name'],
-            addActionOption(result.data['id'], result.data['name'], idEdit)
-          ];
-          tableVillages.row($("#rows_"+$("#id").val())).data(newData);
+          $("#btn-submit").text("Submit");
+        }else {
+          $("#btn-submit").text("Update");
         }
-        resetForm();
-    
-        // Append Alert Result
         Swal.fire(
           result.status,
           result.message,
-          'success'
+          'error'
         );
-    }).fail(function(jqXHR, textStatus, errorThrown){
-        console.log(jqXHR);
-        $('#name').attr('disabled', false);
         resetForm();
+        return;
+      }
+      const rows = (tableVillages.rows().count() == 0) ? "1" : tableVillages.row(':last').data()[0];
+      if($("#_method").val() == "POST"){
+        // Store
+        tableVillages.row.add([
+          parseInt(rows)+1,
+          result.data['name'],
+          addActionOption(result.data['id'], result.data['name'], parseInt(rows)+1)
+        ]).draw().node().id = "rows_"+result.data['id'];
+      } else {
+        // Update
+        const newData = [
+          idEdit,
+          result.data['name'],
+          addActionOption(result.data['id'], result.data['name'], idEdit)
+        ];
+        tableVillages.row($("#rows_"+$("#id").val())).data(newData);
+      }
+      resetForm();
+      Swal.fire(
+        result.status,
+        result.message,
+        'success'
+      );
+    }).fail(function(jqXHR, textStatus, errorThrown){
         Swal.fire({
           icon: 'error',
           title: 'Oops... ' + textStatus,
@@ -237,10 +244,11 @@
   });
 
   function searchProvince() {
+    resetForm();
     $('#regencies').empty();
-    $("#name").attr('disabled', true);
-    $('#btn-submit').attr('disabled', true);
     tableVillages.clear().draw();
+    $("#districts, #btn-submit, #btn-reset, #name").prop('disabled', true);
+    $("#name").val('');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -256,9 +264,8 @@
           });
           $('#regencies').select2({
             'placeholder': 'Urutkan Berdasarkan Kabupaten/Kota',
-          }).attr('disabled', false);
-          $("#districts").empty().attr('disabled', true);
-          $('#btn-submit').attr('disabled', true);
+          });
+          $("#regencies").prop('disabled', false);
         } else {
           console.log("Terjadi Kesalahan");
         }
@@ -267,10 +274,11 @@
   }
 
   function searchRegency() {
+    resetForm();
     $('#districts').empty();
-    $("#name").attr('disabled', true);
-    $('#btn-submit').attr('disabled', true);
     tableVillages.clear().draw();
+    $("#btn-submit, #btn-reset, #name").prop('disabled', true);
+    $("#name").val('');
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -284,11 +292,10 @@
           $.each(result.data, (key, value) => {
             $('#districts').append('<option value="'+ value['id'] +'">'+ value['name'] +'</option>')
           });
-          $('#districts').attr('disabled', false);
           $('#districts').select2({
             'placeholder': 'Urutkan Berdasarkan Kecamatan',
-          }).attr('disabled', false);
-          $('#btn-submit').attr('disabled', true);
+          });
+          $("#districts").prop('disabled', false);
         } else {
           console.log("Terjadi Kesalahan");
         }
@@ -297,9 +304,10 @@
   }
 
   function searchDistrict() {
+    resetForm();
     tableVillages.clear().draw();
     $(".dataTables_empty").text("Menunggu data...");
-    $("#name").attr('disabled', true);
+    $("#btn-submit, #btn-reset, #name").prop('disabled', true);
     $.ajax({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -320,8 +328,8 @@
               addActionOption(value['id'], value['name'], counting)
             ]).draw().node().id="rows_"+value['id'];
           });
-          $("#name").attr('disabled', false);
-          $('#btn-submit').attr('disabled', false);
+          $("#btn-submit, #btn-reset, #name").prop('disabled', false);
+          $("#name").val('');
         } else {
           console.log("Terjadi KEsalahan");
         }
@@ -352,9 +360,8 @@
     $("#name").val(name);
 
     $("#form_title").text('Form Ubah Data Kelurahan');
-    $("#btn-submit").text("Update").attr('disabled', false);
-    $("#name").attr('disabled', false);
-    $("#provinces, #regencies, #districts").attr('disabled', true);
+    $("#btn-submit").text("Update").prop('disabled', false);
+    $("#regencies, #districts, #btn-reset, #name").prop('disabled', false);
   }
 
   function deleteAction(id) {
@@ -387,6 +394,15 @@
     });
   }
 
+  function resetAction() {
+    resetForm();
+    tableVillages.clear().draw();
+    $("#name").val('');
+    $("#btn-submit").prop('disabled', true);
+    $("#regencies option, #districts option").not(':first').remove();
+    $("#regencies, #districts, #btn-reset, #name").prop('disabled', true);
+  }
+
   function resetForm() {    
     $("#id").val('');
     $("#idEdit").val('');
@@ -394,10 +410,8 @@
     $("#name").val('');
 
     $("#form_title").text('Form Buat Data Kelurahan');
-    $("#btn-submit").text("Submit").attr('disabled', true);
-    $('#provinces').attr('disabled', false);
-    $('#regencies, #districts').empty().attr('disabled', true);
-    $("#name").attr('disabled', true);
+    $("#btn-submit").text("Submit").prop('disabled', false);
+    $("#regencies, #districts, #btn-reset, #name").prop('disabled', false);
   }
 </script>
     

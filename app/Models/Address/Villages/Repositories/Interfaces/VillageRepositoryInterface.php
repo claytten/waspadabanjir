@@ -19,4 +19,6 @@ interface VillageRepositoryInterface extends BaseRepositoryInterface
     public function findVillageById(int $id) : Village;
 
     public function searchVillage(string $text) : Collection;
+
+    public function checkDuplicateVillage(string $name, int $district_id): ?Village;
 }

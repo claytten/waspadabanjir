@@ -8,8 +8,10 @@ use App\Models\Address\Villages\Repositories\VillageRepository;
 use App\Models\Address\Villages\Requests\CreateVillageRequest;
 use App\Models\Address\Villages\Requests\UpdateVillageRequest;
 use App\Http\Controllers\Controller;
+use App\Models\Address\Villages\Village;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class VillageController extends Controller
 {
@@ -80,6 +82,13 @@ class VillageController extends Controller
     {
         $data = $request->except('_token', '_method');
         $data['name'] = strtoupper($data['name']);
+        if (!empty($this->villageRepo->checkDuplicateVillage($data['name'], $data['district_id']))) {
+            return response()->json([
+                'status'    => 'error',
+                'message'   => 'Data Kecamatan Sudah Ada pada Kabupaten/Kota Tersebut!'
+            ]);
+        }
+
         $village = $this->villageRepo->createVillage($data);
 
         return response()->json([
@@ -112,6 +121,12 @@ class VillageController extends Controller
         $village = $this->villageRepo->findVillageById($id);
         $data = $request->except('_token', '_method');
         $data['name'] = strtoupper($data['name']);
+        if (!empty($this->villageRepo->checkDuplicateVillage($data['name'], $data['district_id']))) {
+            return response()->json([
+                'status'    => 'error',
+                'message'   => 'Data Kecamatan Sudah Ada pada Kabupaten/Kota Tersebut!'
+            ]);
+        }
 
         $vilRepo = new VillageRepository($village);
         $vilRepo->updateVillage($data);

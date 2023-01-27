@@ -24,7 +24,7 @@ class CreateVillageRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'string', 'max:191', 'unique:villages,name']
+            'name' => ['required', 'string', 'max:191']
         ];
     }
 

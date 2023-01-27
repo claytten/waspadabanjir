@@ -121,4 +121,8 @@ class VillageRepository extends BaseRepository implements VillageRepositoryInter
         }
         return $this->model->searchVillage($text)->get();
     }
+
+    public function checkDuplicateVillage(string $name, int $district_id): ?Village {
+        return $this->model->where('name', 'LIKE', "%{$name}%")->where('district_id', $district_id)->first();
+    }
 }

@@ -47,7 +47,7 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text"><i class="fas fa-map-marker"></i></span>
                       </div>
-                      <input class="form-control @error('name') is-invalid @enderror" placeholder="Nama Provinsi" type="text" name="name" value="{{ old('name')}}" id="name">
+                      <input class="form-control @error('name') is-invalid @enderror" placeholder="Nama Provinsi" type="text" name="name" value="{{ old('name')}}" id="name" required>
                       @error('name')
                           <div class="invalid-feedback">
                               {{ $message }}
@@ -161,7 +161,20 @@
     $("#btn-submit").text("Loading..");
 
     $.post(link, $(this).serialize(), function(result){
-        console.log(result);
+      if(result.status == 'error') {
+        if($("#_method").val() == "POST"){
+          $("#btn-submit").text("Submit");
+        }else {
+          $("#btn-submit").text("Update");
+        }
+        Swal.fire(
+          result.status,
+          result.message,
+          'error'
+        );
+        resetForm();
+        return;
+      }
         const rows = (provincesTable.rows().count() == 0) ? "1" : provincesTable.row(':last').data()[0];
         if($("#_method").val() == "POST"){
           // Store
@@ -192,6 +205,7 @@
         );
     }).fail(function(jqXHR, textStatus, errorThrown){
         console.log(jqXHR);
+        resetForm();
         Swal.fire({
           icon: 'error',
           title: 'Oops... ' + textStatus,

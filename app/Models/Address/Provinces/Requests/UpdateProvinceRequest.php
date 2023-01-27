@@ -4,6 +4,8 @@ namespace App\Models\Address\Provinces\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateProvinceRequest extends FormRequest
 {
@@ -25,7 +27,7 @@ class UpdateProvinceRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'string', 'max:191']
+            'name' => ['required', 'string', 'max:191', 'unique:provinces,name']
         ];
     }
 
@@ -42,5 +44,19 @@ class UpdateProvinceRequest extends FormRequest
             'name.max' => 'Nama maksimal 191 karakter',
             'name.unique' => 'Nama sudah ada'
         ];
+    }
+
+    /**
+    * Get the error messages for the defined validation rules.*
+    * @return array
+    */
+    protected function failedValidation(Validator $validator)
+    {
+        if ($validator->errors()->has('name')) {
+            throw new HttpResponseException(response()->json([
+                'status'    => 'error',
+                'message'   => 'Data Provinsi Sudah Ada!'
+            ], 200));
+        }
     }
 }
